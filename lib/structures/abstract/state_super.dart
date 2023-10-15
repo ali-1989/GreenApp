@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:iris_tools/api/managers/orientationManager.dart';
-import 'package:iris_tools/modules/stateManagers/assist.dart';
 
 import 'package:app/tools/app/app_loading.dart';
 import 'package:app/tools/app/app_sizes.dart';
@@ -13,7 +12,6 @@ import '/managers/settings_manager.dart';
 /// with TickerProviderStateMixin
 
 abstract class StateSuper<W extends StatefulWidget> extends State<W> {
-	final AssistController assistCtr = AssistController();
 	late double ws;
 	late double hs;
 	late double hr;

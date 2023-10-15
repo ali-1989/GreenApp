@@ -2,18 +2,14 @@ import 'package:app/structures/abstract/state_super.dart';
 import 'package:flutter/material.dart';
 
 import 'package:iris_tools/api/helpers/focusHelper.dart';
-import 'package:iris_tools/modules/stateManagers/assist.dart';
 import 'package:iris_tools/widgets/maxWidth.dart';
 
 import 'package:app/services/session_service.dart';
 import 'package:app/structures/middleWares/requester.dart';
-import 'package:app/system/extensions.dart';
 import 'package:app/system/keys.dart';
 import 'package:app/tools/app/app_messages.dart';
 import 'package:app/tools/app/app_sheet.dart';
-import 'package:app/tools/app/app_snack.dart';
 import 'package:app/tools/route_tools.dart';
-import 'package:app/views/baseComponents/appbar_builder.dart';
 
 class ContactUsPage extends StatefulWidget{
 
@@ -22,7 +18,7 @@ class ContactUsPage extends StatefulWidget{
   @override
   State<ContactUsPage> createState() => _ContactUsPageState();
 }
-///==================================================================================
+///=============================================================================
 class _ContactUsPageState extends StateSuper<ContactUsPage> {
   TextEditingController textCtr = TextEditingController();
   Requester requester = Requester();
@@ -37,19 +33,7 @@ class _ContactUsPageState extends StateSuper<ContactUsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Assist(
-        controller: assistCtr,
-        builder: (context, ctr, data) {
-          return Scaffold(
-            appBar: AppBarCustom(
-              title: Text(AppMessages.contactUs),
-            ),
-            body: SafeArea(
-                child: buildBody()
-            ),
-          );
-        }
-    );
+    return SizedBox();
   }
 
   Widget buildBody(){

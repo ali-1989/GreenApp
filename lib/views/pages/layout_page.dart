@@ -1,7 +1,6 @@
 import 'package:app/structures/abstract/state_super.dart';
 import 'package:flutter/material.dart';
 
-import 'package:iris_tools/modules/stateManagers/assist.dart';
 import 'package:shaped_bottom_bar/models/shaped_item_object.dart';
 import 'package:shaped_bottom_bar/shaped_bottom_bar.dart';
 import 'package:shaped_bottom_bar/utils/arrays.dart';
@@ -9,7 +8,6 @@ import 'package:shaped_bottom_bar/utils/arrays.dart';
 import 'package:app/tools/app/app_icons.dart';
 import 'package:app/tools/app/app_messages.dart';
 import 'package:app/tools/app/app_themes.dart';
-import 'package:app/tools/route_tools.dart';
 import 'package:app/views/baseComponents/appbar_builder.dart';
 import 'package:app/views/baseComponents/drawer_builder.dart';
 import 'package:app/views/pages/home_page.dart';
@@ -21,7 +19,7 @@ class LayoutPage extends StatefulWidget{
   @override
   State<LayoutPage> createState() => LayoutPageState();
 }
-///=================================================================================================
+///=============================================================================
 class LayoutPageState extends StateSuper<LayoutPage> {
   GlobalKey<ScaffoldState> scaffoldState = GlobalKey<ScaffoldState>();
   int selectedPage = 0;
@@ -45,24 +43,16 @@ class LayoutPageState extends StateSuper<LayoutPage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: ()=> onWillBack(this),
-      child: Assist(
-        controller: assistCtr,
-          builder: (context, ctr, data) {
-          return Scaffold(
-            key: scaffoldState,
-            appBar: buildAppBar(),
-            body: SafeArea(
-              bottom: false,
-                child: buildBody()
-            ),
-            drawer: DrawerMenuBuilder.getDrawer(),
-            extendBody: true,
-            bottomNavigationBar: buildNavBar(),
-          );
-        }
+    return Scaffold(
+      key: scaffoldState,
+      appBar: buildAppBar(),
+      body: SafeArea(
+          bottom: false,
+          child: buildBody()
       ),
+      drawer: DrawerMenuBuilder.getDrawer(),
+      extendBody: true,
+      bottomNavigationBar: buildNavBar(),
     );
   }
 
