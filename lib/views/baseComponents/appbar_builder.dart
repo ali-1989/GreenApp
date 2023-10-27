@@ -1,90 +1,76 @@
-import 'package:flutter/foundation.dart';
+import 'package:app/structures/abstract/state_super.dart';
+import 'package:app/system/extensions.dart';
+import 'package:app/tools/app/app_decoration.dart';
+import 'package:app/tools/app/app_images.dart';
+import 'package:app/views/paths.dart';
 import 'package:flutter/material.dart';
+import 'package:iris_tools/widgets/colored_space.dart';
+import 'package:iris_tools/widgets/shadow.dart';
 
-/*class GenAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final AppBar child;
 
-  const GenAppBar({
-    Key? key,
-    required super.child,
-  }) : super(key: key);
+class CustomAppBar extends StatefulWidget {
+  final Widget? titleView;
+  final String? title;
+  const CustomAppBar({super.key, this.titleView, this.title});
 
+  @override
+  State<CustomAppBar> createState() => _CustomAppBarState();
+}
+///=============================================================================
+class _CustomAppBarState extends StateSuper<CustomAppBar> {
   @override
   Widget build(BuildContext context) {
-    if(isWeb()){
-      return const SizedBox();
-    }
+    return Row(
+      textDirection: TextDirection.ltr,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Padding(
+            padding: EdgeInsets.only(left: 30* wRel, right: 25* wRel),
+          child: Image.asset(AppImages.icoUser, width: 50* iconR, height: 50*iconR),
+        ),
 
-    return child;
-  }
+        /*DecoratedBox(
+            decoration: ShapeDecoration(
+                shape: ContinuousRectangleBorder(
+                    //borderRadius: BorderRadius.circular(30)
+                    borderRadius: SmoothBorderRadius.all(SmoothRadius( cornerRadius: 60, cornerSmoothing: 0.5))
+                ),
+              color: Colors.red,
+            ),
+          child: SizedBox(width: 70, height: 70),
+        ),*/
 
-  @override
-  Size get preferredSize {
-    //MediaQuery.of(context).padding.top + kToolbarHeight;
-    // AppBar().preferredSize.height;
-
-    if(isWeb()){
-      return Size.zero;
-    }
-
-    return const Size.fromHeight(kToolbarHeight);
-  }
-
-  bool isWeb(){
-    return kIsWeb;
-  }
-}*/
-
-class AppBarCustom extends AppBar {
-
-  AppBarCustom({
-    super.key,
-    super.leading,
-    super.automaticallyImplyLeading = true,
-    super.title,
-    super.actions,
-    super.flexibleSpace,
-    super.bottom,
-    super.elevation,
-    super.scrolledUnderElevation,
-    super.shadowColor,
-    super.surfaceTintColor,
-    super.backgroundColor,
-    super.foregroundColor,
-    super.iconTheme,
-    super.actionsIconTheme,
-    super.primary = true,
-    super.centerTitle,
-    super.excludeHeaderSemantics = false,
-    super.titleSpacing,
-    super.toolbarOpacity = 1.0,
-    super.bottomOpacity = 1.0,
-    super.toolbarHeight,
-    super.leadingWidth,
-    super.toolbarTextStyle,
-    super.titleTextStyle,
-    super.systemOverlayStyle,
-    //super.shape,
-  }) : super(
-  shape: const RoundedRectangleBorder(
-    borderRadius: BorderRadius.only(
-      bottomLeft: Radius.circular(20), bottomRight: Radius.circular(20))
-    )
-  );
-
-  @override
-  Size get preferredSize {
-    //MediaQuery.of(context).padding.top + kToolbarHeight;
-    // AppBar().preferredSize.height;
-
-    if(isWeb()){
-      return const Size.fromHeight(60);
-    }
-
-    return const Size.fromHeight(kToolbarHeight);
-  }
-
-  bool isWeb(){
-    return kIsWeb;
+        ShadowBox(
+          offset: Offset(0, 3),
+          blurRadius: 2,
+          circular: 25,
+          spreadRadius: 0,
+          child: ClipPath(
+            clipper: PathClipper(
+                builder: (siz){
+                  return Paths.buildSquareFatSide(siz,  20);
+                }
+            ),
+            child: ColoredSpace(width: 63, height: 63),
+          ),
+        ),
+        
+        Expanded(
+            child: DecoratedBox(
+              decoration: const BoxDecoration(
+                color: AppDecoration.secondColor,
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(15), bottomLeft: Radius.circular(15))
+              ),
+              child: SizedBox(
+                height: 35 * hRel,
+                child: Center(
+                  child: widget.titleView?? Text(widget.title?? '')
+                      .bold().color(Colors.white).fsRHole(3),
+                ),
+              ),
+            )
+        )
+      ],
+    );
   }
 }

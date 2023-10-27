@@ -1,8 +1,11 @@
+import 'package:app/tools/app/app_sizes.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:iris_tools/api/helpers/colorHelper.dart';
+import 'package:iris_tools/api/helpers/mathHelper.dart';
+import 'package:iris_tools/api/managers/fonts_manager.dart';
 import 'package:iris_tools/api/system.dart';
 
 import 'package:app/structures/models/color_theme.dart';
@@ -27,12 +30,12 @@ class AppThemes {
 	late ColorTheme currentTheme;
 	late ColorTheme defaultTheme;
 	late Font baseFont;
-	late Font subFont;
+	late Font lightFont;
 	late Font boldFont;
 	late ThemeData themeData;
 	ThemeMode currentThemeMode = ThemeMode.light;
 	Brightness currentBrightness = Brightness.light;
-	TextDirection textDirection = TextDirection.rtl;
+	TextDirection textDirection = TextDirection.ltr;
 	/// sets minimum vertical layout metrics
 	StrutStyle strutStyle = const StrutStyle(forceStrutHeight: true, height: 1.08, leading: 0.36);
 
@@ -64,7 +67,7 @@ class AppThemes {
 
 			_instance.baseFont = Font();
 			_instance.boldFont = Font();
-			_instance.subFont = Font();
+			_instance.lightFont = Font();
 
 			prepareThemes();
 			applyDefaultTheme();
@@ -73,9 +76,9 @@ class AppThemes {
 
 	static void prepareFonts(String language) {
 		if(_isInit) {
-			_instance.baseFont = FontManager.instance.defaultFontFor(language, FontUsage.normal);
+			_instance.baseFont = FontManager.instance.defaultFontFor(language, FontUsage.regular);
 			_instance.boldFont = FontManager.instance.defaultFontFor(language, FontUsage.bold);
-			_instance.subFont = FontManager.instance.defaultFontFor(language, FontUsage.sub);
+			_instance.lightFont = FontManager.instance.defaultFontFor(language, FontUsage.thin);
 		}
 	}
 
@@ -115,8 +118,8 @@ class AppThemes {
 	}
 
 	static void prepareDefaultFontFor(String lang){
-		AppThemes._instance.baseFont = FontManager.instance.defaultFontFor(lang, FontUsage.normal);
-		AppThemes._instance.subFont = FontManager.instance.defaultFontFor(lang, FontUsage.sub);
+		AppThemes._instance.baseFont = FontManager.instance.defaultFontFor(lang, FontUsage.regular);
+		AppThemes._instance.lightFont = FontManager.instance.defaultFontFor(lang, FontUsage.thin);
 		AppThemes._instance.boldFont = FontManager.instance.defaultFontFor(lang, FontUsage.bold);
 	}
 
@@ -140,23 +143,23 @@ class AppThemes {
 			brightness: _instance.currentBrightness,
 		);
 
-		final raw = FontManager.instance.rawTextTheme;
+		const raw = TextStyle();
 
-		th.baseTextStyle = raw.bodyMedium!.copyWith(
+		th.baseTextStyle = raw.copyWith(
 			fontSize: _instance.baseFont.size,
 			fontFamily: _instance.baseFont.family,
 			height: _instance.baseFont.height,
 			color: th.textColor,
 		);
 
-		th.subTextStyle = raw.titleMedium!.copyWith(
-			fontSize: _instance.subFont.size,
-			fontFamily: _instance.subFont.family,
-			height: _instance.subFont.height,
+		th.lightTextStyle = raw.copyWith(
+			fontSize: _instance.lightFont.size,
+			fontFamily: _instance.lightFont.family,
+			height: _instance.lightFont.height,
 			color: th.textColor,
 		);
 
-		th.boldTextStyle = raw.displayLarge!.copyWith(
+		th.boldTextStyle = raw.copyWith(
 			fontSize: _instance.boldFont.size,
 			fontFamily: _instance.boldFont.family,
 			height: _instance.boldFont.height,
@@ -177,15 +180,16 @@ class AppThemes {
 		}
 
 		_checkTheme(th);
+		final pixelRatio = PlatformDispatcher.instance.implicitView!.devicePixelRatio;
 
 		final baseFamily = th.baseTextStyle.fontFamily;
-		final subFamily = th.subTextStyle.fontFamily;
+		final subFamily = th.lightTextStyle.fontFamily;
 		final boldFamily = th.boldTextStyle.fontFamily;
 		final height = th.baseTextStyle.height?? 1.0;
-		final raw = FontManager.instance.rawThemeData;
+		final raw = ThemeData();
 		TextTheme primaryTextTheme;
 
-		double? fontSize = _instance.baseFont.size ?? FontManager.appFontSizeIfSet();
+		double? fontSize = _instance.baseFont.size ?? FontManager.instance.appFontSize();
 
 		double? calcFontSize(int p){
 			if(fontSize == null){
@@ -200,7 +204,7 @@ class AppThemes {
 					fontFamily: baseFamily, color: th.textColor, height: height, fontSize: calcFontSize(1),
 				),
 				bodyMedium: raw.textTheme.bodyMedium!.copyWith(
-					fontFamily: baseFamily, color: th.textColor, height: height,fontSize: calcFontSize(0),
+					fontFamily: baseFamily, color: th.textColor, height: height, fontSize: calcFontSize(0),
 				),
 				bodySmall: raw.textTheme.bodySmall!.copyWith(
 					fontFamily: subFamily, color: th.textColor, height: height, fontSize: calcFontSize(-1),
@@ -251,7 +255,7 @@ class AppThemes {
 			selectedColor: th.differentColor,
 			disabledColor: th.inactiveTextColor,
 			shadowColor: th.shadowColor,
-			labelStyle: th.subTextStyle.copyWith(color: chipTextColor),
+			labelStyle: th.lightTextStyle.copyWith(color: chipTextColor),
 			elevation: ColorHelper.isNearLightness(th.primaryColor, Colors.black)? 0.0: 1.0,
 			padding: const EdgeInsets.all(0.0),
 		);
@@ -338,7 +342,10 @@ class AppThemes {
 
 		/// https://flutter.dev/docs/release/breaking-changes/buttons
 
+		final buttonBorder = MaterialStateProperty.all(const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))));
+
 		const buttonTheme = ButtonThemeData(
+
 		);
 
 		const iconButtonTheme = IconButtonThemeData(
@@ -347,14 +354,12 @@ class AppThemes {
 			),
 		);
 
-		final buttonBorder = MaterialStateProperty.all(const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))));
-
+		final btnVisualDensity = VisualDensity(vertical: MathHelper.between(0, 3.5, -3.5, 0.8, pixelRatio));
 		final elevatedButtonTheme = ElevatedButtonThemeData(
 			style: ButtonStyle(
 				shape: buttonBorder,
-				//padding: MaterialStateProperty.all(const EdgeInsets.symmetric(vertical: 14, horizontal: 8)),
+				visualDensity: kIsWeb? null : btnVisualDensity,
 				tapTargetSize: MaterialTapTargetSize.padded,
-				//backgroundColor: MaterialStateProperty.all(th.buttonBackColor),
 				foregroundColor: MaterialStateProperty.all(th.buttonTextColor),
 				backgroundColor: MaterialStateProperty.resolveWith<Color>(
 							(Set<MaterialState> states) {
@@ -381,7 +386,7 @@ class AppThemes {
 			style: ButtonStyle(
 				//foregroundColor: MaterialStateProperty.all(AppThemes.checkPrimaryByWB(th.primaryColor, th.differentColor)),
 				//foregroundColor: MaterialStateProperty.all(Colors.lightBlue),
-				visualDensity: VisualDensity.comfortable,
+				visualDensity: kIsWeb? null : btnVisualDensity,
 				tapTargetSize: MaterialTapTargetSize.padded,
 				foregroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
 							if (states.contains(MaterialState.disabled)) {
@@ -407,7 +412,7 @@ class AppThemes {
 		final outlinedButtonTheme = OutlinedButtonThemeData(
 			style: ButtonStyle(
 				tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-				//backgroundColor: MaterialStateProperty.all(th.buttonBackColor),
+				visualDensity: kIsWeb? null : btnVisualDensity,
 				foregroundColor: MaterialStateProperty.all(th.textColor),
 				shape: buttonBorder,
 			),
@@ -462,10 +467,11 @@ class AppThemes {
 
 		final inputDecoration = InputDecorationTheme(
 			hintStyle: th.baseTextStyle.copyWith(color: th.hintColor),
-			labelStyle: th.subTextStyle.copyWith(color: th.hintColor),
+			labelStyle: th.lightTextStyle.copyWith(color: th.hintColor),
 			focusColor: th.hintColor,
 			hoverColor: th.infoTextColor,//webHoverColor
 			floatingLabelBehavior: FloatingLabelBehavior.auto,
+			contentPadding: EdgeInsets.symmetric(vertical: 6 * (AppSizes.instance.heightRelative*AppSizes.instance.heightRelative), horizontal: 10),
 			border: UnderlineInputBorder(borderSide: BorderSide(color: th.hintColor)),
 			focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: th.hintColor)),
 			enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: th.hintColor)),
@@ -555,7 +561,7 @@ class AppThemes {
 	}
 
 	static TextStyle subTextStyle() {
-		return AppThemes._instance.currentTheme.subTextStyle;
+		return AppThemes._instance.currentTheme.lightTextStyle;
 	}
 
 	static TextDirection getOppositeDirection() {

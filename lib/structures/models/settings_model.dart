@@ -10,7 +10,7 @@ import 'package:app/tools/date_tools.dart';
 class SettingsModel {
   static const defaultHttpAddress = 'http://vosatezehn.com:7436'; // http://vosatezehn.com, http://192.168.43.140, 1.103
   static const defaultWsAddress = 'ws://vosatezehn.com:7438/ws';
-  static const Locale defaultAppLocale = Locale('fa', 'IR');
+  static const Locale defaultAppLocale = Locale('en', 'US');
   static const CalendarType defaultCalendarType = CalendarType.solarHijri;
   static final defaultDateFormat = DateFormat.yyyyMmDd.format();
   static int webSocketPeriodicHeartMinutes = 3;

@@ -1,35 +1,49 @@
+import 'package:app/system/extensions.dart';
+import 'package:app/tools/app/app_decoration.dart';
 import 'package:flutter/material.dart';
 
 import 'package:animate_do/animate_do.dart';
-import 'package:lottie/lottie.dart';
+import 'package:iris_tools/api/helpers/colorHelper.dart';
 
-import 'package:app/tools/app/app_images.dart';
 
 class SplashView extends StatelessWidget {
-  const SplashView({Key? key}) : super(key: key);
+  const SplashView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return SizedBox.expand(
-      child: DecoratedBox(
-        decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(AppImages.logoSplash),
-              fit: BoxFit.fill,
-            )
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
+      child: Material(
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+              gradient: RadialGradient(
+                radius: 1,
+                focalRadius: 0.0,
+                tileMode: TileMode.clamp,
+                colors: [
+                  AppDecoration.mainColor,
+                  AppDecoration.mainColor,
+                  ColorHelper.darkPlus(AppDecoration.mainColor, val: 0.02),
+                  ColorHelper.darkPlus(AppDecoration.mainColor, val: 0.04),
+                  ColorHelper.darkPlus(AppDecoration.mainColor, val: 0.06),
+                  ColorHelper.darkPlus(AppDecoration.mainColor, val: 0.09),
+                ],
+              )
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
 
-            FadeIn(
-              duration: const Duration(milliseconds: 700),
-              child: Image.asset(AppImages.appIcon,
-                width: 100,
-                height: 100,
+              FadeIn(
+                duration: const Duration(milliseconds: 700),
+                child: const Text('Green Oasis',
+                  style: TextStyle(shadows: [
+                    Shadow(color: Colors.grey, blurRadius: 2, offset: Offset(2,2)),
+                    Shadow(color: Colors.grey, blurRadius: 5, offset: Offset(4,4)),
+                  ], color: Colors.white),
+                ).bold().fsR(20),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

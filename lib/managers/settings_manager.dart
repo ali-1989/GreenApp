@@ -110,6 +110,10 @@ class SettingsManager {
 		return;
 	}
 
+	static Future resetLocalSettings(){
+		return AppDB.deleteKv(Keys.setting$appSettings);
+	}
+
 	static Future<GlobalSettingsModel?> requestGlobalSettings() async {
 		if(!AppCache.canCallMethodAgain('requestGlobalSettings')){
 			return _globalSettings;

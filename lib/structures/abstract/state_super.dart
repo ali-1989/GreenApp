@@ -14,8 +14,10 @@ import '/managers/settings_manager.dart';
 abstract class StateSuper<W extends StatefulWidget> extends State<W> {
 	late double ws;
 	late double hs;
-	late double hr;
-	late double fr;
+	late double wRel;
+	late double hRel;
+	late double iconR;
+	late double fontR;
 
 	@override
   void didUpdateWidget(W oldWidget) {
@@ -34,8 +36,10 @@ abstract class StateSuper<W extends StatefulWidget> extends State<W> {
 
 		ws = AppSizes.instance.appWidth;
 		hs = AppSizes.instance.appHeight;
-		hr = AppSizes.instance.heightRatio;
-		fr = AppSizes.instance.fontRatio;
+		wRel = AppSizes.instance.widthRelative;
+		hRel = AppSizes.instance.heightRelative;
+		iconR = AppSizes.instance.iconRatio;
+		fontR = AppSizes.instance.fontRatio;
 	}
 
 	@override

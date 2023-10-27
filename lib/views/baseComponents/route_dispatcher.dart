@@ -1,3 +1,5 @@
+import 'package:app/views/pages/register_page.dart';
+import 'package:app/views/pages/welcome_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -30,7 +32,7 @@ class RouteDispatcher {
         }
       }
 
-      return LayoutPage();
+      return WelcomePage();
     }
 
     return LayoutPage(key: AppBroadcast.layoutPageKey);

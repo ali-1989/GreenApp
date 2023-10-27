@@ -24,7 +24,7 @@ class ColorTheme {
   Color buttonTextColorOnPrimary = Colors.black;
   Color buttonBackColor = Colors.blue;
   Color buttonBackColorOnPrimary = Colors.white;
-  Color underLineDecorationColor = Colors.blue[700]!;
+  Color underLineDecorationColor = Colors.blue[500]!;
   Color cardColor = Colors.white;
   Color dialogBackColor = Colors.white;
   Color dialogTextColor = Colors.black;
@@ -48,7 +48,7 @@ class ColorTheme {
 
   late ColorScheme buttonsColorScheme;  //in Init & create
   late TextStyle baseTextStyle; //in Init
-  late TextStyle subTextStyle; //in Init
+  late TextStyle lightTextStyle; //in Init
   late TextStyle boldTextStyle; //in Init
   late TextStyle textUnderlineStyle; //in Init
   Function(ColorTheme to)? executeOnStart;
@@ -71,8 +71,8 @@ class ColorTheme {
 
     appBarBackColor = primaryColor;
     buttonBackColor = ColorHelper.isDarkColor(primaryColor) ? primarySwatch[700]! : primarySwatch[800]!;
-    hintColor = textColor.withAlpha(200);//primarySwatch[200]!;
-    infoTextColor = textColor.withAlpha(170);
+    hintColor = textColor.withAlpha(160);
+    infoTextColor = textColor.withAlpha(180);
     webHoverColor = primaryColor.withAlpha(40);
     textDifferentColor = accentColor;
 
@@ -95,8 +95,6 @@ class ColorTheme {
 
     textUnderlineStyle = baseTextStyle.copyWith(
         fontWeight: FontWeight.bold,
-        //decoration: TextDecoration.underline,
-        //decorationColor: underLineDecorationColor,
         color: underLineDecorationColor
     );
 

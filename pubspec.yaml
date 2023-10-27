@@ -46,9 +46,9 @@ dependencies:
   image_picker: ^1.0.4
   file_picker: ^6.0.0
   toggle_switch: ^2.1.0
-  firebase_messaging: ^14.6.9
-  firebase_core: ^2.17.0
-  lottie: ^2.6.0
+  firebase_messaging: ^14.7.2
+  firebase_core: ^2.20.0
+  lottie: ^2.7.0
   workmanager: ^0.5.2
   simple_animations: ^5.0.2
   animate_do: ^3.1.2                   # https://animate.style/
@@ -57,14 +57,15 @@ dependencies:
   google_sign_in: ^6.1.5
   #sign_in_with_apple: ^4.0.0
   pin_code_fields: ^8.0.1
-  shaped_bottom_bar: ^1.1.0
+  awesome_bottom_bar: ^1.2.4
   share_extend: ^2.0.0
   flutter_custom_clippers: ^2.1.0
   appinio_swiper: ^2.0.3
   wakelock: ^0.6.2
   carousel_slider: ^4.2.1
   esptouch_flutter: ^1.0.0
-
+  flutter_blue: ^0.8.0
+  figma_squircle: ^0.5.3
 
   iris_tools:
     git: https://github.com/ali-1989/IrisTools.git
@@ -92,7 +93,7 @@ dependency_overrides:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.3
+  flutter_lints: ^3.0.0
 
 
 flutter:
@@ -101,6 +102,7 @@ flutter:
   # Image.asset('assets/images/x.jpg')
   assets:
     - assets/images/
+    - assets/icons/
     - assets/locales/
     - assets/audio/
     - assets/raw/
@@ -111,18 +113,18 @@ flutter:
     - family: OpenSans
       fonts:
         - asset: assets/fonts/OpenSans.ttf
-    - family: Nazanin # base-sub
-      fonts:
-        - asset: assets/fonts/nazanin-base-sub.ttf
-    - family: Sans # sub
-      fonts:
-        - asset: assets/fonts/sans-sub.ttf
     - family: IranSans # any
       fonts:
         - asset: assets/fonts/iran-sans.ttf
-    - family: Icomoon # any
+    - family: GladioraRegular # bold
       fonts:
-        - asset: assets/fonts/icomoon.ttf
+        - asset: assets/fonts/Gladiora-Regular.ttf
+    - family: GladioraBold # bold
+      fonts:
+        - asset: assets/fonts/Gladiora-Bold.ttf
+    - family: GladioraLight # any
+      fonts:
+        - asset: assets/fonts/Gladiora-Light.ttf
 
 
 flutter_icons:

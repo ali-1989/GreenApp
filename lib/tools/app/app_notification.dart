@@ -190,7 +190,7 @@ class AppNotification {
 			title: title,
 			body: text,
 			autoDismissible: true,
-			color: AppDecoration.orange,
+			color: AppDecoration.mainColor,
 			category: NotificationCategory.Message,
 			notificationLayout: NotificationLayout.Default,
 			payload: payload,

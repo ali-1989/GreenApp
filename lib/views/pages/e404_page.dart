@@ -24,7 +24,7 @@ class _E404PageState extends State<E404Page> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Lottie.asset(
-                  AppImages.logoSplash,
+                  AppImages.appIcon,
                   width: 200,
                   height: 200,
                   reverse: false,

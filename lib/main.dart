@@ -26,6 +26,7 @@ import 'package:app/tools/device_info_tools.dart';
 import 'package:app/tools/log_tools.dart';
 import 'package:app/tools/route_tools.dart';
 import 'package:app/views/baseComponents/splash_page.dart';
+import 'package:iris_tools/widgets/path/box_clipper.dart';
 
 ///================ call on any hot restart
 void main() {
@@ -54,18 +55,21 @@ void main() {
               return MaxWidth(
                 maxWidth: AppSizes.webMaxWidthSize,
                 apply: kIsWeb,
-                child: Directionality(
-                  textDirection: AppThemes.instance.textDirection,
-                  child: DefaultTextHeightBehavior(
-                    textHeightBehavior: const TextHeightBehavior(applyHeightToFirstAscent: false, applyHeightToLastDescent: false),
-                    child: DefaultTextStyle(
-                      style: AppThemes.instance.themeData.textTheme.bodySmall?? const TextStyle(),
-                      child: OrientationBuilder( /// detect orientation change and rotate screen
-                          builder: (context, orientation) {
-                            return Toaster(
-                              child: MyApp(),
-                            );
-                          }
+                child: ClipRect(
+                  clipper: BoxClipper(width: kIsWeb? AppSizes.webMaxWidthSize : double.infinity),
+                  child: Directionality(
+                    textDirection: AppThemes.instance.textDirection,
+                    child: DefaultTextHeightBehavior(
+                      textHeightBehavior: const TextHeightBehavior(applyHeightToFirstAscent: false, applyHeightToLastDescent: false),
+                      child: DefaultTextStyle(
+                        style: AppThemes.instance.themeData.textTheme.bodySmall?? const TextStyle(),
+                        child: OrientationBuilder( /// detect orientation change and rotate screen
+                            builder: (context, orientation) {
+                              return Toaster(
+                                child: MyApp(),
+                              );
+                            }
+                        ),
                       ),
                     ),
                   ),
@@ -81,6 +85,7 @@ void main() {
 }
 
 Future<void> mainInitialize() async {
+  FontManager.init(calcFontSize: true);
   await FireBaseService.initializeApp();
 
   usePathUrlStrategy();
@@ -158,10 +163,10 @@ class MyApp extends StatelessWidget {
     return Builder(
       builder: (context) {
 
-        if(factor > 1.0 && FontManager.firstFontSize != null){
-          final themeFs = FontManager.instance.getThemeFontSizeOrRelative(context);
+        if(factor > 1.0 && FontManager.instance.startFontSize != null){
+          final themeFs = FontManager.instance.themeFontSizeOrRelative(context);
 
-          while(factor > 1.0 && (themeFs * factor) > FontManager.maxForFontSize){
+          while(factor > 1.0 && (themeFs * factor) > FontManager.instance.maximumAppFontSize){
             factor = factor - 0.09;
           }
         }

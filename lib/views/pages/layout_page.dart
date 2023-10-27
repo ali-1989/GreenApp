@@ -1,16 +1,18 @@
 import 'package:app/structures/abstract/state_super.dart';
+import 'package:app/tools/app/app_decoration.dart';
+import 'package:app/tools/app/app_images.dart';
+import 'package:app/views/pages/automation_page.dart';
+import 'package:app/views/pages/chart_page.dart';
+import 'package:app/views/pages/devices_page.dart';
+import 'package:app/views/pages/setting_page.dart';
+import 'package:awesome_bottom_bar/widgets/inspired/inspired.dart';
 import 'package:flutter/material.dart';
+import 'package:awesome_bottom_bar/awesome_bottom_bar.dart';
 
-import 'package:shaped_bottom_bar/models/shaped_item_object.dart';
-import 'package:shaped_bottom_bar/shaped_bottom_bar.dart';
-import 'package:shaped_bottom_bar/utils/arrays.dart';
 
-import 'package:app/tools/app/app_icons.dart';
-import 'package:app/tools/app/app_messages.dart';
-import 'package:app/tools/app/app_themes.dart';
 import 'package:app/views/baseComponents/appbar_builder.dart';
-import 'package:app/views/baseComponents/drawer_builder.dart';
 import 'package:app/views/pages/home_page.dart';
+import 'package:iris_tools/widgets/keep_alive_wrap.dart';
 
 class LayoutPage extends StatefulWidget{
 
@@ -22,10 +24,8 @@ class LayoutPage extends StatefulWidget{
 ///=============================================================================
 class LayoutPageState extends StateSuper<LayoutPage> {
   GlobalKey<ScaffoldState> scaffoldState = GlobalKey<ScaffoldState>();
-  int selectedPage = 0;
+  int selectedPage = 2;
   late PageController pageController;
-  ValueKey<int> bottomBarKey = ValueKey<int>(1);
-
 
   @override
   Future<bool> onWillBack<s extends StateSuper>(s state) {
@@ -38,90 +38,111 @@ class LayoutPageState extends StateSuper<LayoutPage> {
   initState(){
     super.initState();
 
-    pageController = PageController();
+    pageController = PageController(initialPage: selectedPage);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldState,
-      appBar: buildAppBar(),
       body: SafeArea(
           bottom: false,
           child: buildBody()
       ),
-      drawer: DrawerMenuBuilder.getDrawer(),
+      //drawer: DrawerMenuBuilder.getDrawer(),
       extendBody: true,
       bottomNavigationBar: buildNavBar(),
     );
   }
 
   Widget buildBody(){
-    return Padding(
-      padding: EdgeInsets.only(bottom: 50),
-      child: PageView(
-          physics: NeverScrollableScrollPhysics(),
-        allowImplicitScrolling: false,
-        controller: pageController,
-        children: [
-          HomePage(),
-        ],
+    return DecoratedBox(
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage(AppImages.homeBackG),
+          fit: BoxFit.cover,
+        )
+      ),
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 50),
+        child: Column(
+          children: [
+            SizedBox(height: 15* hRel),
+
+            buildAppBar(),
+            SizedBox(height: 4* hRel),
+
+            Expanded(
+              child: PageView(
+                  physics: const NeverScrollableScrollPhysics(),
+                allowImplicitScrolling: false,
+                controller: pageController,
+                children: [
+                  SettingsPage(),
+                  DevicesPage(),
+                  KeepAliveWrap(child: HomePage()),
+                  AutomationPage(),
+                  ChartPage(),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  AppBar buildAppBar(){
-    return AppBarCustom(
-      title: Text(AppMessages.appName),
-      /*leading: IconButton(
-          onPressed: (){
-          },
-          icon: Icon(AppIcons.list)
-      ),*/
-
-      actions: [
-        GestureDetector(
-          onTap: gotoAidPage,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(AppIcons.cashMultiple, size: 20,),
-            ],
-          ),
-        ),
-
-        IconButton(
-            onPressed: (){
-              //RouteTools.pushPage(context, SearchPage());
-            },
-            icon: Icon(AppIcons.search)
-        ),
-      ],
+  Widget buildAppBar(){
+    return CustomAppBar(
+      title: getTitle()
     );
   }
 
-  Widget buildNavBar(){
-    return ShapedBottomBar(
-      key: bottomBarKey,
-        backgroundColor: AppThemes.instance.currentTheme.primaryColor,
-        iconsColor: Colors.black,
-        bottomBarTopColor: Colors.transparent,
-        shapeColor: AppThemes.instance.currentTheme.differentColor,
-        selectedIconColor: Colors.white,
-        shape: ShapeType.PENTAGON,
-        animationType: ANIMATION_TYPE.FADE,
-        selectedItemIndex: selectedPage,
-        //textStyle: AppThemes.instance.currentTheme.baseTextStyle,
-        listItems: [
-          ShapedItemObject(iconData: AppIcons.home, title: AppMessages.home),
-        ],
-        onItemChanged: (position) {
-          selectedPage = position;
+  String getTitle(){
+    switch (selectedPage){
+      case 0:
+        return 'Settings';
+      case 1:
+        return 'Devices';
+      case 2:
+        return 'Home';
+      case 3:
+        return 'Automation';
+      case 4:
+        return 'Charts';
+      default:
+        return '';
+    }
+  }
 
+  Widget buildNavBar(){
+    final icoSize = 16 *wRel;
+
+    return BottomBarInspiredOutside(
+      backgroundColor: AppDecoration.mainColor,
+      color: Colors.white,
+      colorSelected: Colors.white,
+      itemStyle: ItemStyle.circle,
+      borderRadius: BorderRadius.circular(5),
+      radius: 20,
+      animated: true,
+      height: 30,
+      top: -20,
+      sizeInside: 55,
+      chipStyle: const ChipStyle(background: AppDecoration.mainColor, color: Colors.white, convexBridge: false, notchSmoothness: NotchSmoothness.softEdge),
+      indexSelected: selectedPage,
+      onTap: (position) {
+          selectedPage = position;
+          callState();
           pageController.jumpToPage(selectedPage);
-          //setState(() {});
         },
+      items: [
+        TabItem(icon: Image.asset(AppImages.icoBNavigatorSetting, width: icoSize, height: icoSize)),
+        TabItem(icon: Image.asset(AppImages.icoBNavigatorDevices, width: icoSize, height: icoSize)),
+        TabItem(icon: Image.asset(AppImages.icoBNavigatorHome, width: icoSize, height: icoSize)),
+        TabItem(icon: Image.asset(AppImages.icoBNavigatorNetwork, width: icoSize, height: icoSize)),
+        TabItem(icon: Image.asset(AppImages.icoBNavigatorChart, width: icoSize, height: icoSize)),
+      ],
     );
   }
 
@@ -129,11 +150,7 @@ class LayoutPageState extends StateSuper<LayoutPage> {
     selectedPage = idx;
     pageController.jumpToPage(idx);
 
-    bottomBarKey = ValueKey(bottomBarKey.value +1);
+    //bottomBarKey = ValueKey(bottomBarKey.value +1);
     setState(() {});
-  }
-
-  void gotoAidPage(){
-    //AidService.gotoAidPage();
   }
 }

@@ -1,6 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:iris_tools/api/helpers/colorHelper.dart';
+import 'package:iris_tools/api/helpers/mathHelper.dart';
+import 'package:iris_tools/api/managers/fonts_manager.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'package:app/managers/font_manager.dart';
@@ -11,19 +14,17 @@ import 'package:app/tools/app/app_themes.dart';
 class AppDecoration {
   AppDecoration._();
 
-  static const mainColor = Color(0xFFF95959);
-  static const secondColor = Color(0xFFF0A17D);
-  static const differentColor = Color(0xFFF7C8B3);
-  static const red = Color(0xfff0134d);
-  static const green = Color(0xFF00cc6a);
-  static const blue = Color(0xFF79dae8);
-  static const orange = Color(0xfffbb454);
-  static const purple = Color(0xFF7A40EF);
-  static Color greenTint = green.withAlpha(40);
-  static Color redTint = red.withAlpha(40);
-  static Color blueTint = blue.withAlpha(100);
-  static Color purpleTint = purple.withAlpha(40);
+  static const mainColor = Color(0xFF528273);
+  static const secondColor = Color(0xFF0F342B);
+  static const differentColor = Color(0xFFFF8000);
 
+  static String get gladioraLightFont {//GladioraLight
+    return FontManager.instance.defaultFontFamilyFor('en', FontUsage.thin);
+  }
+
+  static String get gladioraBoldFont {
+    return FontManager.instance.defaultFontFamilyFor('en', FontUsage.bold);
+  }
   //--------------------------------------------------
   static ClassicFooter classicFooter = const ClassicFooter(
     loadingText: '',
@@ -95,7 +96,7 @@ class AppDecoration {
 
   static double fontSizeRelative(double size) {
     var siz = AppThemes.instance.currentTheme.baseTextStyle.fontSize;
-    return (siz?? FontManager.appFontSize()) + size;
+    return (siz?? FontManager.instance.appFontSizeOrRelative()) + size;
   }
   ///------------------------------------------------------------------
   static InputDecoration noneBordersInputDecoration = const InputDecoration(
@@ -107,14 +108,19 @@ class AppDecoration {
     errorBorder: InputBorder.none,
   );
 
-  static InputDecoration outlineBordersInputDecoration = const InputDecoration(
-    border: OutlineInputBorder(),
-    enabledBorder: OutlineInputBorder(),
-    focusedBorder: OutlineInputBorder(),
-    focusedErrorBorder: OutlineInputBorder(),
-    disabledBorder: OutlineInputBorder(),
-    errorBorder: OutlineInputBorder(),
-  );
+  static InputDecoration get outlineBordersInputDecoration {
+    final cTheme = AppThemes.instance.currentTheme;
+    // infoTextColor
+
+    return InputDecoration(
+      border: OutlineInputBorder(borderSide: BorderSide(color: cTheme.hintColor)),
+      enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: cTheme.hintColor)),
+      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: cTheme.textColor)),
+      disabledBorder: OutlineInputBorder(borderSide: BorderSide(color: cTheme.hintColor)),
+      errorBorder: OutlineInputBorder(borderSide: BorderSide(color: cTheme.errorColor)),
+      focusedErrorBorder: OutlineInputBorder(borderSide: BorderSide(color: cTheme.errorColor)),
+    );
+  }
 
   static InputDecoration textFieldInputDecoration({int alpha = 255}) {
     final border = OutlineInputBorder(
@@ -172,6 +178,12 @@ class AppDecoration {
     Clip clip = Clip.hardEdge,
   }){
 
+    double? w;
+
+    if(width != null){
+      w = kIsWeb? MathHelper.minDouble(width, AppSizes.webMaxWidthSize) : width;
+    }
+
     return SnackBar(
       content: replaceContent?? Text(message),
       behavior: behavior,
@@ -179,10 +191,10 @@ class AppDecoration {
       backgroundColor: backgroundColor,
       dismissDirection: DismissDirection.horizontal,
       action: action,
-      width: width?? (AppSizes.isBigWidth()? AppSizes.webMaxWidthSize: null),
+      width: w,
       elevation: elevation,
       padding: padding,
-      margin: margin, /*default: fromLTRB(15.0, 5.0, 15.0, 10.0)*/
+      margin: margin, /* default: fromLTRB(15.0, 5.0, 15.0, 10.0) */
       clipBehavior: clip,
       shape: shape,
     );

@@ -135,7 +135,14 @@ class Requester {
           request = 'GET';
         }
 
-        Tools.verboseLog('@@@@@ API CALLED >>> url:[$url]\n\nrequest:[$request]\n\nresponse ====>>  status:[${_httpRequester.responseData?.statusCode}] data:$val \n');
+        var pr = '_._._._._._._.__._._._._._._._ API CALLED >>>'
+            '\nurl:[$url]'
+            '\n\nrequest:[$request]'
+            '\n\nresponse ====>>  status:[${_httpRequester.responseData?.statusCode}]'
+            '\ndata:$val'
+            '\n_._._._._._._.__._._._._._._.__._._._._._._.__._._._._._._._';
+
+        Tools.verboseLog(pr);
       }
 
       /*if(_httpRequester.responseData?.statusCode == 401 && SessionService.getLastLoginUser() != null){

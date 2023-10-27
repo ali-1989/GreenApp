@@ -108,12 +108,25 @@ class AppMessages {
     return _getContext().t('password')?? _noText;
   }
 
+  static String get repeatPassword {
+    final l1 = _getContext().tInMap('loginSection', 'repeatPassword');
+    return l1?? _noText;
+  }
+
   static String get pay {
     return _getContext().t('pay')?? _noText;
   }
   
   static String get register {
     return _getContext().t('register')?? _noText;
+  }
+
+  static String get signIn {
+    return _getContext().t('signIp')?? _noText;
+  }
+
+  static String get signUp {
+    return _getContext().t('signUp')?? _noText;
   }
 
   static String get logout {
@@ -176,6 +189,14 @@ class AppMessages {
     return loginMessage('loginWithGoogle');
   }
 
+  static String get forgotPassword {
+    return loginMessage('forgotPassword');
+  }
+
+  static String get passwordRecovery {
+    return loginMessage('passwordRecovery');
+  }
+
   static String get countrySelection {
     return _getContext().tInMap('countrySection', 'countrySelection')?? _noText;
   }
@@ -200,6 +221,18 @@ class AppMessages {
     return _getContext().t('login')?? _noText;
   }
 
+  static String get nameMustBigger2Char {
+    return registerMessage('nameMustBigger2Char');
+  }
+
+  static String get familyMustBigger2Char {
+    return registerMessage('familyMustBigger2Char');
+  }
+
+  static String get emailIsNotCorrect {
+    return registerMessage('emailIsNotCorrect');
+  }
+
   static String get otherNumber {
     return registerMessage('otherNumber');
   }
@@ -210,6 +243,18 @@ class AppMessages {
 
  static String get pleaseEnterAPassword {
     return registerMessage('selectPassword');
+  }
+
+  static String get passwordsNotSame {
+    return registerMessage('passwordsNotSame');
+  }
+
+  static String get passwordMust4Char {
+    return registerMessage('passwordMust4Char');
+  }
+
+  static String get emailVerifyIsSentClickOn {
+    return _getContext().t('emailVerifyIsSentClickOn')?? _noText;
   }
 
   static String get errorOccur {
@@ -332,164 +377,25 @@ class AppMessages {
     return _getContext().t('close')?? _noText;
   }
 
-  ///-----------------------------------------------------------------------------------
+  static String get email {
+    return _getContext().t('email')?? _noText;
+  }
+
+  static String get inEmailSignOutError {
+    return _getContext().t('inEmailSignOutError')?? _noText;
+  }
+
+  static String get verifyEmail {
+    return _getContext().t('verifyEmail')?? _noText;
+  }
+
+  ///---------------------------------------------------------------------------
   static String get appName {
-    return 'وسعت ذهن';
+    return _getContext().t('appName')?? _noText;
   }
 
   static String get profileTitle {
     return _getContext().tC('profile')?? _noText;
   }
 
-  static String get loginTitle {
-    return 'ورود';
-  }
-
-  static String get registerTitle {
-    return 'ثبت نام';
-  }
-
-  static String get aboutUsTitle {
-    return 'درباره ما';
-  }
-
-  static String get termTitle {
-    return 'سیاست حریم خصوصی';
-  }
-
-  static String get enterCountryCode {
-    return 'کد کشور را وارد کنید';
-  }
-
-  static String get enterPhoneNumber {
-    return 'شماره موبایل خود را وارد کنید';
-  }
-
-  static String get notCorrectMobileInfo {
-    return 'شماره موبایل پذیرفته نیست';
-  }
-
-  static String get mustLiveInIran {
-    return 'فقط برای کاربران داخل ایران';
-  }
-
-  static String get pleaseEnterVerifyCode {
-    return 'لطفا کد ارسال شده را وارد کنید';
-  }
-
-  static String get pleaseEnterNameFamily {
-    return 'لطفا نام و نام خانوادگی خود را کامل وارد کنید';
-  }
-
-  static String get enterName {
-    return 'لطفا نام خود را وارد کنید';
-  }
-
-  static String get enterFamily {
-    return 'لطفا نام خانوادگی خود را وارد کنید';
-  }
-
-  static String get pleaseSelectAge {
-    return 'لطفا سن خود را انتخاب کنید';
-  }
-
-  static String get meditation {
-    return 'مدیتیشن';
-  }
-
-  static String get focus {
-    return 'چندبخشی';
-  }
-
-  static String get motion {
-    return 'حرکت';
-  }
-
-  static String get video {
-    return 'فیلم';
-  }
-
-  static String get aid {
-    return 'حمایت';
-  }
-
-  static String get aidUs {
-    return 'حمایت از ما';
-  }
-
-  static String get favorites {
-    return 'منتخب ها';
-  }
-
-  static String get lastSeenItem {
-    return 'آخرین بازدیدها';
-  }
-
-  static String get sentencesTitle {
-    return 'جملات روز';
-  }
-
-  static String get shareApp {
-    return 'اشتراک اپلیکیشن';
-  }
-
-  static String get contactUsDescription {
-    return 'سوال ، انتقاد و یا پیشنهاد خود را برای ما بنویسید';
-  }
-
-  static String get contactUsEmptyPrompt {
-    return 'لطفا متن خود را بنویسید';
-  }
-
-  static String get pleaseKeepOrder {
-    return 'لطفا ترتیب موارد را رعایت کنید';
-  }
-
-  static String get isAddToFavorite {
-    return 'به منتخب ها اضافه شد';
-  }
-
-  static String get email {
-    return 'ایمیل';
-  }
-
-  static String get mobile {
-    return 'موبایل';
-  }
-
-  static String get welcome {
-    return 'خوش آمدید';
-  }
-
-  static String get inEmailSignOutError {
-    return 'هنگام خروج از ایمیل خطایی رخ داده است';
-  }
-  
-  static String get payWitIran {
-    return _getContext().t('payWitIran')?? _noText;
-  }
-
-  static String get payWitPaypal {
-    return _getContext().t('payWitPaypal')?? _noText;
-  }
-  
-  static String get adminPageTitle {
-    return 'صفحه ی مدیریت وسعت ذهن';
-  }
-
-  static String get pleaseSelectOneOption {
-    return 'لطفا یکی از گزینه ها را انتخاب کنید';
-  }
-
-  static String get pleaseEnterMobileToSendCode {
-    return 'لطفا شماره موبایل خود را جهت ارسال کد وارد کنید';
-  }
-
-  static String get pleaseEnterEmailToSendVerifyEmail {
-    return 'لطفا آدرس ایمیل خود را جهت ورود وارد کنید';
-  }
-
-  static String get pleaseEnterEmailToRegistering {
-    return 'لطفا آدرس ایمیل خود را جهت ثبت نام وارد کنید';
-  }
 }
