@@ -15,7 +15,7 @@ class AppDecoration {
   AppDecoration._();
 
   static const mainColor = Color(0xFF528273);
-  static const secondColor = Color(0xFF0F342B);
+  static const secondColor = Color(0xFF14463A);
   static const differentColor = Color(0xFFFF8000);
 
   static String get gladioraLightFont {//GladioraLight

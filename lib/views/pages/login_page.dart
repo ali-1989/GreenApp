@@ -80,7 +80,7 @@ class LoginPageState extends StateSuper<LoginPage> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 textDirection: TextDirection.ltr,
                 children: [
-                  Text(AppMessages.loginBtn.toUpperCase())
+                  Text(AppMessages.signIn.toUpperCase())
                       .color(Colors.white).fsRAdd(25)
                       .font(AppDecoration.gladioraBoldFont)
                   .bold(weight: FontWeight.w900),
@@ -160,7 +160,7 @@ class LoginPageState extends StateSuper<LoginPage> {
                 height: 30 * hRel,
                 child: ElevatedButton(
                     onPressed: onLoginClick,
-                    child: Text(AppMessages.loginBtn).fsRHole(2)
+                    child: Text(AppMessages.signIn).fsRHole(2)
                 ),
               ),
             ),

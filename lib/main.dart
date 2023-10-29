@@ -60,7 +60,7 @@ void main() {
                   child: Directionality(
                     textDirection: AppThemes.instance.textDirection,
                     child: DefaultTextHeightBehavior(
-                      textHeightBehavior: const TextHeightBehavior(applyHeightToFirstAscent: false, applyHeightToLastDescent: false),
+                      textHeightBehavior: AppThemes.instance.baseFont.textHeightBehavior?? const TextHeightBehavior(),
                       child: DefaultTextStyle(
                         style: AppThemes.instance.themeData.textTheme.bodySmall?? const TextStyle(),
                         child: OrientationBuilder( /// detect orientation change and rotate screen
@@ -116,7 +116,7 @@ Future<(bool, String?)> prepareDirectoriesAndLogger() async {
 ///=============================================================================
 class MyApp extends StatelessWidget {
   // ignore: prefer_const_constructors_in_immutables
-  MyApp({Key? key}) : super(key: key);
+  MyApp({super.key}) : super();
 
   ///============ call on any hot reload
   @override

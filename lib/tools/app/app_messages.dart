@@ -365,6 +365,10 @@ class AppMessages {
     return "'request' key not exist";
   }
 
+  static String get iRealized {
+    return _getContext().t('IRealized')?? _noText;
+  }
+
   static String get unKnow {
     return _getContext().t('unknown')?? _noText;
   }
@@ -394,8 +398,12 @@ class AppMessages {
     return _getContext().t('appName')?? _noText;
   }
 
-  static String get profileTitle {
-    return _getContext().tC('profile')?? _noText;
+  static String get addWidget {
+    return _getContext().tC('addWidget')?? _noText;
+  }
+
+  static String get addWidgetGuideText {
+    return _getContext().tC('addWidgetGuideText')?? _noText;
   }
 
 }

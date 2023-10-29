@@ -56,12 +56,12 @@ class WelcomePageState extends StateSuper<WelcomePage> {
                    buildSocialLoginSection(),
 
                     /// google button
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: onGoogleClick,
-                        child: Image.asset(AppImages.icoGoogle, width: 32*iconR, height: 32*iconR),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: ColorHelper.lightPlus(AppDecoration.buttonBackgroundColor(), val:0.2),
                       ),
+                      onPressed: onGoogleClick,
+                      child: Image.asset(AppImages.icoGoogle, width: 32*iconR, height: 32*iconR),
                     ),
 
 
@@ -79,9 +79,6 @@ class WelcomePageState extends StateSuper<WelcomePage> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: ColorHelper.darkPlus(AppDecoration.buttonBackgroundColor(), val: 0.2),
-                        ),
                         onPressed: onSignUpClick,
                         child: Text(AppMessages.signUp.capitalizeFirstOfEach)
                             .bold(weight: FontWeight.w900).fsR(3),
@@ -103,6 +100,9 @@ class WelcomePageState extends StateSuper<WelcomePage> {
         SizedBox(
           width: ws/4,
           child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: ColorHelper.lightPlus(AppDecoration.buttonBackgroundColor(), val:0.2),
+            ),
               onPressed: onFaceBookClick,
               child: buildIcon(AppImages.icoFaceBook),
           ),
@@ -111,6 +111,9 @@ class WelcomePageState extends StateSuper<WelcomePage> {
         SizedBox(
           width: ws/4,
           child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: ColorHelper.lightPlus(AppDecoration.buttonBackgroundColor(), val:0.2),
+            ),
             onPressed: onLinkedInClick,
             child: buildIcon(AppImages.icoLinkedIn),
           ),
@@ -119,6 +122,9 @@ class WelcomePageState extends StateSuper<WelcomePage> {
         SizedBox(
           width: ws/4,
           child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: ColorHelper.lightPlus(AppDecoration.buttonBackgroundColor(), val:0.2),
+            ),
             onPressed: onMetaClick,
             child: buildIcon(AppImages.icoX),
           ),

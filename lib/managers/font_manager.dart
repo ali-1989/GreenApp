@@ -52,7 +52,6 @@ class FontManager extends FontsManager {
     }
 
     /// family: family name in [pubspec.yaml]   *** family match is important, case insensitive
-    /// fileName: asset in [pubspec.yaml]       not important
 
     final fs = appFontSizeOrRelative();
 

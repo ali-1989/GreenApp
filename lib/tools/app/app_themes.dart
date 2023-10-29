@@ -97,7 +97,7 @@ class AppThemes {
 			mainTheme.infoColor = const Color(0xFF79DAE8);
 			mainTheme.warningColor = const Color(0xFFFBB454);
 
-			mainTheme.buttonBackColor = mainTheme.primaryColor;
+			mainTheme.buttonBackColor = ColorHelper.darkPlus(mainTheme.primaryColor, val: 0.15);
 
 			AppThemes._instance.themeList[mainTheme.themeName] = mainTheme;
 
@@ -131,7 +131,7 @@ class AppThemes {
 			catch (e) {/**/}
 		}
 	}
-	///--------------------------------------------------------------------------------------------------
+	///---------------------------------------------------------------------------
 	static void _checkTheme(ColorTheme th) {
 		th.buttonsColorScheme = ColorScheme.fromSwatch(
 			primarySwatch: th.primarySwatch,
@@ -185,7 +185,7 @@ class AppThemes {
 		final baseFamily = th.baseTextStyle.fontFamily;
 		final subFamily = th.lightTextStyle.fontFamily;
 		final boldFamily = th.boldTextStyle.fontFamily;
-		final height = th.baseTextStyle.height?? 1.0;
+		final height = th.baseTextStyle.height;
 		final raw = ThemeData();
 		TextTheme primaryTextTheme;
 
@@ -344,9 +344,7 @@ class AppThemes {
 
 		final buttonBorder = MaterialStateProperty.all(const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))));
 
-		const buttonTheme = ButtonThemeData(
-
-		);
+		const buttonTheme = ButtonThemeData();
 
 		const iconButtonTheme = IconButtonThemeData(
 			style: ButtonStyle(
@@ -354,13 +352,29 @@ class AppThemes {
 			),
 		);
 
-		final btnVisualDensity = VisualDensity(vertical: MathHelper.between(0, 3.5, -3.5, 0.8, pixelRatio));
+		final btnVisualDensity = VisualDensity(vertical: MathHelper.between(0, 3.2, -3.5, 0.8, pixelRatio));
+
 		final elevatedButtonTheme = ElevatedButtonThemeData(
 			style: ButtonStyle(
 				shape: buttonBorder,
+				minimumSize: MaterialStateProperty.all(Size(30,35 * MathHelper.between(1.2, 3.2, 1.2, 0.8, pixelRatio))),
 				visualDensity: kIsWeb? null : btnVisualDensity,
 				tapTargetSize: MaterialTapTargetSize.padded,
-				foregroundColor: MaterialStateProperty.all(th.buttonTextColor),
+				//padding: MaterialStateProperty.all(const EdgeInsets.symmetric(vertical: 1)),
+				foregroundColor: MaterialStateProperty.resolveWith<Color>(
+							(Set<MaterialState> states) {
+						if (states.contains(MaterialState.disabled)) {
+							return th.inactiveTextColor;
+						}
+
+						if (states.contains(MaterialState.focused) ||
+								states.contains(MaterialState.pressed)) {
+							return th.buttonTextColor;
+						}
+
+						return th.buttonTextColor;
+					},
+				),
 				backgroundColor: MaterialStateProperty.resolveWith<Color>(
 							(Set<MaterialState> states) {
 						if (states.contains(MaterialState.disabled)) {
@@ -384,23 +398,22 @@ class AppThemes {
 
 		final textButtonTheme = TextButtonThemeData(
 			style: ButtonStyle(
-				//foregroundColor: MaterialStateProperty.all(AppThemes.checkPrimaryByWB(th.primaryColor, th.differentColor)),
-				//foregroundColor: MaterialStateProperty.all(Colors.lightBlue),
 				visualDensity: kIsWeb? null : btnVisualDensity,
 				tapTargetSize: MaterialTapTargetSize.padded,
+				//foregroundColor: MaterialStateProperty.all(AppThemes.checkPrimaryByWB(th.primaryColor, th.differentColor)),
 				foregroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
 							if (states.contains(MaterialState.disabled)) {
-								return th.inactiveBackColor;
+								return th.inactiveTextColor;
 							}
 							if (states.contains(MaterialState.hovered)) {
-								return Colors.lightBlue.withAlpha(200);
+								return th.primaryColor.withAlpha(200);
 							}
 							if (states.contains(MaterialState.focused) ||
 									states.contains(MaterialState.pressed)) {
-								return Colors.lightBlue;
+								return th.primaryColor;
 							}
 
-							return Colors.lightBlue;
+							return th.primaryColor;
 						},
 				),
 				overlayColor: MaterialStateProperty.all(
@@ -413,8 +426,22 @@ class AppThemes {
 			style: ButtonStyle(
 				tapTargetSize: MaterialTapTargetSize.shrinkWrap,
 				visualDensity: kIsWeb? null : btnVisualDensity,
-				foregroundColor: MaterialStateProperty.all(th.textColor),
 				shape: buttonBorder,
+				foregroundColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+					if (states.contains(MaterialState.disabled)) {
+						return th.inactiveTextColor;
+					}
+					if (states.contains(MaterialState.hovered)) {
+						return th.textColor.withAlpha(200);
+					}
+					if (states.contains(MaterialState.focused) ||
+							states.contains(MaterialState.pressed)) {
+						return th.textColor;
+					}
+
+					return th.textColor;
+				},
+				),
 			),
 		);
 
@@ -488,6 +515,7 @@ class AppThemes {
 		
 		///-------------- themeData ----------------------------------
 		final myThemeData = ThemeData(
+			useMaterial3: false,
 			visualDensity: VisualDensity.adaptivePlatformDensity,
 			applyElevationOverlayColor: true,
 			platform: System.getTargetPlatform(),
@@ -497,7 +525,6 @@ class AppThemes {
 			primaryTextTheme: primaryTextTheme,
 			textTheme: primaryTextTheme,
 			dialogTheme: dialogTheme,
-			buttonBarTheme: const ButtonBarThemeData(buttonTextTheme: ButtonTextTheme.accent),
 			iconTheme: iconTheme,
 			primaryIconTheme: iconTheme,
 			sliderTheme: sliderTheme,
@@ -506,6 +533,7 @@ class AppThemes {
 			textSelectionTheme: textSelectionTheme,
 			cardTheme: cardTheme,
 			iconButtonTheme: iconButtonTheme,
+			buttonBarTheme: const ButtonBarThemeData(buttonTextTheme: ButtonTextTheme.accent),
 			buttonTheme: buttonTheme,
 			textButtonTheme: textButtonTheme,
 			elevatedButtonTheme: elevatedButtonTheme,
@@ -514,13 +542,16 @@ class AppThemes {
 			radioTheme: radioThemeData,
 			checkboxTheme: checkboxThemeData,
 			dividerTheme: dividerTheme,
+			bottomAppBarTheme: bottomAppAppBarTheme,
+			colorScheme: colorScheme,
+			chipTheme: chipThemeData,
+			scrollbarTheme: scrollbarTheme,
 			primaryColorDark: ColorHelper.darkIfIsLight(th.primaryColor),
 			primaryColorLight: ColorHelper.lightPlus(th.primaryColor),
 			// canvasColor: drawer & dropDown backColor
 			canvasColor: th.drawerBackColor,
 			primarySwatch: th.primarySwatch,
 			primaryColor: th.primaryColor,
-			//accentColor: th.accentColor, use: colorScheme.secondary [this is used for btn if 'primaryColorScheme' not set]
 			scaffoldBackgroundColor: th.backgroundColor,
 			dividerColor: th.dividerColor,
 			cardColor: th.cardColor,
@@ -532,11 +563,7 @@ class AppThemes {
 			indicatorColor: th.differentColor,
 			secondaryHeaderColor: th.differentColor,
 			highlightColor: ColorHelper.changeLight(th.primaryColor),
-			bottomAppBarTheme: bottomAppAppBarTheme,
-			colorScheme: colorScheme,
-			chipTheme: chipThemeData,
-			scrollbarTheme: scrollbarTheme,
-			unselectedWidgetColor: th.hintColor, // color: radioButton
+			unselectedWidgetColor: th.hintColor,
 			shadowColor: th.shadowColor,
 			hoverColor: th.webHoverColor,
 		);
@@ -546,6 +573,7 @@ class AppThemes {
 		}
 
 		return myThemeData;
+		//return ThemeData(useMaterial3: true);
 	}
 	///================================================================================================
 	static TextTheme textTheme() {

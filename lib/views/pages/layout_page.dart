@@ -116,7 +116,7 @@ class LayoutPageState extends StateSuper<LayoutPage> {
   }
 
   Widget buildNavBar(){
-    final icoSize = 16 *wRel;
+    final icoSize = 20 *iconR;
 
     return BottomBarInspiredOutside(
       backgroundColor: AppDecoration.mainColor,

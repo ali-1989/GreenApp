@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:iris_tools/api/helpers/focusHelper.dart';
 import 'package:iris_tools/api/helpers/mathHelper.dart';
-import 'package:iris_tools/widgets/border/dotted_border.dart';
+import 'package:iris_tools/widgets/border/dot_dash_border.dart';
 
 import 'package:app/managers/font_manager.dart';
 import 'package:app/tools/app/app_decoration.dart';
@@ -313,7 +313,7 @@ extension WidgetExtension on Widget {
 
     color ??= AppThemes.instance.currentTheme.fabBackColor;
 
-    return DottedBorder(
+    return DotDashBorder(
       dashPattern: dashPattern,
       padding: padding,
       color: color.withAlpha(alpha),

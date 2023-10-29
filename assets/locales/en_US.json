@@ -94,6 +94,8 @@
   "man": "man",
   "male": "male",
   "female": "female",
+  "IRealized": "I realized",
+  "know": "know",
   "unknown": "unknown",
   "age": "age",
   "city": "city",
@@ -388,6 +390,7 @@
 
   "appName": "green oasis",
   "emailVerifyIsSentClickOn": "A confirmation email has been sent to you. Please click on the link inside to activate your account",
-
+  "addWidget" : "add widget",
+  "addWidgetGuideText" : "you can add your frequently used chart widget to this page by using the `add widget` button to access it faster.",
   "": ""
 }

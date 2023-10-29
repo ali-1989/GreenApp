@@ -2,9 +2,9 @@ import 'package:app/structures/abstract/state_super.dart';
 import 'package:app/system/extensions.dart';
 import 'package:app/tools/app/app_decoration.dart';
 import 'package:app/tools/app/app_images.dart';
-import 'package:app/views/paths.dart';
 import 'package:flutter/material.dart';
 import 'package:iris_tools/widgets/colored_space.dart';
+import 'package:iris_tools/widgets/path/paths.dart';
 import 'package:iris_tools/widgets/shadow.dart';
 
 
@@ -25,36 +25,40 @@ class _CustomAppBarState extends StateSuper<CustomAppBar> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Padding(
-            padding: EdgeInsets.only(left: 30* wRel, right: 25* wRel),
-          child: Image.asset(AppImages.icoUser, width: 50* iconR, height: 50*iconR),
-        ),
+            padding: EdgeInsets.only(left: 25* wRel, right: 25* wRel),
+          child: Builder(
+            builder: (context) {
+              if(true) {
+                return Image.asset(
+                    AppImages.icoUser, width: 50 * iconR, height: 50 * iconR);
+              }
 
-        /*DecoratedBox(
-            decoration: ShapeDecoration(
-                shape: ContinuousRectangleBorder(
-                    //borderRadius: BorderRadius.circular(30)
-                    borderRadius: SmoothBorderRadius.all(SmoothRadius( cornerRadius: 60, cornerSmoothing: 0.5))
+              return ShadowBuilder(
+                  pathBuilder: (siz){
+                    return Paths.buildSquareFatSide(siz,  20);
+                  },
+                    transparentFill: false,
+                    shadows: const [
+                      Shadow(color: Colors.black,
+                          offset: Offset(0, 1),
+                          blurRadius: 5
+                      ),
+
+                    ],
+                child: ClipPath(
+                  clipper: PathClipper(
+                      builder: (siz){
+                        return Paths.buildSquareFatSide(siz,  20);
+                      }
+                  ),
+                  child: const ColoredSpace(width: 63, height: 63),
                 ),
-              color: Colors.red,
-            ),
-          child: SizedBox(width: 70, height: 70),
-        ),*/
-
-        ShadowBox(
-          offset: Offset(0, 3),
-          blurRadius: 2,
-          circular: 25,
-          spreadRadius: 0,
-          child: ClipPath(
-            clipper: PathClipper(
-                builder: (siz){
-                  return Paths.buildSquareFatSide(siz,  20);
-                }
-            ),
-            child: ColoredSpace(width: 63, height: 63),
+              );
+            }
           ),
         ),
-        
+
+
         Expanded(
             child: DecoratedBox(
               decoration: const BoxDecoration(
@@ -65,7 +69,7 @@ class _CustomAppBarState extends StateSuper<CustomAppBar> {
                 height: 35 * hRel,
                 child: Center(
                   child: widget.titleView?? Text(widget.title?? '')
-                      .bold().color(Colors.white).fsRHole(3),
+                      .bold().color(Colors.white).fsRAdd(3),
                 ),
               ),
             )

@@ -4,7 +4,6 @@ import 'package:app/tools/app/app_decoration.dart';
 import 'package:app/tools/app/app_images.dart';
 import 'package:app/tools/app/app_messages.dart';
 import 'package:app/tools/app/app_sheet.dart';
-import 'package:app/tools/app/app_sizes.dart';
 import 'package:app/tools/app/app_themes.dart';
 import 'package:app/tools/route_tools.dart';
 import 'package:app/views/pages/login_page.dart';
@@ -53,8 +52,6 @@ class RegisterPageState extends StateSuper<RegisterPage> {
   }
 
   Widget buildBody() {
-    print('${AppSizes.instance.pixelRatio}  w:${AppSizes.instance.appWidth}  h:${AppSizes.instance.appHeight}');
-    print('h:${AppSizes.instance.heightRelative}  w:${AppSizes.instance.widthRelative} ');
     return Row(
       children: [
         Flexible(
@@ -207,11 +204,8 @@ class RegisterPageState extends StateSuper<RegisterPage> {
         offset: const Offset(-10, 0),
         child: ElevatedButton(
             onPressed: onVerifyClick,
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 10 * hRel),
-              child: Text(AppMessages.verifyEmail.capitalizeFirstOfEach)
-                  .fsRAdd(3).englishRegularFont(),
-            )
+            child: Text(AppMessages.verifyEmail.capitalizeFirstOfEach)
+                .fsRAdd(3).englishRegularFont()
         ),
       ),
     );

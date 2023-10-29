@@ -37,7 +37,7 @@ dependencies:
   http: ^1.1.0
   dio: ^5.3.3
   connectivity_plus: 4.0.2
-  url_launcher: ^6.1.14
+  url_launcher: ^6.2.1
   material_dialogs: ^1.1.4
   awesome_notifications: ^0.7.4+1                 # can not upgrade to new, occur error, 0.6.21
   iris_notifier: ^0.0.7
