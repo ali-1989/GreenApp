@@ -48,6 +48,7 @@ class RegisterPageState extends StateSuper<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: buildBody(),
+      resizeToAvoidBottomInset: false,
     );
   }
 
@@ -205,7 +206,7 @@ class RegisterPageState extends StateSuper<RegisterPage> {
         child: ElevatedButton(
             onPressed: onVerifyClick,
             child: Text(AppMessages.verifyEmail.capitalizeFirstOfEach)
-                .fsRAdd(3).englishRegularFont()
+                .fsRRatio(3).englishRegularFont()
         ),
       ),
     );
@@ -255,10 +256,10 @@ class RegisterPageState extends StateSuper<RegisterPage> {
     }
 
     return Padding(
-      padding: const EdgeInsets.only(top: 8.0),
+      padding: const EdgeInsets.only(top: 3.0),
       child: Text(msg)
           .color(AppThemes.instance.currentTheme.errorColor)
-          .fsRHole(0),
+          .fsRRatio(1),
     );
   }
 

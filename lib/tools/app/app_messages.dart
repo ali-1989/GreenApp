@@ -32,6 +32,14 @@ class AppMessages {
     return _getContext().tInMap('registerSection', key)?? _noText;
   }
 
+  static String trans(String key) {
+    return _getContext().t(key)?? _noText;
+  }
+
+  static String transCap(String key) {
+    return _getContext().tC(key)?? _noText;
+  }
+
   static String get ok {
     return _getContext().tC('ok')?? _noText;
   }
@@ -45,31 +53,31 @@ class AppMessages {
   }
 
   static String get select {
-    return _getContext().tC('select')?? _noText;
+    return _getContext().t('select')?? _noText;
   }
 
   static String get name {
-    return _getContext().tC('name')?? _noText;
+    return _getContext().t('name')?? _noText;
   }
 
   static String get family {
-    return _getContext().tC('family')?? _noText;
+    return _getContext().t('family')?? _noText;
   }
 
   static String get age {
-    return _getContext().tC('age')?? _noText;
+    return _getContext().t('age')?? _noText;
   }
 
   static String get gender {
-    return _getContext().tC('gender')?? _noText;
+    return _getContext().t('gender')?? _noText;
   }
 
   static String get man {
-    return _getContext().tC('man')?? _noText;
+    return _getContext().t('man')?? _noText;
   }
 
   static String get woman {
-    return _getContext().tC('woman')?? _noText;
+    return _getContext().t('woman')?? _noText;
   }
 
   static String get notice {
@@ -266,11 +274,11 @@ class AppMessages {
   }
 
   static String get wantToLeave {
-    return _getContext().tC('wantToLeave')?? _noText;
+    return _getContext().t('wantToLeave')?? _noText;
   }
 
   static String get e404 {
-    return _getContext().tC('thisPageNotFound')?? _noText;
+    return _getContext().t('thisPageNotFound')?? _noText;
   }
 
   static String get tryAgain {
@@ -346,15 +354,15 @@ class AppMessages {
   }
 
   static String get sorryYouDoNotHaveAccess {
-    return _getContext().tC('sorryYouDoNotHaveAccess')?? _noText;
+    return _getContext().t('sorryYouDoNotHaveAccess')?? _noText;
   }
 
   static String get youMustRegister {
-    return _getContext().tC('youMustRegister')?? _noText;
+    return _getContext().t('youMustRegister')?? _noText;
   }
 
   static String get thereAreNoResults {
-    return _getContext().tC('thereAreNoResults')?? _noText;
+    return _getContext().t('thereAreNoResults')?? _noText;
   }
   
   static String get requestDataIsNotJson {
@@ -399,11 +407,36 @@ class AppMessages {
   }
 
   static String get addWidget {
-    return _getContext().tC('addWidget')?? _noText;
+    return _getContext().t('addWidget')?? _noText;
   }
 
-  static String get addWidgetGuideText {
-    return _getContext().tC('addWidgetGuideText')?? _noText;
+  static String get addGreenMind {
+    return _getContext().t('addGreenMind')?? _noText;
+  }
+
+  static String get homeWidgetGuideText {
+    return _getContext().t('homeWidgetGuideText')?? _noText;
+  }
+
+  static String get devicesAddingGuideText {
+    return _getContext().t('devicesAddingGuideText')?? _noText;
+  }
+
+  static String get addWidgetButtonGuideText {
+    return _getContext().t('addWidgetButtonGuideText')?? _noText;
+  }
+
+  static String get addDevice {
+    return _getContext().t('addDevice')?? _noText;
+  }
+
+  static String get setupGreenMind {
+    return _getContext().t('setupGreenMind')?? _noText;
+  }
+
+  static String espDeviceFound(int count) {
+    final t = _getContext().t('espDeviceFound')?? _noText;
+    return t.replaceAll('#', '$count');
   }
 
 }

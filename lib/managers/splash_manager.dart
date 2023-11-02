@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app/managers/green_mind_manager.dart';
 import 'package:app/managers/home_chart_manager.dart';
 import 'package:app/managers/user_guide_manager.dart';
 import 'package:flutter/foundation.dart';
@@ -63,7 +64,8 @@ class SplashManager {
       }
 
       await HomeChartManager.init();
-      await UserGuideManager.init();
+      await UserGuidingManager.init();
+      await GreenMindManager.init();
       SplashManager.isFullInitialOk = true;
     }
     catch (e){

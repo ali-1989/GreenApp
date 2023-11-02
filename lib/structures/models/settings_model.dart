@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 
 import 'package:iris_tools/dateSection/calendarTools.dart';
 
-import 'package:app/managers/font_manager.dart';
 import 'package:app/system/keys.dart';
-import 'package:app/tools/app/app_themes.dart';
 import 'package:app/tools/date_tools.dart';
 
 class SettingsModel {
-  static const defaultHttpAddress = 'http://vosatezehn.com:7436'; // http://vosatezehn.com, http://192.168.43.140, 1.103
-  static const defaultWsAddress = 'ws://vosatezehn.com:7438/ws';
+  static const defaultHttpAddress = 'http://green.vosatezehn.com:20010';
+  static const defaultWsAddress = 'ws://green.vosatezehn.com:20020/ws';
   static const Locale defaultAppLocale = Locale('en', 'US');
   static const CalendarType defaultCalendarType = CalendarType.solarHijri;
   static final defaultDateFormat = DateFormat.yyyyMmDd.format();

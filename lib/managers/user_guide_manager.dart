@@ -4,8 +4,8 @@ import 'package:app/structures/enums/user_guide_key.dart';
 import 'package:app/structures/models/user_guide_model.dart';
 import 'package:app/system/extensions.dart';
 
-class UserGuideManager {
-	UserGuideManager._();
+class UserGuidingManager {
+	UserGuidingManager._();
 
 	static final List<UserGuideModel> _itemList = [];
 	static bool _isInit = false;
@@ -24,9 +24,7 @@ class UserGuideManager {
 	}
 
 	static Future<void> fetch() async {
-		await Future.delayed(Duration(seconds: 3), (){
-			print('---> user guide ');
-		});
+
 	}
 
 	static bool userIsGuided(UserGuideKey key){

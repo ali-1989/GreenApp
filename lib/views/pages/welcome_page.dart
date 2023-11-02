@@ -30,17 +30,17 @@ class WelcomePageState extends StateSuper<WelcomePage> {
             children: [
               Image.asset(AppImages.welcomeBackG,
                 width: ws,
-                height: hs * 3/5,
+                height: hs * 3/5.3,
                 fit: BoxFit.cover,
               ),
 
               const Text('Welcome to ')
-                  .fsRAdd(15)
+                  .fsRRatio(15)
                   .font(AppDecoration.gladioraLightFont)
                   .color(AppDecoration.mainColor),
 
               const Text('GreenOasis!')
-                  .fsRAdd(15)
+                  .fsRRatio(15)
                   .font(AppDecoration.gladioraBoldFont)
                   .color(AppDecoration.mainColor)
 

@@ -100,7 +100,7 @@ class AppSizes {
   // WQVGA       => [320 * 533]  rate: 0.75
   double get heightRelative => MathHelper.relativeOf(appHeight, 530, 40, 0.1);
   double get widthRelative => MathHelper.relativeOf(appWidth, 320, 20, 0.1);
-  double get fontRatio => MathHelper.between(1.8, 3.5, 0.3, 0.8, pixelRatio!);
+  double get fontRatio => MathHelper.between(1.4, 3.5, 0.8, 0.8, pixelRatio!);
   double get iconRatio => MathHelper.between(1.3, 3.5, 0.7, 0.8, pixelRatio!);
 
   ///●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●

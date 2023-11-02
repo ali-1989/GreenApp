@@ -69,7 +69,7 @@ class _CustomAppBarState extends StateSuper<CustomAppBar> {
                 height: 35 * hRel,
                 child: Center(
                   child: widget.titleView?? Text(widget.title?? '')
-                      .bold().color(Colors.white).fsRAdd(3),
+                      .bold().color(Colors.white).fsRRatio(3),
                 ),
               ),
             )

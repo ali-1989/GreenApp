@@ -21,6 +21,7 @@ class AppImages {
   static const icoLogin = 'assets/icons/login.png';
   static const icoSignUp = 'assets/icons/sign_up.png';
   static const icoX = 'assets/icons/x.png';
+  static const icoBackButton = 'assets/icons/back_button.png';
 }
 
 

@@ -352,12 +352,12 @@ class AppThemes {
 			),
 		);
 
-		final btnVisualDensity = VisualDensity(vertical: MathHelper.between(0, 3.2, -3.5, 0.8, pixelRatio));
+		final btnVisualDensity = VisualDensity(vertical: MathHelper.between(0, 3.5, -3.5, 0.8, pixelRatio));
 
 		final elevatedButtonTheme = ElevatedButtonThemeData(
 			style: ButtonStyle(
 				shape: buttonBorder,
-				minimumSize: MaterialStateProperty.all(Size(30,35 * MathHelper.between(1.2, 3.2, 1.2, 0.8, pixelRatio))),
+				minimumSize: MaterialStateProperty.all(Size(30,35 * MathHelper.between(1.2, 3.5, 1.2, 0.8, pixelRatio))),
 				visualDensity: kIsWeb? null : btnVisualDensity,
 				tapTargetSize: MaterialTapTargetSize.padded,
 				//padding: MaterialStateProperty.all(const EdgeInsets.symmetric(vertical: 1)),

@@ -32,14 +32,14 @@ class AppDB {
 
     await AppDB.db.openTable(AppDB.tbKv);
     await AppDB.db.openTable(AppDB.tbUsers);
-    await AppDB.db.openTable(AppDB.tbReviews);
+    await AppDB.db.openTable(AppDB.tbGreenMind);
 
     return AppDB.db;
   }
-  ///-------- tables -------------------------------------------------------------------------------------
+  ///-------- tables -----------------------------------------------------------
   static String tbKv = 'KvTable';
   static String tbUsers = 'Users';
-  static String tbReviews = 'Reviews';
+  static String tbGreenMind = 'GreenMind';
 
 
   static Future<bool> firstLaunch() async {
@@ -47,7 +47,7 @@ class AppDB {
 
     return true;
   }
-  ///------------------------------------------------------------------------------------------
+  ///---------------------------------------------------------------------------
   /// 1 is ok and 0 is fail
   static Future<int> setReplaceKv(String key, dynamic data){
     final con = Conditions();
@@ -158,5 +158,5 @@ class AppDB {
 
     return Converter.correctList<T>(res[0][Keys.value])!;
   }
-  ///------------------------------------------------------------------------------------------
+  ///---------------------------------------------------------------------------
 }

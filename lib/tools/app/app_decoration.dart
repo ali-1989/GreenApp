@@ -33,7 +33,23 @@ class AppDecoration {
     failedText: '',
     loadStyle: LoadStyle.ShowWhenLoading,
   );
-  
+
+  static InputDecoration getFilledInputDecoration(){
+    const oBorder = OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(12)),
+        borderSide: BorderSide(color: Colors.transparent)
+    );
+
+    return InputDecoration(
+      fillColor: Colors.white,
+      filled: true,
+      enabledBorder: oBorder,
+      focusedBorder: oBorder,
+      errorBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: AppThemes.instance.currentTheme.errorColor)
+      ),
+    );
+  }
   static TextStyle infoHeadLineTextStyle() {
     return AppThemes.instance.themeData.textTheme.headlineSmall!.copyWith(
       color: AppThemes.instance.themeData.textTheme.headlineSmall!.color!.withAlpha(150),
@@ -44,7 +60,7 @@ class AppDecoration {
     return AppThemes.instance.themeData.textTheme.headlineSmall!.copyWith(
       color: AppThemes.instance.themeData.textTheme.headlineSmall!.color!.withAlpha(150),
       fontSize: AppThemes.instance.themeData.textTheme.headlineSmall!.fontSize! -2,
-      height: 1.5,
+      height: 1.4,
     );
     //return currentTheme.baseTextStyle.copyWith(color: currentTheme.infoTextColor);
   }
@@ -80,7 +96,7 @@ class AppDecoration {
     final app = AppThemes.instance.themeData.appBarTheme.toolbarTextStyle!;
     final color = ColorHelper.getUnNearColor(/*app.color!*/Colors.white, AppThemes.instance.currentTheme.primaryColor, Colors.white);
 
-    return app.copyWith(color: color, fontSize: 14);//currentTheme.appBarItemColor
+    return app.copyWith(color: color, fontSize: fontSizeAddRatio(14));//currentTheme.appBarItemColor
   }
 
   static Text sheetText(String text) {
@@ -97,6 +113,11 @@ class AppDecoration {
   static double fontSizeRelative(double size) {
     var siz = AppThemes.instance.currentTheme.baseTextStyle.fontSize;
     return (siz?? FontManager.instance.appFontSizeOrRelative()) + size;
+  }
+
+  static double fontSizeAddRatio(double size) {
+    var siz = AppThemes.instance.currentTheme.baseTextStyle.fontSize;
+    return (siz?? FontManager.instance.appFontSizeOrRelative()) + (size * AppSizes.instance.fontRatio);
   }
   ///------------------------------------------------------------------
   static InputDecoration noneBordersInputDecoration = const InputDecoration(

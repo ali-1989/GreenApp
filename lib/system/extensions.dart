@@ -433,6 +433,53 @@ extension IconExtension on Icon {
   }
 }
 ///=============================================================================
+extension TextStyleExtension on TextStyle {
+
+  TextStyle fs(double size){
+    return TextStyle(
+      fontSize: size,
+      height: height,
+      color: color,
+      shadows: shadows,
+      background: background,
+      fontWeight: fontWeight,
+      wordSpacing: wordSpacing,
+      letterSpacing: letterSpacing,
+      backgroundColor: backgroundColor,
+      overflow: overflow,
+      debugLabel: debugLabel,
+      decoration: decoration,
+      decorationColor: decorationColor,
+      decorationStyle: decorationStyle,
+      decorationThickness: decorationThickness,
+      fontFamily: fontFamily,
+      fontFamilyFallback: fontFamilyFallback,
+      fontFeatures: fontFeatures,
+      fontStyle: fontStyle,
+      fontVariations: fontVariations,
+      foreground: foreground,
+      inherit: inherit,
+      leadingDistribution: leadingDistribution,
+      locale: locale,
+      textBaseline: textBaseline,
+    );
+  }
+
+  TextStyle fsR(double size) {
+    var siz = fontSize?? AppThemes.instance.currentTheme.baseTextStyle.fontSize;
+    siz = (siz?? FontManager.instance.appFontSizeOrRelative()) + size;
+
+    return fs(siz);
+  }
+
+  TextStyle fsRRatio(double size) {
+    var siz = fontSize?? AppThemes.instance.currentTheme.baseTextStyle.fontSize;
+    siz = (siz?? FontManager.instance.appFontSizeOrRelative()) + (size * AppSizes.instance.fontRatio);
+
+    return fs(siz);
+  }
+}
+///=============================================================================
 extension TextExtension on Text {
 
   Text infoColor({bool baseStyle = false}) {
@@ -704,22 +751,17 @@ extension TextExtension on Text {
     return fs(siz);
   }
 
-  Text fsRAdd(double size) {
+  Text fsRRatio(double size) {
     var siz = style?.fontSize?? AppThemes.instance.currentTheme.baseTextStyle.fontSize;
-
-    //siz = ((siz?? FontManager.instance.appFontSizeOrRelative()) + size ) * AppSizes.instance.fontRatio;
     siz = (siz?? FontManager.instance.appFontSizeOrRelative()) + (size * AppSizes.instance.fontRatio);
 
     return fs(siz);
   }
 
-  Text fsRHole(double size) {
-    var siz = style?.fontSize?? AppThemes.instance.currentTheme.baseTextStyle.fontSize;
-    final x = MathHelper.between(1.3, 3.3, 0.7, 1.0, AppSizes.instance.pixelRatio!);
+  Text fsSetR(double size) {
+    //final x = MathHelper.between(1.3, 3.5, 0.7, 1.0, AppSizes.instance.pixelRatio!);
 
-    siz = ((siz?? FontManager.instance.appFontSizeOrRelative()) + size) * x;
-
-    return fs(siz);
+    return fs(size * AppSizes.instance.fontRatio);
   }
 
   Text alpha({int alpha = 160, bool baseStyle = false}) {

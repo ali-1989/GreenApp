@@ -14,7 +14,7 @@ import 'package:app/views/baseComponents/appbar_builder.dart';
 import 'package:app/views/pages/home_page.dart';
 import 'package:iris_tools/widgets/keep_alive_wrap.dart';
 
-class LayoutPage extends StatefulWidget{
+class LayoutPage extends StatefulWidget {
 
   const LayoutPage({super.key});
 
@@ -23,6 +23,7 @@ class LayoutPage extends StatefulWidget{
 }
 ///=============================================================================
 class LayoutPageState extends StateSuper<LayoutPage> {
+  /// for drawer menu
   GlobalKey<ScaffoldState> scaffoldState = GlobalKey<ScaffoldState>();
   int selectedPage = 2;
   late PageController pageController;
@@ -43,15 +44,15 @@ class LayoutPageState extends StateSuper<LayoutPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: scaffoldState,
-      body: SafeArea(
-          bottom: false,
-          child: buildBody()
+    return SafeArea(
+      top: false,
+      bottom: false,
+      child: Scaffold(
+        key: scaffoldState,
+        body: buildBody(),
+        extendBody: true,
+        bottomNavigationBar: buildNavBar(),
       ),
-      //drawer: DrawerMenuBuilder.getDrawer(),
-      extendBody: true,
-      bottomNavigationBar: buildNavBar(),
     );
   }
 
@@ -67,7 +68,7 @@ class LayoutPageState extends StateSuper<LayoutPage> {
         padding: const EdgeInsets.only(bottom: 50),
         child: Column(
           children: [
-            SizedBox(height: 15* hRel),
+            SizedBox(height: 25* hRel),
 
             buildAppBar(),
             SizedBox(height: 4* hRel),

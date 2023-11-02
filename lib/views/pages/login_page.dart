@@ -4,7 +4,6 @@ import 'package:app/tools/app/app_broadcast.dart';
 import 'package:app/tools/app/app_decoration.dart';
 import 'package:app/tools/app/app_images.dart';
 import 'package:app/tools/app/app_messages.dart';
-import 'package:app/tools/app/app_themes.dart';
 import 'package:app/tools/route_tools.dart';
 import 'package:app/views/pages/layout_page.dart';
 import 'package:flutter/material.dart';
@@ -23,28 +22,12 @@ class LoginPage extends StatefulWidget {
 class LoginPageState extends StateSuper<LoginPage> {
   TextEditingController emailCtr = TextEditingController();
   TextEditingController passwordCtr = TextEditingController();
-  late InputDecoration inputDecoration;
   bool showTextFieldError = false;
 
 
   @override
   void initState(){
     super.initState();
-
-    const oBorder = OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(12)),
-        borderSide: BorderSide(color: Colors.transparent)
-    );
-
-    inputDecoration = InputDecoration(
-      fillColor: Colors.white,
-      filled: true,
-      enabledBorder: oBorder,
-      focusedBorder: oBorder,
-      errorBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: AppThemes.instance.currentTheme.errorColor)
-      ),
-    );
   }
 
   @override
@@ -59,6 +42,7 @@ class LoginPageState extends StateSuper<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: buildBody(),
+      resizeToAvoidBottomInset: false,
     );
   }
 
@@ -81,7 +65,7 @@ class LoginPageState extends StateSuper<LoginPage> {
                 textDirection: TextDirection.ltr,
                 children: [
                   Text(AppMessages.signIn.toUpperCase())
-                      .color(Colors.white).fsRAdd(25)
+                      .color(Colors.white).fsRRatio(25)
                       .font(AppDecoration.gladioraBoldFont)
                   .bold(weight: FontWeight.w900),
 
@@ -92,7 +76,8 @@ class LoginPageState extends StateSuper<LoginPage> {
                       Shadow(color: Colors.white, offset: Offset.zero, blurRadius: 3),
                       Shadow(color: Colors.white, offset: Offset(1, 2), blurRadius: 3),
                     ]),
-                  ).fsRHole(2).bold()
+                  ).bold()
+                  .fsRRatio(2)
                       .color(AppDecoration.mainColor)
                 ],
               ),
@@ -104,13 +89,14 @@ class LoginPageState extends StateSuper<LoginPage> {
               padding: EdgeInsets.symmetric(horizontal: 30.0 * wRel),
               child: TextField(
                 controller: emailCtr,
-                decoration: inputDecoration.copyWith(
+                keyboardType: TextInputType.emailAddress,
+                decoration: AppDecoration.getFilledInputDecoration().copyWith(
                   errorText: checkTextFieldErr(emailCtr),
                   hintText: AppMessages.email,
                   errorStyle: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: Colors.orange,
-                  )
+                      fontWeight: FontWeight.w600,
+                      color: Colors.orange,
+                  ).fsRRatio(1)
                 ),
               ),
             ),
@@ -120,12 +106,13 @@ class LoginPageState extends StateSuper<LoginPage> {
               padding: EdgeInsets.symmetric(horizontal: 30.0 * wRel),
               child: TextField(
                 controller: passwordCtr,
-                decoration: inputDecoration.copyWith(
+                decoration: AppDecoration.getFilledInputDecoration().copyWith(
                     errorText: checkTextFieldErr(passwordCtr),
                   hintText: AppMessages.password,
-                    errorStyle: const TextStyle(
+                    errorStyle: TextStyle(
                       fontWeight: FontWeight.w600,
                       color: Colors.orange,
+                      fontSize: AppDecoration.fontSizeAddRatio(1)
                     )
                 ),
               ),
@@ -160,7 +147,7 @@ class LoginPageState extends StateSuper<LoginPage> {
                 height: 30 * hRel,
                 child: ElevatedButton(
                     onPressed: onLoginClick,
-                    child: Text(AppMessages.signIn).fsRHole(2)
+                    child: Text(AppMessages.signIn).fsRRatio(2)
                 ),
               ),
             ),

@@ -74,10 +74,12 @@ class _EsTouchPageState extends State<EsTouchPage> {
 
   void fetchWifiInfo() async {
     setState(() => fetchingWifiInfo = true);
+
     try {
       ssid.text = await SimpleWifiInfo.ssid ?? '';
       bssid.text = await SimpleWifiInfo.bssid ?? '';
-    } finally {
+    }
+    finally {
       setState(() => fetchingWifiInfo = false);
     }
   }
@@ -112,6 +114,7 @@ class _EsTouchPageState extends State<EsTouchPage> {
 
   Widget form(BuildContext context) {
     Color color = Theme.of(context).primaryColor;
+
     return Form(
       key: formKey,
       child: ListView(
