@@ -17,7 +17,8 @@ import '/managers/font_manager.dart';
 /// https://colorhunt.co/
 
 /// notes:
-/// material library's theme is only supported by the material library widgets and not by RichText. use Text.rich.
+/// material library's theme is only supported by the material library widgets and not by RichText,
+/// use Text.rich.
 
 class AppThemes {
 	AppThemes._();
@@ -37,7 +38,6 @@ class AppThemes {
 	Brightness currentBrightness = Brightness.light;
 	TextDirection textDirection = TextDirection.ltr;
 	/// sets minimum vertical layout metrics
-	StrutStyle strutStyle = const StrutStyle(forceStrutHeight: true, height: 1.08, leading: 0.36);
 
 	static AppThemes get instance {
 		init();
@@ -406,14 +406,14 @@ class AppThemes {
 								return th.inactiveTextColor;
 							}
 							if (states.contains(MaterialState.hovered)) {
-								return th.primaryColor.withAlpha(200);
+								return th.underLineDecorationColor.withAlpha(200);
 							}
 							if (states.contains(MaterialState.focused) ||
 									states.contains(MaterialState.pressed)) {
-								return th.primaryColor;
+								return th.underLineDecorationColor;
 							}
 
-							return th.primaryColor;
+							return th.underLineDecorationColor;
 						},
 				),
 				overlayColor: MaterialStateProperty.all(
@@ -498,11 +498,11 @@ class AppThemes {
 			focusColor: th.hintColor,
 			hoverColor: th.infoTextColor,//webHoverColor
 			floatingLabelBehavior: FloatingLabelBehavior.auto,
-			contentPadding: EdgeInsets.symmetric(vertical: 6 * (AppSizes.instance.heightRelative*AppSizes.instance.heightRelative), horizontal: 10),
-			border: UnderlineInputBorder(borderSide: BorderSide(color: th.hintColor)),
+			contentPadding: EdgeInsets.symmetric(vertical: 6 * (AppSizes.instance.heightRelative * AppSizes.instance.heightRelative), horizontal: 10),
+			//border: UnderlineInputBorder(borderSide: BorderSide(color: th.hintColor)),
 			focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: th.hintColor)),
 			enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: th.hintColor)),
-			disabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: th.inactiveTextColor)),
+			disabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: th.hintColor)),
 			errorBorder: UnderlineInputBorder(borderSide: BorderSide(color: th.errorColor)),
 			focusedErrorBorder: UnderlineInputBorder(borderSide: BorderSide(color: th.errorColor)),
 		); ///OutlineInputBorder, UnderlineInputBorder
@@ -553,11 +553,10 @@ class AppThemes {
 			primarySwatch: th.primarySwatch,
 			primaryColor: th.primaryColor,
 			scaffoldBackgroundColor: th.backgroundColor,
+			dialogBackgroundColor: th.dialogBackColor,
 			dividerColor: th.dividerColor,
 			cardColor: th.cardColor,
 			hintColor: th.hintColor,
-			dialogBackgroundColor: th.dialogBackColor,
-			//deprecate> buttonColor: th.buttonsColorScheme.background,
 			disabledColor: th.inactiveTextColor,
 			splashColor: th.accentColor,
 			indicatorColor: th.differentColor,
@@ -573,9 +572,8 @@ class AppThemes {
 		}
 
 		return myThemeData;
-		//return ThemeData(useMaterial3: true);
 	}
-	///================================================================================================
+	///===========================================================================
 	static TextTheme textTheme() {
 		return AppThemes._instance.themeData.textTheme;
 	}

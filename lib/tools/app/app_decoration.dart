@@ -18,6 +18,8 @@ class AppDecoration {
   static const secondColor = Color(0xFF14463A);
   static const differentColor = Color(0xFFFF8000);
 
+  static get strutStyle => const StrutStyle(forceStrutHeight: true, height: 1.08, leading: 0.36);
+
   static String get gladioraLightFont {//GladioraLight
     return FontManager.instance.defaultFontFamilyFor('en', FontUsage.thin);
   }
@@ -45,6 +47,7 @@ class AppDecoration {
       filled: true,
       enabledBorder: oBorder,
       focusedBorder: oBorder,
+      disabledBorder: oBorder,
       errorBorder: UnderlineInputBorder(
           borderSide: BorderSide(color: AppThemes.instance.currentTheme.errorColor)
       ),

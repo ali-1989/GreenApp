@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -10,7 +11,8 @@ class GoogleService {
   GoogleService(){
     if(kIsWeb){
       signObj = GoogleSignIn(
-        clientId: '731359726004-om1nsl47c9l9mjm246h3ebe0rt5lkgdi.apps.googleusercontent.com', //client_type:3
+        //client_type:3
+        clientId: '579668054514-ojuoo3o4cj1vjbcqfavq6upv9e8h4d1h.apps.googleusercontent.com',
         signInOption: SignInOption.standard,
         scopes: [
           'https://www.googleapis.com/auth/userinfo.email',
@@ -19,7 +21,8 @@ class GoogleService {
       );
     }
     else {
-      signObj = GoogleSignIn(
+      signObj = GoogleSignIn();
+      /*signObj = GoogleSignIn(
         signInOption: SignInOption.standard,
         scopes: [
           'https://www.googleapis.com/auth/userinfo.email',
@@ -27,38 +30,43 @@ class GoogleService {
           //'https://www.googleapis.com/auth/contacts.readonly',
           //'https://accounts.google.com/o/oauth2/auth',
         ],
-      );
+      );*/
     }
   }
 
   Future<GoogleSignInAccount?> signIn() async {
     try {
+      //_googleUser = await signObj.signInSilently().timeout(const Duration(seconds: 20));
+
       if(kIsWeb){
-        //_googleUser = await signObj.signInSilently().timeout(const Duration(seconds: 20));
-        _googleUser ??= await signObj.signIn().timeout(const Duration(minutes: 5));
+        _googleUser = await signObj.signIn().timeout(const Duration(minutes: 3));
       }
       else {
-        _googleUser = await signObj.signIn().timeout(const Duration(seconds: 60));
+        _googleUser = await signObj.signIn().timeout(const Duration(seconds: 180));
       }
+
+      print('A===========================A');
+      print('${_googleUser?.displayName}');
+      print('${_googleUser?.email}');
+
+      final googleAuth = await _googleUser!.authentication;
+      print('B===========================');
+      print('${googleAuth.accessToken}');
+      print('${googleAuth.idToken}');
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      print('C===========================');
+      final UserCredential loginUser = await FirebaseAuth.instance.signInWithCredential(credential);
+      print(loginUser.user?.email);
+      print(loginUser.user?.displayName);
+      print(loginUser.user?.photoURL);
+      print('End===========================');
     }
-    on PlatformException catch (e){
-      return null;
-    }
-    catch (e) {
+    catch (e) {print('eeeeee > $e');/**/}
 
-    }
-
-    return _googleUser;
-
-    // https://www.technicalfeeder.com/2022/01/flutter-keep-login-state-and-get-authorization-bearer-token/
-    /*final googleAuth = await _googleUser!.authentication;
-
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-
-    final UserCredential loginUser = await FirebaseAuth.instance.signInWithCredential(credential);*/
+    //return _googleUser;
   }
 
   Future<GoogleSignInAccount?> signOut() async {

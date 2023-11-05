@@ -1,37 +1,68 @@
-import 'package:app/managers/green_mind_manager.dart';
+// Usually, I would prefer splitting up an app into smaller files, but as this
+// is an example app for a published plugin, it's better to have everything in
+// one file so that all of the examples are visible on https://pub.dev/packages/esptouch_flutter/example
+
+import 'dart:async';
+
 import 'package:app/structures/abstract/state_super.dart';
-import 'package:app/structures/middleWares/requester.dart';
 import 'package:app/system/extensions.dart';
-import 'package:app/system/keys.dart';
 import 'package:app/tools/app/app_decoration.dart';
-import 'package:app/tools/app/app_dialog_iris.dart';
 import 'package:app/tools/app/app_images.dart';
 import 'package:app/tools/app/app_messages.dart';
+import 'package:app/tools/app/app_sheet.dart';
 import 'package:app/tools/app/app_snack.dart';
+import 'package:app/tools/app/app_toast.dart';
+import 'package:app/tools/device_info_tools.dart';
 import 'package:app/tools/route_tools.dart';
+import 'package:app/tools/wifi_info_tools.dart';
 import 'package:app/views/baseComponents/appbar_builder.dart';
-import 'package:app/views/pages/setup_green_mind_page.dart';
+import 'package:app/views/pages/connect_green_mind_page.dart';
 import 'package:app/views/states/back_bar.dart';
 import 'package:app/views/states/user_guide_box.dart';
+import 'package:esptouch_flutter/esptouch_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:iris_tools/api/helpers/focusHelper.dart';
+import 'package:flutter/services.dart';
+import 'package:iris_tools/modules/stateManagers/updater_state.dart';
+
+/// BSSID is the MAC address.
+/// SSID is the technical term for a network name.
 
 class AddGreenMindPage extends StatefulWidget {
   // ignore: prefer_const_constructors_in_immutables
-  AddGreenMindPage({super.key}) : super();
+  AddGreenMindPage({super.key});
 
   @override
-  State<AddGreenMindPage> createState() => _AddGreenMindPageState();
+  State createState() => _AddGreenMindPageState();
 }
-///=============================================================================
+
 class _AddGreenMindPageState extends StateSuper<AddGreenMindPage> {
-  Requester requester = Requester();
-  TextEditingController snCtr = TextEditingController();
+  final TextEditingController ssidCtr = TextEditingController();
+  final TextEditingController bssidCtr = TextEditingController();
+  final TextEditingController passwordCtr = TextEditingController();
+  ESPTouchPacket packetState = ESPTouchPacket.broadcast;
+  String fetchingWifiInfoState = 'fetchingWifiInfoState';
+  String fetchingWifiInfoId = 'fetchingWifiInfoId';
+  StreamSubscription<ESPTouchResult>? streamSubscription;
+  Timer? timer;
+  final List<ESPTouchResult> results = [];
+  late ESPTouchTask task;
+  bool showGetWifiDataButton = false;
 
   @override
-  void dispose(){
-    snCtr.dispose();
-    requester.dispose();
+  void initState(){
+    super.initState();
+
+    addPostOrCall(fn: onGetWifiInfoClick);
+  }
+
+  @override
+  void dispose() {
+    ssidCtr.dispose();
+    bssidCtr.dispose();
+    passwordCtr.dispose();
+    timer?.cancel();
+    streamSubscription?.cancel();
+
     super.dispose();
   }
 
@@ -41,6 +72,7 @@ class _AddGreenMindPageState extends StateSuper<AddGreenMindPage> {
       top: false,
       child: Scaffold(
         body: buildBody(),
+        resizeToAvoidBottomInset: false,
       ),
     );
   }
@@ -58,48 +90,93 @@ class _AddGreenMindPageState extends StateSuper<AddGreenMindPage> {
           SizedBox(height: 25* hRel),
 
           CustomAppBar(title: AppMessages.addGreenMind),
-          SizedBox(height: 15* hRel),
 
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Transform.translate(
-              offset: const Offset(-7, 0),
-              child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppDecoration.differentColor,
-                  ),
-                  onPressed: onSetupGreenMindClick,
-                  child: Text(AppMessages.setupGreenMind).fsRRatio(2)
-              ),
+          SizedBox(height: 14* hRel),
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40.0),
+              child: UserGuideBox(message: AppMessages.trans('setupGreenMindBySSIDGuide')),
             ),
           ),
+
+          SizedBox(height: 14* hRel),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14.0),
+            child: UpdaterBuilder(
+              id: fetchingWifiInfoId,
+              builder: (_,controller, stateData) {
+                if(!showGetWifiDataButton){
+                  return const SizedBox();
+                }
+
+                if(controller.hasState(fetchingWifiInfoState)){
+                  return const CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation(AppDecoration.differentColor),
+                  );
+                }
+
+                return ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppDecoration.differentColor,
+                    ),
+                    onPressed: onGetWifiInfoClick,
+                    child: Text(AppMessages.trans('useCurrentWiFiInfo'))
+                );
+              },
+            ),
+          ),
+
+          SizedBox(height: 14* hRel),
 
           Expanded(
               child: ListView(
                 padding: EdgeInsets.symmetric(horizontal: 20 * wRel),
                 children: [
-                  SizedBox(height: 30 * hRel),
-                  UserGuideBox(message: AppMessages.trans('addGreenMindGuide')),
-
-                  SizedBox(height: 14 * hRel),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextField(
-                      controller: snCtr,
-                      decoration: AppDecoration.getFilledInputDecoration().copyWith(
-                        hintText: 'serial number',
-                      ),
+                  TextField(
+                    controller: ssidCtr,
+                    enabled: false,
+                    decoration: AppDecoration.getFilledInputDecoration().copyWith(
+                      hintText: 'SSID (wifi router\'s name)',
+                      fillColor: Colors.grey,
                     ),
                   ),
 
-                  SizedBox(height: 14 * hRel),
+                  SizedBox(height: 6* hRel),
 
-                  ElevatedButton(
-                      onPressed: onFindClick,
-                      child: Text(AppMessages.transCap('find')).fsRRatio(2)
-                  )
+                  /*TextField(
+                    controller: bssidCtr,
+                    decoration: AppDecoration.getFilledInputDecoration().copyWith(
+                      hintText: 'BSSID (MAC address) : 00:a0:c9:14:c8:29',
+                    ),
+                  ),
+
+                  SizedBox(height: 6* hRel),*/
+
+                  TextField(
+                    controller: passwordCtr,
+                    decoration: AppDecoration.getFilledInputDecoration().copyWith(
+                      hintText: 'Password',
+                    ),
+                  ),
+
+                  SizedBox(height: 25 * hRel),
+
+                  SizedBox(
+                    width: 140 * wRel,
+                    child: ElevatedButton(
+                      onPressed: onGoClick,
+                      child: Text(context.tC('go')!),
+                    ),
+                  ),
+
+                  SizedBox(height: 3 * hRel),
+                  TextButton(
+                      onPressed: gotoConnectGreenMindPage,
+                      child: Text(AppMessages.trans('IHaveAlreadySetupGreenMind'))
+                          .underLine().clickableColor()
+                  ),
                 ],
-              ),
+              )
           ),
 
           SizedBox(height: 10 * hRel),
@@ -109,51 +186,152 @@ class _AddGreenMindPageState extends StateSuper<AddGreenMindPage> {
     );
   }
 
-  void onSetupGreenMindClick() {
-    RouteTools.pushPage(context, const SetupGreenMindPage());
+  void onGetWifiInfoClick() async {
+    final ctr = UpdaterController.forId(fetchingWifiInfoId);
+    ctr!.addStateAndUpdate(fetchingWifiInfoState);
+
+    try {
+      var temp = await WifiInfoTools.ssid ?? '';
+      if(temp.startsWith('"')){
+        temp = temp.substring(1);
+      }
+
+      if(temp.endsWith('"')){
+        temp = temp.substring(0, temp.length -1);
+      }
+
+      ssidCtr.text = temp;
+      bssidCtr.text = await WifiInfoTools.bssid ?? '';
+    }
+    finally {
+      if(ssidCtr.text.isEmpty){
+        showGetWifiDataButton = true;
+        Future.delayed(const Duration(milliseconds: 200), (){
+          AppSheet.showSheetOk(context, AppMessages.trans('pleaseConnectToWifi'));
+        });
+      }
+      else {
+        showGetWifiDataButton = false;
+      }
+
+      ctr.removeState(fetchingWifiInfoState);
+      ctr.update(delay: const Duration(milliseconds: 500));
+    }
   }
 
-  void onFindClick() async {
-    final sn = snCtr.text;
+  Future<void> createTask() async {
+    String pass = passwordCtr.text.length.toString().padLeft(2, '0');
+    pass += passwordCtr.text;
+    pass += await DeviceInfoTools.getDeviceId();
 
-    if(sn.isEmpty){
-      AppSnack.showError(context, AppMessages.trans('enterSerialNumber'));
+    task = ESPTouchTask(
+      ssid: ssidCtr.text,
+      bssid: bssidCtr.text,
+      password: pass,
+      packet: packetState,
+      taskParameter: const ESPTouchTaskParameter(),
+    );
+  }
+
+  void execute(){
+    Stream<ESPTouchResult>? stream = task.execute();
+    streamSubscription = stream.listen(results.add);
+
+    final receiving = task.taskParameter.waitUdpReceiving;
+    final sending = task.taskParameter.waitUdpSending;
+    final cancelLatestAfter = receiving + sending;
+    showLoading();
+
+    timer = Timer(cancelLatestAfter, afterExecute);
+  }
+
+  void afterExecute() async {
+    streamSubscription?.cancel();
+    await hideLoading();
+
+    if (mounted) {
+      await showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            //title: Text('${results.length} device(s) found'),
+            title: Text(AppMessages.espDeviceFound(results.length)),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context)..pop(),
+                child: Text(AppMessages.ok),
+              ),
+            ],
+          );
+        },
+      );
+      
+      if(results.isNotEmpty){
+
+      }
+    }
+  }
+
+  void gotoConnectGreenMindPage(){
+    RouteTools.pushReplacePage(context, ConnectGreenMindPage());
+  }
+
+  void Function() copyValue(BuildContext context, String label, String value) {
+    return (){
+      Clipboard.setData(ClipboardData(text: value));
+
+      AppToast.showToast(context, 'Copied $label to clipboard');
+    };
+  }
+
+  void onGoClick() async {
+    if(ssidCtr.text.isEmpty){
+      AppSnack.showError(context, AppMessages.trans('enterSsid'));
       return;
     }
 
-    await FocusHelper.hideKeyboardByUnFocusRootWait();
-    showLoading();
-    requestFindGreenMind(sn);
+    await createTask();
+    execute();
   }
-
-  void requestFindGreenMind(String sn){
-    requester.httpRequestEvents.onAnyState = (req) async {
-      await hideLoading();
-    };
-
-    requester.httpRequestEvents.onFailState = (req, res) async {
-      AppSnack.showError(context, AppMessages.dataNotFound);
-    };
-
-    requester.httpRequestEvents.onStatusOk = (req, data) async {
-      AppDialogIris.instance.showYesNoDialog(
-          context,
-        descView: Text(AppMessages.trans('deviceFoundAddToYourList'))
-          .bold().fsRRatio(2),
-        yesFn: (_){
-            GreenMindManager.addGreenMind(data[Keys.data]);
-            //RouteTools.popIfCan(_);
-        }
-      );
-    };
-
-    requester.methodType = MethodType.post;
-    requester.bodyJson = {};
-    requester.bodyJson!['request'] = 'find_green_mind';
-    requester.bodyJson!['serial_number'] = sn;
-
-    requester.prepareUrl();
-    requester.request();
-  }
-
 }
+
+
+/*
+Widget resultList(BuildContext context) {
+    return ListView.builder(
+      itemCount: results.length,
+      itemBuilder: (_, index) {
+        final result = results[index];
+
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              GestureDetector(
+                onLongPress: copyValue(context, 'BSSID', result.bssid),
+                child: Row(
+                  children: <Widget>[
+                    const Text('BSSID: '),
+                    Text(result.bssid,
+                        style: const TextStyle(fontFamily: 'monospace')),
+                  ],
+                ),
+              ),
+
+              GestureDetector(
+                onLongPress: copyValue(context, 'IP', result.ip),
+                child: Row(
+                  children: <Widget>[
+                    const Text('IP: '),
+                    Text(result.ip, style: const TextStyle(fontFamily: 'monospace')),
+                  ],
+                ),
+              )
+            ],
+          ),
+        );
+      },
+    );
+  }
+*/

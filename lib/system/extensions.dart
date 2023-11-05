@@ -906,9 +906,36 @@ extension TextExtension on Text {
     );
   }
 
-  Text underLineClickable() {
+  Text clickableColor() {
     return bold()
         .color(AppThemes.instance.currentTheme.underLineDecorationColor);
+  }
+
+  Text underLine({Color? color}) {
+    var ts = style ?? AppThemes.instance.currentTheme.baseTextStyle;
+    ts = ts.copyWith(
+        decorationStyle: TextDecorationStyle.solid,
+        decoration: TextDecoration.underline,
+      decorationColor: color?? AppThemes.instance.currentTheme.underLineDecorationColor,
+    );
+
+    return Text(
+        data!,
+        key: key,
+        style: ts,
+        strutStyle: strutStyle,
+        textAlign: textAlign,
+        locale: locale,
+        maxLines: maxLines,
+        overflow: overflow,
+        semanticsLabel: semanticsLabel,
+        softWrap: softWrap,
+        textDirection: textDirection,
+        textHeightBehavior: textHeightBehavior,
+        textScaleFactor: textScaleFactor,
+        textWidthBasis: textWidthBasis,
+      selectionColor: selectionColor,
+    );
   }
 }
 ///=============================================================================

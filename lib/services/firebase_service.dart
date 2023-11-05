@@ -1,5 +1,6 @@
 import 'dart:isolate';
 
+import 'package:app/services/firebase_options.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -61,39 +62,22 @@ class FireBaseService {
   static Future<void> initializeApp() async {
     try {
       if(kIsWeb){
-        const firebaseOptions = FirebaseOptions(
-          appId: '1:731359726004:web:7b371dd04042f69cb20ae1',
-          apiKey: 'AIzaSyC2gsyD1HYpP6LwXws6hZc_PTFoK68rl8c',
-          projectId: 'vosate-zehn-7d8fe',
-          messagingSenderId: '731359726004',
-          measurementId: 'G-8ZKZGGLXRW',
-        );
-
-        await Firebase.initializeApp(options: firebaseOptions);
+        await Firebase.initializeApp(options: DefaultFirebaseOptions.web);
         return;
       }
 
-      const firebaseOptions = FirebaseOptions(
-        appId: '1:731359726004:android:fbbd8cd236c4fc31b20ae1',
-        apiKey: 'AIzaSyBVuGcqQFjUl1t5mIUJ04rfr9EKkDRqYxM',
-        projectId: 'vosate-zehn-7d8fe',
-        messagingSenderId: '731359726004',
-        measurementId: 'G-8ZKZGGLXRW',
-      );
-      LogTools.logger.logToAll('@@@@@@@@@: A- start initialize fire ${Isolate.current.hashCode}'); //todo.
-      try {
-      await Firebase.initializeApp(options: firebaseOptions)
+      LogTools.logger.logToAll('@@@@@@@@@: A- start initialize firebase: ${Isolate.current.hashCode}'); //todo.
+
+      await Firebase.initializeApp(options: DefaultFirebaseOptions.android)
           .then<FirebaseApp?>((v) => v).catchError((e){
-	  LogTools.logger.logToAll('@@@@@@@@@: e1e -$e  ${Isolate.current.hashCode}'); //todo.
+	        LogTools.logger.logToAll('@@@@@@@@@: ee1 -$e  ${Isolate.current.hashCode}'); //todo.
         return null;
       });
-      }
-      catch (e){
-        LogTools.logger.logToAll('@@@@@@@@@: e2e -$e  ${Isolate.current.hashCode}'); //todo.
-      }
-      LogTools.logger.logToAll('@@@@@@@@@: B - Ok ${Isolate.current.hashCode}'); //todo.
+
     }
-    catch (e){/**/}
+    catch (e){
+      LogTools.logger.logToAll('@@@@@@@@@: ee2 -$e  ${Isolate.current.hashCode}'); //todo.
+      /**/}
   }
 
   static Future start() async {
@@ -119,7 +103,6 @@ class FireBaseService {
       //FirebaseMessaging.instance.setAutoInitEnabled(false);
 
       setListening();
-      LogTools.logger.logToAll('@@@@@@@@@: set listener ${Isolate.current.hashCode}'); //todo.
 
       Future.delayed(const Duration(seconds: 3), (){
         getToken();

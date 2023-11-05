@@ -132,7 +132,7 @@ class LoginPageState extends StateSuper<LoginPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                     radius: 6,
                     child: Text(AppMessages.passwordRecovery)
-                    .bold().underLineClickable(),
+                    .bold().clickableColor(),
                   )
                       //.color(Colors.blue),
                 ],

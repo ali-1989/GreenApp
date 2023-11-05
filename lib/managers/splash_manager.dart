@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:app/managers/green_mind_manager.dart';
 import 'package:app/managers/home_chart_manager.dart';
 import 'package:app/managers/user_guide_manager.dart';
+import 'package:app/services/firebase_service.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:app/tools/app/app_broadcast.dart';
@@ -106,8 +107,7 @@ class SplashManager {
       //LoginService.init();
       //DownloadUploadService.init();
       SettingsManager.requestGlobalSettings();
-      //MediaManager.loadAllRecords();
-      //await FireBaseService.start();
+      await FireBaseService.start();
 
       /*if (System.isWeb()) {
         void onSizeCheng(oldW, oldH, newW, newH) {
@@ -118,7 +118,7 @@ class SplashManager {
       }*/
 
       if(RouteTools.materialContext != null) {
-        VersionManager.checkAppHasNewVersion(RouteTools.materialContext!);
+        //VersionManager.checkAppHasNewVersion(RouteTools.materialContext!);
       }
     }
     catch (e){

@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "579668054514",
+    "project_id": "green-oasis-2023",
+    "storage_bucket": "green-oasis-2023.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:579668054514:android:a5bb8bf5a11ad7a3d79b6b",
+        "android_client_info": {
+          "package_name": "ir.iris.green"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "579668054514-flfj0hbjl21qkpjsubqhtthiikibk1jv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ir.iris.green",
+            "certificate_hash": "7dc4879ca122664369785fb37bbaa21cf5df6120"
+          }
+        },
+        {
+          "client_id": "579668054514-ojuoo3o4cj1vjbcqfavq6upv9e8h4d1h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWjfnXat4hBF8R2Jrvu-k0oMji1ITuZ3g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "579668054514-ojuoo3o4cj1vjbcqfavq6upv9e8h4d1h.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "579668054514-dg2h9sv7qa0nm05bnkqsr8ivgj605v97.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "ir.iris.green"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

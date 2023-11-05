@@ -13,13 +13,14 @@ class ColorTheme {
   Color differentColor = Colors.pinkAccent;
   Color textColor = Colors.black;
   Color backgroundColor = Colors.white;
-  Color infoTextColor = Colors.black.withAlpha(170); //in Init
+  /// TextField (hint & label) in AppTheme
+  Color hintColor = Colors.black.withAlpha(150); //in Init
+  Color infoTextColor = Colors.black.withAlpha(180); //in Init
+  Color inactiveBackColor = Colors.grey[400]!;
+  Color inactiveTextColor = Colors.grey[600]!;
   Color webHoverColor = Colors.black.withAlpha(40); //in Init
-  Color hintColor = Colors.blue[200]!;
   Color dividerColor = Colors.blue.withAlpha(140); //in Init
   Color activeItemColor = Colors.blue; //in Init
-  Color inactiveBackColor = Colors.grey[400]!;
-  Color inactiveTextColor = Colors.grey[700]!;
   Color buttonTextColor = Colors.white;
   Color buttonTextColorOnPrimary = Colors.black;
   Color buttonBackColor = Colors.blue;
@@ -71,7 +72,7 @@ class ColorTheme {
 
     appBarBackColor = primaryColor;
     buttonBackColor = ColorHelper.isDarkColor(primaryColor) ? primarySwatch[700]! : primarySwatch[800]!;
-    hintColor = textColor.withAlpha(160);
+    hintColor = textColor.withAlpha(150);
     infoTextColor = textColor.withAlpha(180);
     webHoverColor = primaryColor.withAlpha(40);
     textDifferentColor = accentColor;

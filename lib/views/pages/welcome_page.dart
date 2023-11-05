@@ -1,3 +1,4 @@
+import 'package:app/services/google_service.dart';
 import 'package:app/structures/abstract/state_super.dart';
 import 'package:app/system/extensions.dart';
 import 'package:app/tools/app/app_decoration.dart';
@@ -141,6 +142,7 @@ class WelcomePageState extends StateSuper<WelcomePage> {
   }
 
   void onGoogleClick() {
+    GoogleService().signIn();
   }
 
   void onLinkedInClick() {

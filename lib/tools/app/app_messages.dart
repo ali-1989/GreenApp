@@ -28,10 +28,6 @@ class AppMessages {
     return _getContext().tInMap('loginSection', key)?? _noText;
   }
 
-  static String registerMessage(String key) {
-    return _getContext().tInMap('registerSection', key)?? _noText;
-  }
-
   static String trans(String key) {
     return _getContext().t(key)?? _noText;
   }
@@ -230,35 +226,35 @@ class AppMessages {
   }
 
   static String get nameMustBigger2Char {
-    return registerMessage('nameMustBigger2Char');
+    return loginMessage('nameMustBigger2Char');
   }
 
   static String get familyMustBigger2Char {
-    return registerMessage('familyMustBigger2Char');
+    return loginMessage('familyMustBigger2Char');
   }
 
   static String get emailIsNotCorrect {
-    return registerMessage('emailIsNotCorrect');
+    return loginMessage('emailIsNotCorrect');
   }
 
   static String get otherNumber {
-    return registerMessage('otherNumber');
+    return loginMessage('otherNumber');
   }
 
   static String get enterVerifyCodeDesc {
-    return registerMessage('validationDescription');
+    return loginMessage('validationDescription');
   }
 
  static String get pleaseEnterAPassword {
-    return registerMessage('selectPassword');
+    return loginMessage('selectPassword');
   }
 
   static String get passwordsNotSame {
-    return registerMessage('passwordsNotSame');
+    return loginMessage('passwordsNotSame');
   }
 
   static String get passwordMust4Char {
-    return registerMessage('passwordMust4Char');
+    return loginMessage('passwordMust4Char');
   }
 
   static String get emailVerifyIsSentClickOn {
@@ -283,6 +279,10 @@ class AppMessages {
 
   static String get tryAgain {
     return _getContext().t('tryAgain')?? _noText;
+  }
+
+  static String get cancel {
+    return _getContext().t('cancel')?? _noText;
   }
 
   static String get tokenIsIncorrectOrExpire {

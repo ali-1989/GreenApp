@@ -1,3 +1,5 @@
+import 'package:app/structures/models/green_guide_model.dart';
+import 'package:app/structures/models/green_sight_model.dart';
 import 'package:app/system/keys.dart';
 import 'package:iris_tools/dateSection/dateHelper.dart';
 
@@ -8,6 +10,8 @@ class GreenMindModel {
   DateTime? productDate;
   late DateTime registerDate;
   DateTime? communicationDate;
+  List<GreenSightModel> sights = [];
+  List<GreenGuideModel> guides = [];
 
   GreenMindModel();
 
@@ -18,6 +22,17 @@ class GreenMindModel {
     productDate = DateHelper.timestampToSystem(map['product_date']);
     registerDate = DateHelper.timestampToSystem(map['register_date'])!;
     communicationDate = DateHelper.timestampToSystem(map['communication_date']);
+
+    List? gSights = map['sights'];
+    List? gGuides = map['guides'];
+
+    if(gSights is List){
+      sights = gSights.map((e) => GreenSightModel.fromMap(e)).toList();
+    }
+
+    if(gGuides is List){
+      guides = gGuides.map((e) => GreenGuideModel.fromMap(e)).toList();
+    }
   }
 
   Map<String, dynamic> toMap(){
@@ -28,6 +43,8 @@ class GreenMindModel {
     ret['product_date'] = DateHelper.toTimestampNullable(productDate);
     ret['register_date'] = DateHelper.toTimestampNullable(registerDate);
     ret['communication_date'] = DateHelper.toTimestampNullable(communicationDate);
+    ret['sights'] = sights.map((e) => e.toMap());
+    ret['guides'] = guides.map((e) => e.toMap());
 
     return ret;
   }
