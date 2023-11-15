@@ -1,4 +1,3 @@
-import 'package:app/tools/app/app_sizes.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,6 +9,7 @@ import 'package:iris_tools/api/system.dart';
 
 import 'package:app/structures/models/color_theme.dart';
 import 'package:app/tools/app/app_decoration.dart';
+import 'package:app/tools/app/app_sizes.dart';
 import '/managers/font_manager.dart';
 
 /// hlp:

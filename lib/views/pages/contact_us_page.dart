@@ -1,10 +1,10 @@
-import 'package:app/structures/abstract/state_super.dart';
 import 'package:flutter/material.dart';
 
 import 'package:iris_tools/api/helpers/focusHelper.dart';
 import 'package:iris_tools/widgets/maxWidth.dart';
 
 import 'package:app/services/session_service.dart';
+import 'package:app/structures/abstract/state_super.dart';
 import 'package:app/structures/middleWares/requester.dart';
 import 'package:app/system/keys.dart';
 import 'package:app/tools/app/app_messages.dart';

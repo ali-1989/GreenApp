@@ -1,6 +1,9 @@
+import 'package:flutter/material.dart';
+
 import 'package:app/managers/green_mind_manager.dart';
 import 'package:app/managers/home_chart_manager.dart';
 import 'package:app/structures/abstract/state_super.dart';
+import 'package:app/structures/middleWares/requester.dart';
 import 'package:app/system/extensions.dart';
 import 'package:app/tools/app/app_broadcast.dart';
 import 'package:app/tools/app/app_images.dart';
@@ -9,10 +12,6 @@ import 'package:app/tools/app/app_sheet.dart';
 import 'package:app/tools/route_tools.dart';
 import 'package:app/views/pages/add_widget_page.dart';
 import 'package:app/views/states/user_guide_box.dart';
-import 'package:flutter/material.dart';
-
-
-import 'package:app/structures/middleWares/requester.dart';
 
 class HomePage extends StatefulWidget {
 

@@ -1,6 +1,5 @@
 import 'dart:isolate';
 
-import 'package:app/services/firebase_options.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -10,6 +9,7 @@ import 'package:iris_tools/dateSection/dateHelper.dart';
 
 import 'package:app/managers/api_manager.dart';
 import 'package:app/managers/settings_manager.dart';
+import 'package:app/services/firebase_options.dart';
 import 'package:app/structures/enums/app_events.dart';
 import 'package:app/system/keys.dart';
 import 'package:app/tools/app/app_db.dart';

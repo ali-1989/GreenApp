@@ -1,18 +1,18 @@
+import 'package:flutter/material.dart';
+
+import 'package:awesome_bottom_bar/awesome_bottom_bar.dart';
+import 'package:awesome_bottom_bar/widgets/inspired/inspired.dart';
+import 'package:iris_tools/widgets/keep_alive_wrap.dart';
+
 import 'package:app/structures/abstract/state_super.dart';
 import 'package:app/tools/app/app_decoration.dart';
 import 'package:app/tools/app/app_images.dart';
+import 'package:app/views/baseComponents/appbar_builder.dart';
 import 'package:app/views/pages/automation_page.dart';
 import 'package:app/views/pages/chart_page.dart';
 import 'package:app/views/pages/devices_page.dart';
-import 'package:app/views/pages/setting_page.dart';
-import 'package:awesome_bottom_bar/widgets/inspired/inspired.dart';
-import 'package:flutter/material.dart';
-import 'package:awesome_bottom_bar/awesome_bottom_bar.dart';
-
-
-import 'package:app/views/baseComponents/appbar_builder.dart';
 import 'package:app/views/pages/home_page.dart';
-import 'package:iris_tools/widgets/keep_alive_wrap.dart';
+import 'package:app/views/pages/setting_page.dart';
 
 class LayoutPage extends StatefulWidget {
 

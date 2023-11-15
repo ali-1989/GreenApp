@@ -1,11 +1,10 @@
-
 import 'package:flutter/material.dart';
+
+import 'package:iris_tools/api/managers/fonts_manager.dart';
 
 import 'package:app/system/keys.dart';
 import 'package:app/tools/app/app_db.dart';
 import 'package:app/tools/app/app_themes.dart';
-import 'package:iris_tools/api/managers/fonts_manager.dart';
-
 
 class FontManager extends FontsManager {
   FontManager._({

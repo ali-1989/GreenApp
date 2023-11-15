@@ -1,3 +1,10 @@
+import 'package:flutter/material.dart';
+
+import 'package:iris_tools/api/checker.dart';
+import 'package:iris_tools/api/generator.dart';
+import 'package:iris_tools/api/helpers/focusHelper.dart';
+import 'package:iris_tools/widgets/text/text_field_wrapper.dart';
+
 import 'package:app/structures/abstract/state_super.dart';
 import 'package:app/structures/middleWares/requester.dart';
 import 'package:app/system/extensions.dart';
@@ -10,11 +17,6 @@ import 'package:app/tools/app/app_themes.dart';
 import 'package:app/tools/http_tools.dart';
 import 'package:app/tools/route_tools.dart';
 import 'package:app/views/pages/login_page.dart';
-import 'package:flutter/material.dart';
-import 'package:iris_tools/api/checker.dart';
-import 'package:iris_tools/api/generator.dart';
-import 'package:iris_tools/api/helpers/focusHelper.dart';
-import 'package:iris_tools/widgets/text/text_field_wrapper.dart';
 
 class RegisterPage extends StatefulWidget {
   // ignore: prefer_const_constructors_in_immutables

@@ -1,8 +1,10 @@
-import 'package:app/system/extensions.dart';
-import 'package:app/tools/app/app_decoration.dart';
 import 'package:flutter/material.dart';
+
 import 'package:gradient_borders/gradient_borders.dart';
 import 'package:iris_tools/widgets/custom_card.dart';
+
+import 'package:app/system/extensions.dart';
+import 'package:app/tools/app/app_decoration.dart';
 
 class UserGuideBox extends StatefulWidget {
   final String message;

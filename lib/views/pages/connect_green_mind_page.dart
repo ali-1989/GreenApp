@@ -3,6 +3,11 @@
 // one file so that all of the examples are visible on https://pub.dev/packages/esptouch_flutter/example
 
 
+import 'package:flutter/material.dart';
+
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:iris_tools/modules/stateManagers/updater_state.dart';
+
 import 'package:app/managers/green_mind_manager.dart';
 import 'package:app/structures/abstract/state_super.dart';
 import 'package:app/structures/middleWares/requester.dart';
@@ -20,9 +25,6 @@ import 'package:app/tools/route_tools.dart';
 import 'package:app/views/baseComponents/appbar_builder.dart';
 import 'package:app/views/states/back_bar.dart';
 import 'package:app/views/states/user_guide_box.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:iris_tools/modules/stateManagers/updater_state.dart';
 
 /// BSSID is the MAC address.
 /// SSID is the technical term for a network name.

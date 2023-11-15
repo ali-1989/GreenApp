@@ -1,4 +1,3 @@
-
 import 'package:app/structures/enums/user_guide_key.dart';
 
 class UserGuideModel {

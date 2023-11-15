@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:app/structures/models/home_chart_model.dart';
 
-
 class HomeChartManager {
 	HomeChartManager._();
 

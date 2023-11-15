@@ -1,10 +1,10 @@
-import 'package:app/system/extensions.dart';
-import 'package:app/tools/app/app_decoration.dart';
 import 'package:flutter/material.dart';
 
 import 'package:animate_do/animate_do.dart';
 import 'package:iris_tools/api/helpers/colorHelper.dart';
 
+import 'package:app/system/extensions.dart';
+import 'package:app/tools/app/app_decoration.dart';
 
 class SplashView extends StatelessWidget {
   const SplashView({super.key});

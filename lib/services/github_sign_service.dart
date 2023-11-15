@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:iris_tools/api/cancelable_future.dart';
 
-
 class GithubSignService {
   GithubAuthProvider? _signProvider;
   UserCredential? _credentialUser;

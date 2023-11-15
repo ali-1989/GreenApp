@@ -1,13 +1,12 @@
 import 'dart:async';
 
-import 'package:app/managers/splash_manager.dart';
-import 'package:app/services/session_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-
 import 'package:app/managers/settings_manager.dart';
+import 'package:app/managers/splash_manager.dart';
 import 'package:app/managers/version_manager.dart';
+import 'package:app/services/session_service.dart';
 import 'package:app/structures/abstract/state_super.dart';
 import 'package:app/tools/app/app_broadcast.dart';
 import 'package:app/tools/app/app_locale.dart';

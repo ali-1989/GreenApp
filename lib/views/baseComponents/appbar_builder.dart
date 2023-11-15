@@ -1,12 +1,13 @@
-import 'package:app/structures/abstract/state_super.dart';
-import 'package:app/system/extensions.dart';
-import 'package:app/tools/app/app_decoration.dart';
-import 'package:app/tools/app/app_images.dart';
 import 'package:flutter/material.dart';
+
 import 'package:iris_tools/widgets/colored_space.dart';
 import 'package:iris_tools/widgets/path/paths.dart';
 import 'package:iris_tools/widgets/shadow.dart';
 
+import 'package:app/structures/abstract/state_super.dart';
+import 'package:app/system/extensions.dart';
+import 'package:app/tools/app/app_decoration.dart';
+import 'package:app/tools/app/app_images.dart';
 
 class CustomAppBar extends StatefulWidget {
   final Widget? titleView;

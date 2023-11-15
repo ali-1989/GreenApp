@@ -1,8 +1,9 @@
+import 'package:flutter/material.dart';
+
 import 'package:app/structures/abstract/state_super.dart';
 import 'package:app/tools/app/app_images.dart';
 import 'package:app/tools/app/app_messages.dart';
 import 'package:app/views/baseComponents/appbar_builder.dart';
-import 'package:flutter/material.dart';
 
 class AddWidgetPage extends StatefulWidget {
   // ignore: prefer_const_constructors_in_immutables

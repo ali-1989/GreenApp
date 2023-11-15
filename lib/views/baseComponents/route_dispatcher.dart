@@ -1,4 +1,3 @@
-import 'package:app/views/pages/welcome_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -9,6 +8,7 @@ import 'package:app/services/session_service.dart';
 import 'package:app/tools/app/app_broadcast.dart';
 import 'package:app/tools/app/app_cache.dart';
 import 'package:app/views/pages/layout_page.dart';
+import 'package:app/views/pages/welcome_page.dart';
 import 'package:app/views/states/waitToLoad.dart';
 
 class RouteDispatcher {

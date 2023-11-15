@@ -1,3 +1,7 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+
+import 'package:iris_tools/api/helpers/colorHelper.dart';
 
 import 'package:app/services/google_sign_service.dart';
 import 'package:app/structures/abstract/state_super.dart';
@@ -9,9 +13,6 @@ import 'package:app/tools/route_tools.dart';
 import 'package:app/views/pages/login_page.dart';
 import 'package:app/views/pages/register_page.dart';
 import 'package:app/views/sign_in/google_sign_button.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:iris_tools/api/helpers/colorHelper.dart';
 
 class WelcomePage extends StatefulWidget {
   // ignore: prefer_const_constructors_in_immutables

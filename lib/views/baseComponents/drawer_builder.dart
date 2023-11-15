@@ -10,7 +10,6 @@ import 'package:iris_tools/api/helpers/mathHelper.dart';
 import 'package:iris_tools/modules/stateManagers/updater_state.dart';
 import 'package:share_extend/share_extend.dart';
 
-import 'package:app/system/constants.dart';
 import 'package:app/managers/version_manager.dart';
 import 'package:app/services/download_upload_service.dart';
 import 'package:app/services/login_service.dart';
@@ -18,6 +17,7 @@ import 'package:app/services/session_service.dart';
 import 'package:app/structures/enums/app_events.dart';
 import 'package:app/structures/enums/enums.dart';
 import 'package:app/structures/models/user_model.dart';
+import 'package:app/system/constants.dart';
 import 'package:app/system/extensions.dart';
 import 'package:app/tools/app/app_broadcast.dart';
 import 'package:app/tools/app/app_dialog_iris.dart';

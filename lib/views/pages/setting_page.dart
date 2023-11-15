@@ -1,6 +1,7 @@
+import 'package:flutter/material.dart';
+
 import 'package:app/structures/abstract/state_super.dart';
 import 'package:app/system/extensions.dart';
-import 'package:flutter/material.dart';
 
 class SettingsPage extends StatefulWidget {
   // ignore: prefer_const_constructors_in_immutables

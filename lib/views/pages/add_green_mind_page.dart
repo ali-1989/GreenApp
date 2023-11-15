@@ -4,6 +4,12 @@
 
 import 'dart:async';
 
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+import 'package:esptouch_flutter/esptouch_flutter.dart';
+import 'package:iris_tools/modules/stateManagers/updater_state.dart';
+
 import 'package:app/structures/abstract/state_super.dart';
 import 'package:app/system/extensions.dart';
 import 'package:app/tools/app/app_decoration.dart';
@@ -19,10 +25,6 @@ import 'package:app/views/baseComponents/appbar_builder.dart';
 import 'package:app/views/pages/connect_green_mind_page.dart';
 import 'package:app/views/states/back_bar.dart';
 import 'package:app/views/states/user_guide_box.dart';
-import 'package:esptouch_flutter/esptouch_flutter.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:iris_tools/modules/stateManagers/updater_state.dart';
 
 /// BSSID is the MAC address.
 /// SSID is the technical term for a network name.

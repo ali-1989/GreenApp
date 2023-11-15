@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:app/services/native_call_service.dart';
-import 'package:app/tools/app/app_cache.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -9,14 +7,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:iris_route/iris_route.dart';
 import 'package:iris_tools/widgets/maxWidth.dart';
+import 'package:iris_tools/widgets/path/box_clipper.dart';
 
-import 'package:app/system/constants.dart';
 import 'package:app/managers/font_manager.dart';
 import 'package:app/managers/settings_manager.dart';
 import 'package:app/managers/splash_manager.dart';
 import 'package:app/services/firebase_service.dart';
+import 'package:app/services/native_call_service.dart';
 import 'package:app/structures/models/settings_model.dart';
+import 'package:app/system/constants.dart';
 import 'package:app/tools/app/app_broadcast.dart';
+import 'package:app/tools/app/app_cache.dart';
 import 'package:app/tools/app/app_directories.dart';
 import 'package:app/tools/app/app_locale.dart';
 import 'package:app/tools/app/app_sizes.dart';
@@ -26,7 +27,6 @@ import 'package:app/tools/device_info_tools.dart';
 import 'package:app/tools/log_tools.dart';
 import 'package:app/tools/route_tools.dart';
 import 'package:app/views/baseComponents/splash_page.dart';
-import 'package:iris_tools/widgets/path/box_clipper.dart';
 
 ///================ call on any hot restart
 void main() {

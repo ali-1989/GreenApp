@@ -1,3 +1,9 @@
+import 'package:flutter/material.dart';
+
+import 'package:iris_tools/api/checker.dart';
+import 'package:iris_tools/api/helpers/focusHelper.dart';
+import 'package:iris_tools/widgets/custom_card.dart';
+
 import 'package:app/structures/abstract/state_super.dart';
 import 'package:app/system/extensions.dart';
 import 'package:app/tools/app/app_broadcast.dart';
@@ -6,10 +12,6 @@ import 'package:app/tools/app/app_images.dart';
 import 'package:app/tools/app/app_messages.dart';
 import 'package:app/tools/route_tools.dart';
 import 'package:app/views/pages/layout_page.dart';
-import 'package:flutter/material.dart';
-import 'package:iris_tools/api/checker.dart';
-import 'package:iris_tools/api/helpers/focusHelper.dart';
-import 'package:iris_tools/widgets/custom_card.dart';
 
 class LoginPage extends StatefulWidget {
   // ignore: prefer_const_constructors_in_immutables
