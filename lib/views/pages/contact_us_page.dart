@@ -33,7 +33,7 @@ class _ContactUsPageState extends StateSuper<ContactUsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox();
+    return const SizedBox();
   }
 
   Widget buildBody(){
@@ -49,7 +49,7 @@ class _ContactUsPageState extends StateSuper<ContactUsPage> {
                 controller: textCtr,
                 minLines: 8,
                 maxLines: 12,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   enabledBorder: OutlineInputBorder(),
                   focusedBorder: OutlineInputBorder(),
@@ -58,7 +58,7 @@ class _ContactUsPageState extends StateSuper<ContactUsPage> {
             ),
         ),
 
-        SizedBox(height: 20,),
+        const SizedBox(height: 20,),
         MaxWidth(
             maxWidth: 300,
             child: SizedBox(
@@ -89,7 +89,7 @@ class _ContactUsPageState extends StateSuper<ContactUsPage> {
     final txt = textCtr.text.trim();
 
     final js = <String, dynamic>{};
-    js[Keys.requestZone] = 'send_ticket_data';
+    js[Keys.request] = 'send_ticket_data';
     js[Keys.requesterId] = SessionService.getLastLoginUser()?.userId;
     js[Keys.data] = txt;
 
@@ -111,6 +111,6 @@ class _ContactUsPageState extends StateSuper<ContactUsPage> {
 
     showLoading();
     requester.prepareUrl();
-    requester.request(context);
+    requester.request();
   }
 }

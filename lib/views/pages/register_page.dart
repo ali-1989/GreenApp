@@ -1,14 +1,18 @@
 import 'package:app/structures/abstract/state_super.dart';
+import 'package:app/structures/middleWares/requester.dart';
 import 'package:app/system/extensions.dart';
+import 'package:app/system/keys.dart';
 import 'package:app/tools/app/app_decoration.dart';
 import 'package:app/tools/app/app_images.dart';
 import 'package:app/tools/app/app_messages.dart';
 import 'package:app/tools/app/app_sheet.dart';
 import 'package:app/tools/app/app_themes.dart';
+import 'package:app/tools/http_tools.dart';
 import 'package:app/tools/route_tools.dart';
 import 'package:app/views/pages/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:iris_tools/api/checker.dart';
+import 'package:iris_tools/api/generator.dart';
 import 'package:iris_tools/api/helpers/focusHelper.dart';
 import 'package:iris_tools/widgets/text/text_field_wrapper.dart';
 
@@ -27,6 +31,7 @@ class RegisterPageState extends StateSuper<RegisterPage> {
   TextEditingController passwordCtr = TextEditingController();
   TextEditingController rePasswordCtr = TextEditingController();
   bool showErrors = false;
+  Requester requester = Requester();
 
   @override
   void initState() {
@@ -41,6 +46,8 @@ class RegisterPageState extends StateSuper<RegisterPage> {
     passwordCtr.dispose();
     rePasswordCtr.dispose();
 
+    requester.dispose();
+
     super.dispose();
   }
 
@@ -48,7 +55,6 @@ class RegisterPageState extends StateSuper<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: buildBody(),
-      resizeToAvoidBottomInset: false,
     );
   }
 
@@ -316,14 +322,45 @@ class RegisterPageState extends StateSuper<RegisterPage> {
     if(!can){
       return;
     }
-    FocusHelper.hideKeyboardByService();
 
-    AppSheet.showSheetOneAction(
-        context,
-        AppMessages.emailVerifyIsSentClickOn,
-      onButton: (){
-        RouteTools.pushPage(context, LoginPage());
+    FocusHelper.hideKeyboardByService();
+    requestRegister();
+  }
+
+  void requestRegister(){
+    showLoading();
+
+    final js = <String, dynamic>{};
+    js[Keys.request] = 'register_with_email';
+    js['name'] = nameCtr.text.trim();
+    js['family'] = familyCtr.text.trim();
+    js['email'] = emailCtr.text.trim();
+    js['password'] = Generator.generateMd5(passwordCtr.text.trim());
+
+    requester.httpRequestEvents.onAnyState = (req) async {
+      await hideLoading();
+    };
+
+    requester.httpRequestEvents.onFailState = (req, res) async {
+      bool handled = HttpTools.handler(context, req.getBodyAsJson()?? {});
+
+      if(!handled) {
+        AppSheet.showSheetOk(context, AppMessages.operationFailedTryAgain);
       }
-    );
+    };
+
+    requester.httpRequestEvents.onStatusOk = (req, data) async {
+      AppSheet.showSheetOneAction(
+          context,
+          AppMessages.emailVerifyIsSentClickOn,
+          onButton: (){
+            RouteTools.pushPage(context, LoginPage());
+          }
+      );
+    };
+
+    requester.bodyJson = js;
+    requester.prepareUrl();
+    requester.request();
   }
 }

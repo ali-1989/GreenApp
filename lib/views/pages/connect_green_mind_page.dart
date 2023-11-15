@@ -4,7 +4,6 @@
 
 
 import 'package:app/managers/green_mind_manager.dart';
-import 'package:app/services/session_service.dart';
 import 'package:app/structures/abstract/state_super.dart';
 import 'package:app/structures/middleWares/requester.dart';
 import 'package:app/system/extensions.dart';

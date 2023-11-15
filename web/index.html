@@ -12,19 +12,19 @@
     <!-- https://console.developers.google.com/apis/credentials -->
     <!-- https://console.cloud.google.com/apis/credentials?project=vosate-zehn-7d8fe -->
 
-    <!-- SRC>> client_type:3 in google-service.json OR in above page in (OAuth 2.0 Client IDs - web)   -->
-    <meta name="google-signin-client_id" content="731359726004-om1nsl47c9l9mjm246h3ebe0rt5lkgdi.apps.googleusercontent.com">
+    <!-- SRC>> client_type:3 in google-service.json OR in above page in (Credentials > web > Client IDs - web) -->
+    <meta name="google-signin-client_id" content="579668054514-ojuoo3o4cj1vjbcqfavq6upv9e8h4d1h.apps.googleusercontent.com">
 
     <!-- iOS meta tags & icons -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="green">
+  <meta name="apple-mobile-web-app-title" content="Green Oasis">
     <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>green</title>
+  <title>Green Oasis</title>
     <link rel="manifest" href="manifest.json">
 
     <style>
@@ -104,23 +104,24 @@
 <script src="https://apis.google.com/js/platform.js" async defer>
 </script>
 
+<!-- Google Sign in ---------------------------------- -->
 <script type="module">
-    // https://dit-gis-test.web.app/#/
+    // sample: https://dit-gis-test.web.app/#/
     // https://firebase.google.com/docs/web/setup#available-libraries
 
-    import {initializeApp} from "https://www.gstatic.com/firebasejs/9.19.1/firebase-app.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
+    //import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-analytics.js";
     //import { getAuth, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-auth.js";
-    //import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.19.1/firebase-analytics.js";
     //import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.19.1/firebase-firestore.js'
 
     const firebaseConfig = {
-        apiKey: "AIzaSyC2gsyD1HYpP6LwXws6hZc_PTFoK68rl8c",
-        authDomain: "vosate-zehn-7d8fe.firebaseapp.com",
-        projectId: "vosate-zehn-7d8fe",
-        storageBucket: "vosate-zehn-7d8fe.appspot.com",
-        messagingSenderId: "731359726004",
-        appId: "1:731359726004:web:7b371dd04042f69cb20ae1",
-        measurementId: "G-8ZKZGGLXRW"
+        apiKey: "AIzaSyAqrPZqcu3kr46sEv1hxWe2-YE3a6lULds",
+        authDomain: "green-oasis-2023.firebaseapp.com",
+        projectId: "green-oasis-2023",
+        storageBucket: "green-oasis-2023.appspot.com",
+        messagingSenderId: "579668054514",
+        appId: "1:579668054514:web:cc72b5ccab39a761d79b6b",
+        measurementId: "G-Y08VDNERGP"
     };
 
     const app = initializeApp(firebaseConfig);

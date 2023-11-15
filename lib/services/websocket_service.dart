@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:iris_tools/api/checker.dart';
 import 'package:iris_tools/api/helpers/jsonHelper.dart';
 import 'package:iris_websocket/iris_websocket.dart';
-import 'package:iris_websocket/src/io.dart';
 
 import 'package:app/managers/api_manager.dart';
 import 'package:app/services/login_service.dart';

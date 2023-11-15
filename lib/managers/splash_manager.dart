@@ -14,7 +14,6 @@ import 'package:app/services/wakeup_service.dart';
 import 'package:iris_tools/net/trustSsl.dart';
 
 import 'package:app/managers/settings_manager.dart';
-import 'package:app/managers/version_manager.dart';
 import 'package:app/system/application_signal.dart';
 import 'package:app/tools/app/app_db.dart';
 import 'package:app/tools/app/app_locale.dart';

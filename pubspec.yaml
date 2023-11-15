@@ -33,7 +33,7 @@ dependencies:
   platform_device_id: ^1.0.1
   permission_handler: ^11.0.1            # NoWeb
   flutter_spinkit: ^5.2.0
-  audioplayers: ^5.2.0
+  audioplayers: ^5.2.1
   http: ^1.1.0
   dio: ^5.3.3
   connectivity_plus: ^5.0.1
@@ -46,9 +46,9 @@ dependencies:
   image_picker: ^1.0.4
   file_picker: ^6.1.1
   toggle_switch: ^2.1.0
-  firebase_messaging: ^14.7.3
-  firebase_core: ^2.21.0
-  firebase_auth: ^4.12.1
+  firebase_messaging: ^14.7.4
+  firebase_core: ^2.22.0
+  firebase_auth: ^4.14.0
   lottie: ^2.7.0
   workmanager: ^0.5.2
   simple_animations: ^5.0.2
@@ -72,8 +72,8 @@ dependencies:
 
 
   iris_tools:
-#    git: https://github.com/ali-1989/IrisTools.git
-    path: ../../#FlutterPackages/IrisTools
+    git: https://github.com/ali-1989/IrisTools.git
+#    path: ../../#FlutterPackages/IrisTools
   iris_db:
     git: https://github.com/ali-1989/IrisDB.git
   iris_download_manager:
@@ -89,7 +89,7 @@ dependencies:
 
 
 dependency_overrides:
-  win32: 5.0.9    # 4.1.4 device_info_plus, wakelock_windows
+  win32: ^5.1.0    # 4.1.4 device_info_plus, wakelock_windows
   connectivity_plus: ^5.0.1
 
 

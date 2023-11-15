@@ -1,4 +1,5 @@
-import 'package:app/services/google_service.dart';
+
+import 'package:app/services/google_sign_service.dart';
 import 'package:app/structures/abstract/state_super.dart';
 import 'package:app/system/extensions.dart';
 import 'package:app/tools/app/app_decoration.dart';
@@ -7,6 +8,8 @@ import 'package:app/tools/app/app_messages.dart';
 import 'package:app/tools/route_tools.dart';
 import 'package:app/views/pages/login_page.dart';
 import 'package:app/views/pages/register_page.dart';
+import 'package:app/views/sign_in/google_sign_button.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:iris_tools/api/helpers/colorHelper.dart';
 
@@ -19,6 +22,15 @@ class WelcomePage extends StatefulWidget {
 }
 ///=============================================================================
 class WelcomePageState extends StateSuper<WelcomePage> {
+
+  @override
+  void initState(){
+    super.initState();
+
+    if(kIsWeb){
+      GoogleSignService().signInSilently();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,13 +69,21 @@ class WelcomePageState extends StateSuper<WelcomePage> {
                    buildSocialLoginSection(),
 
                     /// google button
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: ColorHelper.lightPlus(AppDecoration.buttonBackgroundColor(), val:0.2),
-                      ),
-                      onPressed: onGoogleClick,
-                      child: Image.asset(AppImages.icoGoogle, width: 32*iconR, height: 32*iconR),
-                    ),
+                   Builder(
+                       builder: (_){
+                         if(kIsWeb){
+                           return buildSignInButton(onPressed: onGoogleClick);
+                         }
+
+                         return ElevatedButton(
+                           style: ElevatedButton.styleFrom(
+                             backgroundColor: ColorHelper.lightPlus(AppDecoration.buttonBackgroundColor(), val:0.2),
+                           ),
+                           onPressed: onGoogleClick,
+                           child: Image.asset(AppImages.icoGoogle, width: 32*iconR, height: 32*iconR),
+                         );
+                       }
+                   ),
 
 
                     /// login button
@@ -141,14 +161,27 @@ class WelcomePageState extends StateSuper<WelcomePage> {
   void onFaceBookClick() {
   }
 
-  void onGoogleClick() {
-    GoogleService().signIn();
+  Future<void> onGoogleClick() async {
+    showLoading();
+    final res = await GoogleSignService().signIn();
+    hideLoading();
+    final x = await GoogleSignService().getCredentialInfo();
   }
 
-  void onLinkedInClick() {
+  void onLinkedInClick() async {
+    //await GoogleSignService().signOut();
+    /*showLoading();
+    final res = await GithubSignService().signIn();
+    print('************user: ${GithubSignService().currentAuthUser?.photoURL}');
+    print('********* ${res.$1?.user?.email}');
+    print('********* ${res.$1?.user?.displayName}');
+    print('********* ${res.$1?.user?.photoURL}');
+
+    hideLoading();*/
   }
 
-  void onMetaClick() {
+  void onMetaClick() async {
+    //RouteTools.pushPage(context, SignInDemo());
   }
 
   void onSignUpClick() {

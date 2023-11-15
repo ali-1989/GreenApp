@@ -53,6 +53,7 @@ class AppDecoration {
       ),
     );
   }
+  
   static TextStyle infoHeadLineTextStyle() {
     return AppThemes.instance.themeData.textTheme.headlineSmall!.copyWith(
       color: AppThemes.instance.themeData.textTheme.headlineSmall!.color!.withAlpha(150),

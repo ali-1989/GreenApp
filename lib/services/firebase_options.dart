@@ -59,7 +59,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '579668054514',
     projectId: 'green-oasis-2023',
     storageBucket: 'green-oasis-2023.appspot.com',
-    androidClientId: '579668054514-c17kvvimm81is6pfpfrl31n8gmnn7kii.apps.googleusercontent.com',
+    //androidClientId: '579668054514-c17kvvimm81is6pfpfrl31n8gmnn7kii.apps.googleusercontent.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
@@ -83,4 +83,6 @@ class DefaultFirebaseOptions {
     iosClientId: '579668054514-n39tpm6sblnmk38gcfp6577f9fi4ihdh.apps.googleusercontent.com',
     iosBundleId: 'ir.iris.green.RunnerTests',
   );
+
+  static const String fcmKey = 'BLkHyiaxrQJA7eSDwjrCos0BcsGVPjxM8JGXJ1CFBAeFa2wNGoJDGkOJu6CqsPhjwhf2_EII8SoJmos0TqMOitE';
 }

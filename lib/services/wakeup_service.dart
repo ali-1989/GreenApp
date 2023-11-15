@@ -43,7 +43,7 @@ Future<bool> _callbackWorkManager(task, inputData) async {
 void callbackWorkManager() {
   Workmanager().executeTask(_callbackWorkManager);
 }
-///============================================================================================
+///=============================================================================
 class WakeupService {
   WakeupService._();
 
@@ -62,7 +62,7 @@ class WakeupService {
       'periodic-${Constants.appName}',
       frequency: const Duration(hours: 1),
       initialDelay: const Duration(milliseconds: 30),
-      backoffPolicyDelay: const Duration(minutes: 5),
+      backoffPolicyDelay: const Duration(minutes: 16),
       existingWorkPolicy: ExistingWorkPolicy.keep,
       backoffPolicy: BackoffPolicy.linear,
       constraints: Constraints(

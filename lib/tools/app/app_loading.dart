@@ -9,7 +9,7 @@ import 'package:iris_tools/features/overlayDialog.dart';
 import 'package:app/tools/app/app_messages.dart';
 import 'package:app/tools/app/app_overlay.dart';
 import 'package:app/tools/app/app_themes.dart';
-import 'package:app/views/components/overlay/overlayContainer.dart';
+import 'package:app/views/components/overlay/overlay_container.dart';
 
 class AppLoading {
   AppLoading._();

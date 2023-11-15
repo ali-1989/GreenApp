@@ -56,7 +56,7 @@ class _EsTouchPageState extends State<EsTouchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Green',
           style: TextStyle(
             //fontFamily: 'serif-monospace',
@@ -95,7 +95,7 @@ class _EsTouchPageState extends State<EsTouchPage> {
       bssid: bssid.text,
       password: password.text,
       packet: packet,
-      taskParameter: ESPTouchTaskParameter().copyWith(
+      taskParameter: const ESPTouchTaskParameter().copyWith(
         intervalGuideCode: durationTryParse(intervalGuideCode.text),
         intervalDataCode: durationTryParse(intervalDataCode.text),
         timeoutGuideCode: durationTryParse(timeoutGuideCode.text),
@@ -120,7 +120,7 @@ class _EsTouchPageState extends State<EsTouchPage> {
       child: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         children: <Widget>[
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Center(
             child: OutlinedButton(
               onPressed: fetchingWifiInfo ? null : fetchWifiInfo,
@@ -154,14 +154,14 @@ class _EsTouchPageState extends State<EsTouchPage> {
             ),
           ),
           RadioListTile(
-            title: Text('Broadcast'),
+            title: const Text('Broadcast'),
             value: ESPTouchPacket.broadcast,
             groupValue: packet,
             onChanged: setPacket,
             activeColor: color,
           ),
           RadioListTile(
-            title: Text('Multicast'),
+            title: const Text('Multicast'),
             value: ESPTouchPacket.multicast,
             groupValue: packet,
             onChanged: setPacket,
@@ -185,7 +185,7 @@ class _EsTouchPageState extends State<EsTouchPage> {
             child: ElevatedButton(
               onPressed: () {
                 if(ssid.text.isEmpty){
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('enter ssid')));
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('enter ssid')));
                   return;
                 }
                 Navigator.push(
@@ -212,7 +212,8 @@ class _EsTouchPageState extends State<EsTouchPage> {
 }
 
 class TaskRoute extends StatefulWidget {
-  TaskRoute({required this.task});
+  // ignore: prefer_const_constructors_in_immutables
+  TaskRoute({super.key, required this.task});
 
   final ESPTouchTask task;
 
@@ -243,11 +244,11 @@ class TaskRouteState extends State<TaskRoute> {
             context: context,
             builder: (context) {
               return AlertDialog(
-                title: Text('No devices found'),
+                title: const Text('No devices found'),
                 actions: <Widget>[
                   TextButton(
                     onPressed: () => Navigator.of(context)..pop()..pop(),
-                    child: Text('OK'),
+                    child: const Text('OK'),
                   ),
                 ],
               );
@@ -275,15 +276,15 @@ class TaskRouteState extends State<TaskRoute> {
           CircularProgressIndicator(
             valueColor: AlwaysStoppedAnimation(Theme.of(context).primaryColor),
           ),
-          SizedBox(height: 16),
-          Text('Waiting for results'),
+          const SizedBox(height: 16),
+          const Text('Waiting for results'),
         ],
       ),
     );
   }
 
   Widget error(BuildContext context, String s) {
-    return Center(child: Text(s, style: TextStyle(color: Colors.red)));
+    return Center(child: Text(s, style: const TextStyle(color: Colors.red)));
   }
 
   copyValue(BuildContext context, String label, String v) {
@@ -295,7 +296,7 @@ class TaskRouteState extends State<TaskRoute> {
   }
 
   Widget noneState(BuildContext context) {
-    return Text('None');
+    return const Text('None');
   }
 
   Widget resultList(BuildContext context) {
@@ -313,9 +314,9 @@ class TaskRouteState extends State<TaskRoute> {
                 onLongPress: copyValue(context, 'BSSID', result.bssid),
                 child: Row(
                   children: <Widget>[
-                    Text('BSSID: ', style: textTheme.bodyText1),
+                    Text('BSSID: ', style: textTheme.bodyLarge),
                     Text(result.bssid,
-                        style: TextStyle(fontFamily: 'monospace')),
+                        style: const TextStyle(fontFamily: 'monospace')),
                   ],
                 ),
               ),
@@ -323,8 +324,8 @@ class TaskRouteState extends State<TaskRoute> {
                 onLongPress: copyValue(context, 'IP', result.ip),
                 child: Row(
                   children: <Widget>[
-                    Text('IP: ', style: textTheme.bodyText1),
-                    Text(result.ip, style: TextStyle(fontFamily: 'monospace')),
+                    Text('IP: ', style: textTheme.bodyLarge),
+                    Text(result.ip, style: const TextStyle(fontFamily: 'monospace')),
                   ],
                 ),
               )
@@ -339,7 +340,7 @@ class TaskRouteState extends State<TaskRoute> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Task'),
+        title: const Text('Task'),
       ),
       body: Container(
         child: StreamBuilder<ESPTouchResult>(

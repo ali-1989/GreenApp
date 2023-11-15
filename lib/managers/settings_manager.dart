@@ -139,11 +139,11 @@ class SettingsManager {
 		};
 
 		final js = <String, dynamic>{};
-		js[Keys.requestZone] = 'get_app_parameters';
+		js[Keys.request] = 'get_app_parameters';
 
 		requester.bodyJson = js;
 		requester.prepareUrl();
-		requester.request(null, false);
+		requester.request();
 		return res.future;
 	}
 }

@@ -145,7 +145,7 @@
            -->
 
     <application
-        android:label="green"
+        android:label="Green Oasis"
         android:name=".MyApplication"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher"

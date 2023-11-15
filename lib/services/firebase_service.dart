@@ -144,7 +144,7 @@ class FireBaseService {
   static Future<String?> getTokenForce() async {
     LogTools.logger.logToAll('@@@@@@@@@: start get token ${Isolate.current.hashCode}'); //todo.
 
-    token = await FirebaseMessaging.instance.getToken(vapidKey: 'BLkHyiaxrQJA7eSDwjrCos0BcsGVPjxM8JGXJ1CFBAeFa2wNGoJDGkOJu6CqsPhjwhf2_EII8SoJmos0TqMOitE');
+    token = await FirebaseMessaging.instance.getToken(vapidKey: DefaultFirebaseOptions.fcmKey);
     LogTools.logger.logToAll('@@@@@@@@@: token: $token'); //todo.
     if(token != null) {
       lastUpdateToken = DateHelper.now();

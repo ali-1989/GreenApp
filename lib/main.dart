@@ -200,7 +200,7 @@ class MyApp extends StatelessWidget {
 class MyErrorApp extends StatelessWidget {
   final String? errorLog;
 
-  const MyErrorApp({Key? key, this.errorLog}) : super(key: key);
+  const MyErrorApp({super.key, this.errorLog});
 
   @override
   Widget build(BuildContext context) {

@@ -7,7 +7,7 @@ enum UpdaterGroup implements UpdaterGroupId {
 
   const UpdaterGroup(this._number);
 
-  int getNumber(){
+  int serialize(){
     return _number;
   }
 }

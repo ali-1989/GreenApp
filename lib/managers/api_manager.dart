@@ -18,7 +18,7 @@ class ApiManager {
   ApiManager._();
 
   //static String serverApi = '${SettingsManager.localSettings.httpAddress}/v1';
-  static String serverApi = 'http://192.168.1.104:20010/test';
+  static String serverApi = 'http://192.168.43.163:20010/test';
   static String errorReportApi = '${SettingsManager.localSettings.httpAddress}/errors/add';
   static String fcmTopic = 'daily_text';
 
@@ -43,7 +43,7 @@ class ApiManager {
     requester.prepareUrl(pathUrl: url);
     requester.methodType = methodType;
 
-    requester.request(null, false);
+    requester.request();
     return res.future;
   }
 

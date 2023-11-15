@@ -102,11 +102,11 @@ class _ConPageState extends State<ConPage> {
                   }
               ),
 
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical:20.0),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical:20.0),
                 child: Divider(),
               ),
-              Text('URL: http://vosatezehn.com:7436/echo')
+              const Text('URL: http://vosatezehn.com:7436/echo')
             ],
           ),
 
