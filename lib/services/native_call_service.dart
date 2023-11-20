@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 
 import 'package:iris_tools/api/system.dart';
@@ -17,9 +18,8 @@ Future onBridgeCall(call) async {
     LogTools.reportError(call.arguments);
   }
   else if(call.method == 'androidReceiverIsCall') {
-    //await AppNotification.initial();
-    //app_notification.sendMessagesNotification('t1', 'ali', 'Thanks God');
-
+    await FireBaseService.initializeApp();
+    await FireBaseService.start();
   }
 
   return null;

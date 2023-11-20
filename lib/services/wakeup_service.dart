@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app/tools/app/app_notification.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -11,22 +12,24 @@ import 'package:app/system/constants.dart';
 
 @pragma('vm:entry-point')
 Future<bool> _callbackWorkManager(task, inputData) async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await prepareDirectoriesAndLogger();
-  NativeCallService.init();
-
-  var isAppRun = false;
-
   try {
-    isAppRun = (await NativeCallService.assistanceBridge!.invokeMethod('isAppRun')).$1;
-  }
-  catch (e) {/**/}
+    WidgetsFlutterBinding.ensureInitialized();
+    await prepareDirectoriesAndLogger();
 
-  if (isAppRun) {
-    return true;
-  }
+    NativeCallService.init();
+    await AppNotification.initial();
 
-  try {
+    var isAppRun = false;
+
+    try {
+      isAppRun = (await NativeCallService.assistanceBridge!.invokeMethod('isAppRun')).$1;
+    }
+    catch (e) {/**/}
+
+    if (isAppRun) {
+      return true;
+    }
+
     /*switch (task) {
       case Workmanager.iOSBackgroundTask:
         break;
@@ -35,6 +38,7 @@ Future<bool> _callbackWorkManager(task, inputData) async {
     return true;
   }
   catch (e) {
+    /// if return false, this method call again.(backoffPolicyDelay)
     return false;
   }
 }
@@ -61,7 +65,7 @@ class WakeupService {
       'WorkManager-task-${Constants.appName}',
       'periodic-${Constants.appName}',
       frequency: const Duration(hours: 1),
-      initialDelay: const Duration(milliseconds: 30),
+      initialDelay: const Duration(milliseconds: 15),
       backoffPolicyDelay: const Duration(minutes: 16),
       existingWorkPolicy: ExistingWorkPolicy.keep,
       backoffPolicy: BackoffPolicy.linear,

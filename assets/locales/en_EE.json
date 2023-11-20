@@ -20,6 +20,8 @@
   "back": "برگشت",
   "start": "شروع",
   "end": "پایان",
+  "go": "انجام",
+  "execute": "اجرا",
   "finish": "پایان",
   "of": "از",
   "step": "مرحله",
@@ -44,6 +46,7 @@
   "apply": "اعمال",
   "login": "ورود",
   "logout": "خروج از حساب",
+  "termRule" : "terms and rules",
   "block": "مسدود کردن",
   "unblocking": "رفع انسداد",
   "blocked": "مسدود شده",
@@ -68,12 +71,12 @@
   "language": "زبان",
   "languages": "زبان ها",
   "change": "تغییر",
-  "tag": "برچسب",
   "optional": "اختیاری",
   "description": "شرح",
   "title": "عنوان",
   "caption": "عنوان",
   "label": "برچسب",
+  "tag": "برچسب",
   "name": "نام",
   "family": "نام خانوادگی",
   "mobile": "موبایل",
@@ -94,6 +97,8 @@
   "man": "مرد",
   "male": "مذکر",
   "female": "مونث",
+  "IRealized": "I realized",
+  "know": "know",
   "unknown": "نامشخص",
   "age": "سن",
   "city": "شهر",
@@ -163,8 +168,11 @@
   "buy": "خرید",
   "pay": "پرداخت",
   "search": "جستجو",
+  "find": "جستجو",
   "information": "اطلاعات",
-  "dataUpdating" : "درحال بروزرسانی",
+  "updatingData" : "درحال بروزرسانی",
+  "total" : "total",
+  "pending" : "pending",
   "allCount" : "تعداد کل",
   "userCount" : "تعداد کاربران",
   "searchOption" : "گزینه جستجو",
@@ -253,18 +261,6 @@
     "validation": "اعتبار سنجی",
     "resendOtpCode": "ارسال مجدد کد",
     "sendVerifyCode": "ثبت کد تایید"
-  },
-
-  "roleSection" : {
-    "roles" : "نقش ها",
-    "rights" : "امتیازات",
-    "editRights" : "ویرایش امتیازات",
-    "editRoles" : "ویرایش نقشها",
-    "settingRights" : "تنظیم حقوق",
-    "createNewRole" : "ایجاد نقش جدید"
-  },
-
-  "registerSection" : {
     "enterYourName": "لطفا نام خود را وارد کنید",
     "enterFamily": "لطفا یک نام خانوادگی وارد کنید",
     "enterMobile": "لطفا یک شماره همراه وارد کنید",
@@ -286,6 +282,16 @@
     "thanksRegisterDescription" : "ثبت نام شما انجام شد.شما می توانید با مشخصات خود وارد شوید",
     "validationDescription": "لطفا کد ارسال شده به شماره ی #1 را وارد کنید"
   },
+
+  "roleSection" : {
+    "roles" : "نقش ها",
+    "rights" : "امتیازات",
+    "editRights" : "ویرایش امتیازات",
+    "editRoles" : "ویرایش نقشها",
+    "settingRights" : "تنظیم حقوق",
+    "createNewRole" : "ایجاد نقش جدید"
+  },
+
 
   "calendarOptions": {
     "gregorian": "میلادی",
@@ -310,9 +316,6 @@
     "currencySelection" : "انتخاب واحد پول",
     "selectCountry" : "نام کشور یا کد",
     "selectCurrency" : "نام کشور یا نام واحد"
-  },
-
-  "registeringPage" : {
   },
 
   "lock&pattern" : {

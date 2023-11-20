@@ -13,9 +13,10 @@ import 'package:app/tools/app/app_locale.dart';
 import 'package:app/tools/app/app_themes.dart';
 import 'package:app/views/baseComponents/route_dispatcher.dart';
 import 'package:app/views/baseComponents/splash_widget.dart';
-import 'package:app/views/states/waitToLoad.dart';
+import 'package:app/views/states/wait_to_load.dart';
 
 class SplashPage extends StatefulWidget {
+  // ignore: prefer_const_constructors_in_immutables
   SplashPage({super.key});
 
   @override

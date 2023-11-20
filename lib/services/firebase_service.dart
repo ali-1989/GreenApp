@@ -1,10 +1,10 @@
-import 'dart:isolate';
 
 import 'package:flutter/foundation.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:iris_notifier/iris_notifier.dart';
+import 'package:iris_tools/api/system.dart';
 import 'package:iris_tools/dateSection/dateHelper.dart';
 
 import 'package:app/managers/api_manager.dart';
@@ -14,14 +14,13 @@ import 'package:app/structures/enums/app_events.dart';
 import 'package:app/system/keys.dart';
 import 'package:app/tools/app/app_db.dart';
 import 'package:app/tools/app/app_notification.dart';
-import 'package:app/tools/log_tools.dart';
 
 // https://firebase.google.com/docs/cloud-messaging/flutter/receive
 // https://firebase.google.com/docs/cloud-messaging/flutter/client
 
 @pragma('vm:entry-point')
 Future<void> _fbMessagingBackgroundHandler(RemoteMessage message) async {
-  /// firebase it self sending a notification
+  /// firebase it self sending this notification. no need me.
 
   // this is runs in its own isolate outside your applications context,
   // and can, perform logic such as HTTP requests,
@@ -29,7 +28,6 @@ Future<void> _fbMessagingBackgroundHandler(RemoteMessage message) async {
   // communicate with other plugins
 
 
-  //await Firebase.initializeApp();
   //await ApplicationInitial.prepareDirectoriesAndLogger();
   //await ApplicationInitial.inSplashInit();
 }
@@ -61,29 +59,26 @@ class FireBaseService {
 
   static Future<void> initializeApp() async {
     try {
+      FirebaseOptions options;
+
       if(kIsWeb){
-        await Firebase.initializeApp(options: DefaultFirebaseOptions.web);
-        return;
+        options = DefaultFirebaseOptions.web;
+      }
+      else if(System.isAndroid()){
+        options = DefaultFirebaseOptions.android;
+      }
+      else {
+        options = DefaultFirebaseOptions.currentPlatform;
       }
 
-      LogTools.logger.logToAll('@@@@@@@@@: A- start initialize firebase: ${Isolate.current.hashCode}'); //todo.
-
-      await Firebase.initializeApp(options: DefaultFirebaseOptions.android)
-          .then<FirebaseApp?>((v) => v).catchError((e){
-	        LogTools.logger.logToAll('@@@@@@@@@: ee1 -$e  ${Isolate.current.hashCode}'); //todo.
-        return null;
-      });
+      await Firebase.initializeApp(options: options);
 
     }
-    catch (e){
-      LogTools.logger.logToAll('@@@@@@@@@: ee2 -$e  ${Isolate.current.hashCode}'); //todo.
-      /**/}
+    catch (e){/**/}
   }
 
   static Future start() async {
     //FirebaseMessaging.instance.isSupported()
-    LogTools.logger.logToAll('@@@@@@@@@: start fire ${Isolate.current.hashCode}'); //todo.
-
     try {
       await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
         alert: true,
@@ -112,6 +107,8 @@ class FireBaseService {
   }
 
   static void setListening() async {
+    FirebaseMessaging.instance.onTokenRefresh.listen(_onTokenListen);
+
     /// it's fire when app is open and is in foreground
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
      _onNewNotification(message);
@@ -120,32 +117,43 @@ class FireBaseService {
     /// it's fire when app is be in background or is was terminated
     FirebaseMessaging.onBackgroundMessage(_fbMessagingBackgroundHandler);
 
-    FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
-      token = fcmToken;
-      EventNotifierService.notify(AppEvents.firebaseTokenReceived);
-      subscribeToTopic(ApiManager.fcmTopic);
-    });
-
     /// it's fire when be click on Fcm notification. (no notification by app)
-    FirebaseMessaging.onMessageOpenedApp.listen(_handler);
+    FirebaseMessaging.onMessageOpenedApp.listen(_handlerTouchFcmNotification);
 
     ///When app is opened by the user touch (not by the notification), and there is a Fcm notification in the statusbar
     RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
 
     if (initialMessage != null) {
-      _handler(initialMessage);
+      _handlerOpenAppWhenExistNotification(initialMessage);
     }
   }
 
-  static void _handler(RemoteMessage message) {
+  static void _onTokenListen(fcmToken) {
+    token = fcmToken;
+    subscribeToTopic(ApiManager.fcmTopic);
+    EventNotifierService.notify(AppEvents.firebaseTokenReceived);
+  }
+
+  static void _handlerTouchFcmNotification(RemoteMessage message) {
+    /*Future.delayed(const Duration(seconds: 1), (){
+      RouteTools.pushPage(RouteTools.materialContext!, const SentencesPage());
+    });
+
+    _addMessageId(message);*/
+  }
+
+  static void _handlerOpenAppWhenExistNotification(RemoteMessage message) {
+    /*Future.delayed(const Duration(seconds: 1), (){
+      RouteTools.pushPage(RouteTools.materialContext!, const SentencesPage());
+    });
+
+    _addMessageId(message);*/
     //if (message.data['type'] == 'chat') {}
   }
 
   static Future<String?> getTokenForce() async {
-    LogTools.logger.logToAll('@@@@@@@@@: start get token ${Isolate.current.hashCode}'); //todo.
-
     token = await FirebaseMessaging.instance.getToken(vapidKey: DefaultFirebaseOptions.fcmKey);
-    LogTools.logger.logToAll('@@@@@@@@@: token: $token'); //todo.
+    
     if(token != null) {
       lastUpdateToken = DateHelper.now();
       EventNotifierService.notify(AppEvents.firebaseTokenReceived);
@@ -200,5 +208,18 @@ class FireBaseService {
   static void _onNetConnected({data}) {
     EventNotifierService.removeListener(AppEvents.networkConnected, _onNetConnected);
     getTokenForce();
+  }
+
+  static void _addMessageId(RemoteMessage message){
+    try{
+      int? id = message.data['id'];
+
+      final ids = AppDB.fetchAsList(Keys.setting$dailyTextIds);
+
+      if(!ids.contains(id)) {
+        AppDB.addToList(Keys.setting$dailyTextIds, id ?? 0);
+      }
+    }
+    catch (e){/**/}
   }
 }
