@@ -69,6 +69,7 @@ dependencies:
   figma_squircle: ^0.5.3
   network_info_plus: ^4.1.0
   gradient_borders: ^1.0.0
+  twitter_login: ^4.4.2
 
 
   iris_tools:

@@ -1,3 +1,4 @@
+import 'package:app/services/twitter_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -137,7 +138,7 @@ class WelcomePageState extends StateSuper<WelcomePage> {
               backgroundColor: ColorHelper.lightPlus(AppDecoration.buttonBackgroundColor(), val:0.2),
             ),
             onPressed: onLinkedInClick,
-            child: buildIcon(AppImages.icoLinkedIn),
+            child: buildIcon(AppImages.icoFaceBook),
           ),
         ),
 
@@ -147,7 +148,7 @@ class WelcomePageState extends StateSuper<WelcomePage> {
             style: ElevatedButton.styleFrom(
               backgroundColor: ColorHelper.lightPlus(AppDecoration.buttonBackgroundColor(), val:0.2),
             ),
-            onPressed: onMetaClick,
+            onPressed: onTwitterClick,
             child: buildIcon(AppImages.icoX),
           ),
         ),
@@ -181,7 +182,9 @@ class WelcomePageState extends StateSuper<WelcomePage> {
     hideLoading();*/
   }
 
-  void onMetaClick() async {
+  void onTwitterClick() async {
+    print('aaaass');
+    TwitterService.login();
     //RouteTools.pushPage(context, SignInDemo());
   }
 

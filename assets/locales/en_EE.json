@@ -260,7 +260,7 @@
     "otpCodeIsInvalid": "کد وارد شده صحیح نیست",
     "validation": "اعتبار سنجی",
     "resendOtpCode": "ارسال مجدد کد",
-    "sendVerifyCode": "ثبت کد تایید"
+    "sendVerifyCode": "ثبت کد تایید",
     "enterYourName": "لطفا نام خود را وارد کنید",
     "enterFamily": "لطفا یک نام خانوادگی وارد کنید",
     "enterMobile": "لطفا یک شماره همراه وارد کنید",
