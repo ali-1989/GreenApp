@@ -1,6 +1,14 @@
+import 'package:app/services/login_service.dart';
+import 'package:app/services/session_service.dart';
+import 'package:app/structures/middleWares/requester.dart';
+import 'package:app/system/keys.dart';
+import 'package:app/tools/app/app_sheet.dart';
+import 'package:app/tools/http_tools.dart';
+import 'package:app/tools/route_tools.dart';
 import 'package:flutter/material.dart';
 
 import 'package:iris_tools/api/checker.dart';
+import 'package:iris_tools/api/generator.dart';
 import 'package:iris_tools/api/helpers/focusHelper.dart';
 import 'package:iris_tools/widgets/custom_card.dart';
 
@@ -10,8 +18,6 @@ import 'package:app/tools/app/app_broadcast.dart';
 import 'package:app/tools/app/app_decoration.dart';
 import 'package:app/tools/app/app_images.dart';
 import 'package:app/tools/app/app_messages.dart';
-import 'package:app/tools/route_tools.dart';
-import 'package:app/views/pages/layout_page.dart';
 
 class LoginPage extends StatefulWidget {
   // ignore: prefer_const_constructors_in_immutables
@@ -22,6 +28,7 @@ class LoginPage extends StatefulWidget {
 }
 ///=============================================================================
 class LoginPageState extends StateSuper<LoginPage> {
+  Requester? requester;
   TextEditingController emailCtr = TextEditingController();
   TextEditingController passwordCtr = TextEditingController();
   bool showTextFieldError = false;
@@ -36,6 +43,7 @@ class LoginPageState extends StateSuper<LoginPage> {
   void dispose(){
     emailCtr.dispose();
     passwordCtr.dispose();
+    requester?.dispose();
 
     super.dispose();
   }
@@ -61,27 +69,30 @@ class LoginPageState extends StateSuper<LoginPage> {
           children: [
             SizedBox(height: 40 * hRel),
 
-            Center(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                textDirection: TextDirection.ltr,
-                children: [
-                  Text(AppMessages.signIn.toUpperCase())
-                      .color(Colors.white).fsRRatio(25)
-                      .font(AppDecoration.gladioraBoldFont)
-                  .bold(weight: FontWeight.w900),
+            Hero(
+              tag: 'hero1',
+              child: Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  textDirection: TextDirection.ltr,
+                  children: [
+                    Text(AppMessages.signIn.toUpperCase())
+                        .color(Colors.white).fsRRatio(25)
+                        .font(AppDecoration.gladioraBoldFont)
+                    .bold(weight: FontWeight.w900),
 
-                  const Text('GreenOasis',
-                    style: TextStyle(shadows: [
-                      Shadow(color: Colors.white, offset: Offset.zero, blurRadius: 1),
-                      Shadow(color: Colors.white, offset: Offset.zero, blurRadius: 2),
-                      Shadow(color: Colors.white, offset: Offset.zero, blurRadius: 3),
-                      Shadow(color: Colors.white, offset: Offset(1, 2), blurRadius: 3),
-                    ]),
-                  ).bold()
-                  .fsRRatio(2)
-                      .color(AppDecoration.mainColor)
-                ],
+                    const Text('GreenOasis',
+                      style: TextStyle(shadows: [
+                        Shadow(color: Colors.white, offset: Offset.zero, blurRadius: 1),
+                        Shadow(color: Colors.white, offset: Offset.zero, blurRadius: 2),
+                        Shadow(color: Colors.white, offset: Offset.zero, blurRadius: 3),
+                        Shadow(color: Colors.white, offset: Offset(1, 2), blurRadius: 3),
+                      ]),
+                    ).bold()
+                    .fsRRatio(2)
+                        .color(AppDecoration.mainColor)
+                  ],
+                ),
               ),
             ),
 
@@ -203,6 +214,44 @@ class LoginPageState extends StateSuper<LoginPage> {
     }
 
     FocusHelper.hideKeyboardByService();
-    RouteTools.pushPage(context, LayoutPage(key: AppBroadcast.layoutPageKey));
+    requestLogin();
+  }
+
+  Future<void> requestLogin() async {
+    final body = <String, dynamic>{};
+    body[Keys.request] = 'login_user_with_email_password';
+    body[Keys.email] = emailCtr.text.trim();
+    body[Keys.hashPassword] = Generator.generateMd5(passwordCtr.text.trim());
+
+    final events = HttpRequestEvents();
+
+    events.onAnyState = (req) async {
+      await hideLoading();
+    };
+
+    events.onFailState = (req, res) async {
+      bool handled = HttpTools.handler(context, req.getBodyAsJson()?? {});
+
+      if(!handled) {
+        AppSheet.showSheetOk(context, AppMessages.operationFailedTryAgain);
+      }
+    };
+
+    events.onStatusOk = (req, data) async {
+      final mustVerify = data['must_verify'];
+
+      if(mustVerify != null){
+        AppSheet.showSheetOk(context, context.t('emailVerifyIsSentClickOn')!);
+        return;
+      }
+
+      await SessionService.login$newProfileData(data);
+      RouteTools.backToRoot(RouteTools.getTopContext()!);
+      AppBroadcast.reBuildMaterial();
+    };
+
+
+    showLoading();
+    requester = LoginService.requestRegisterUser(body, events);
   }
 }

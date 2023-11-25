@@ -1,4 +1,6 @@
-import 'package:app/services/twitter_service.dart';
+import 'package:app/services/login_service.dart';
+import 'package:app/tools/app/app_broadcast.dart';
+import 'package:app/tools/app/app_snack.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -28,7 +30,7 @@ class WelcomePageState extends StateSuper<WelcomePage> {
   @override
   void initState(){
     super.initState();
-
+    //timeDilation = 5;
     if(kIsWeb){
       GoogleSignService().signInSilently();
     }
@@ -37,8 +39,8 @@ class WelcomePageState extends StateSuper<WelcomePage> {
   @override
   Widget build(BuildContext context) {
 
-    return Material(
-      child: Column(
+    return Scaffold(
+      body: Column(
         children: [
           Column(
             mainAxisSize: MainAxisSize.min,
@@ -91,10 +93,13 @@ class WelcomePageState extends StateSuper<WelcomePage> {
                     /// login button
                     SizedBox(
                       width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: onSignInClick,
-                        child: Text(AppMessages.signIn.capitalizeFirstOfEach)
-                            .bold(weight: FontWeight.w900).fsR(3),
+                      child: Hero(
+                        tag: 'hero1',
+                        child: ElevatedButton(
+                          onPressed: onSignInClick,
+                          child: Text(AppMessages.signIn.capitalizeFirstOfEach)
+                              .bold(weight: FontWeight.w900).fsR(3),
+                        ),
                       ),
                     ),
 
@@ -138,7 +143,7 @@ class WelcomePageState extends StateSuper<WelcomePage> {
               backgroundColor: ColorHelper.lightPlus(AppDecoration.buttonBackgroundColor(), val:0.2),
             ),
             onPressed: onLinkedInClick,
-            child: buildIcon(AppImages.icoFaceBook),
+            child: buildIcon(AppImages.icoLinkedIn),
           ),
         ),
 
@@ -160,14 +165,25 @@ class WelcomePageState extends StateSuper<WelcomePage> {
     return Image.asset(assets, width: 20*iconR, height: 20*iconR, fit: BoxFit.fill);
   }
 
-  void onFaceBookClick() {
-  }
-
   Future<void> onGoogleClick() async {
     showLoading();
     final res = await GoogleSignService().signIn();
-    hideLoading();
-    final x = await GoogleSignService().getCredentialInfo();
+
+    if(res.$1 != null) {
+      final reLaunch = await LoginService.loginWithAuthEmail(email: res.$1!.email);
+      await hideLoading();
+
+      if(reLaunch){
+        RouteTools.backToRoot(RouteTools.getTopContext()!);
+        AppBroadcast.reBuildMaterial();
+      }
+
+      await GoogleSignService().getCredentialInfo();
+    }
+    else {
+      await hideLoading();
+      AppSnack.showError(context, AppMessages.errorOccurTryAgain);
+    }
   }
 
   void onLinkedInClick() async {
@@ -182,10 +198,11 @@ class WelcomePageState extends StateSuper<WelcomePage> {
     hideLoading();*/
   }
 
+  void onFaceBookClick() {
+  }
+
   void onTwitterClick() async {
-    print('aaaass');
-    TwitterService.login();
-    //RouteTools.pushPage(context, SignInDemo());
+    //TwitterService.login();
   }
 
   void onSignUpClick() {

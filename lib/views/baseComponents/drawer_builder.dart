@@ -236,14 +236,16 @@ class DrawerMenuBuilder {
   }
 
   static void onLogoffCall(){
+    final uId = SessionService.getLastLoginUser()!.userId;
+
     if(SessionService.isGuestCurrent()){
-      LoginService.forceLogoff(SessionService.getLastLoginUser()!.userId);
+      LoginService.forceLogoff(userId: uId);
       return;
     }
 
     void yesFn(_){
       //RouteTools.popTopView();
-      LoginService.forceLogoff(SessionService.getLastLoginUser()!.userId);
+      LoginService.forceLogoff(userId: uId);
     }
 
     AppDialogIris.instance.showYesNoDialog(

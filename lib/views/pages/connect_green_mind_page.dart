@@ -189,8 +189,6 @@ class _ConnectGreenMindPageState extends StateSuper<ConnectGreenMindPage> {
   }
 
   void requestLinkGreenMind(Map gm) async {
-    print('=========== requestLinkGreenMind');
-
     requester.httpRequestEvents.onNetworkError = (req) async {
       AppSheet.showSheetYesNo(context,
           Text(AppMessages.errorCommunicatingServer),

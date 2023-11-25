@@ -27,9 +27,7 @@ class GithubSignService {
 
   Future<(UserCredential?, Exception?)> signIn() async {
     try {
-      print('xxxxxxxxxxx 1');
       final cf = CancelableFuture.timeout(FirebaseAuth.instance.signInWithProvider(signInProvider), const Duration(seconds: 120));
-      print('xxxxxxxxxxx 2');
 
       _credentialUser = await cf.future;
 

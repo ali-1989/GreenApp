@@ -42,7 +42,7 @@ class Requester {
     _bodyJs = js;
 
     if(js != null) {
-      DeviceInfoTools.attachDeviceInfo(_bodyJs!);
+      DeviceInfoTools.attachDeviceAndTokenInfo(_bodyJs!);
     }
   }
 

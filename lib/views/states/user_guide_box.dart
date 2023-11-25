@@ -21,8 +21,7 @@ class UserGuideBox extends StatefulWidget {
   }
 
 }
-
-
+///=============================================================================
 class UserGuideBoxState extends State<UserGuideBox> with TickerProviderStateMixin {
   late AnimationController controller;
   late Animation<double> animation;
@@ -76,6 +75,7 @@ class UserGuideBoxState extends State<UserGuideBox> with TickerProviderStateMixi
         return CustomCard(
           color: AppDecoration.buttonBackgroundColor().withAlpha(230),
           border: GradientBoxBorder(
+            width: 2,
               gradient: LinearGradient(
                   colors: colors,
                 begin: Alignment.topRight,

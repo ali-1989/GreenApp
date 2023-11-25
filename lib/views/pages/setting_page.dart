@@ -1,3 +1,5 @@
+import 'package:app/services/login_service.dart';
+import 'package:app/services/session_service.dart';
 import 'package:flutter/material.dart';
 
 import 'package:app/structures/abstract/state_super.dart';
@@ -30,8 +32,17 @@ class SettingsPageState extends StateSuper<SettingsPage> {
   }
 
   Widget buildBody() {
-    return Center(
-      child: Text('Soon...').bold().fsR(10),
+    return Column(
+      children: [
+        ElevatedButton(
+            onPressed: onLogoutClick,
+            child: Text(context.t('logout')!),
+        )
+      ],
     );
+  }
+
+  void onLogoutClick(){
+    LoginService.forceLogoff();
   }
 }

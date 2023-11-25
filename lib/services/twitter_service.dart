@@ -10,12 +10,7 @@ class TwitterService {
         apiSecretKey: 'uUfeiYt6fGpz7J700b4tM8qLV24lSQ5is72njhejyiqvXHAvDe',
         redirectURI: 'https://green-oasis-2023.firebaseapp.com/__/auth/handler',
     );
-    print('aaaass 2');
 
     final loginRes = await loginObj.login();
-    print('aaaass 3');
-
-    print(loginRes.user?.name);
-    print(loginRes.status);
   }
 }

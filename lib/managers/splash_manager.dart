@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app/services/websocket_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -101,10 +102,9 @@ class SplashManager {
       WakeupService.init();
       NativeCallService.init();
       NativeCallService.assistanceBridge?.invokeMethod('setAppIsRun');
-      //WebsocketService.prepareWebSocket(SettingsManager.localSettings.wsAddress);
+      WebsocketService.prepareWebSocket(SettingsManager.localSettings.wsAddress);
       //LoginService.init();
       //DownloadUploadService.init();
-      SettingsManager.requestGlobalSettings();
       await FireBaseService.start();
 
       /*if (System.isWeb()) {

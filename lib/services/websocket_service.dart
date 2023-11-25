@@ -41,7 +41,7 @@ class WebsocketService {
 		//await PublicAccess.logger.logToAll('@@@@@@@@@ ws: isConnected:$isConnected');//todo.
 
 		try {
-				_ws?.close(1000); //status.normalClosure
+				_ws?.close(1000); //normal Close
 		}
 		catch(e){/**/}
 
@@ -65,8 +65,6 @@ class WebsocketService {
 			});
 
 			_ws!.addErrorListener((e) {
-				print('@@@@@@@ eee $e');
-
 				_onDisConnected();
 			});
 
@@ -104,7 +102,6 @@ class WebsocketService {
 	}
 	///-------------- on disConnect ----------------------------------------------
 	static void _onDisConnected() async {
-		print('@@@@@@@ onDisConnected');
 		_isConnected = false;
 		//await PublicAccess.logger.logToAll('@@@@@@@@@ ws: is ok:$isConnected');//todo.
 		periodicHeartTimer?.cancel();
@@ -115,8 +112,6 @@ class WebsocketService {
 	}
 	///-------------- on new Connect ---------------------------------------------
 	static void _onConnected() async {
-		print('@@@@@@@ onConnect');
-
 		_isConnected = true;
 		//await PublicAccess.logger.logToAll('@@@@@@@@@ ws: is ok:$isConnected');//todo.
 		reconnectInterval = const Duration(seconds: 6);
@@ -146,7 +141,7 @@ class WebsocketService {
 
 
 
-	///-------------- onNew Ws Message -----------------------------------------------------------
+	///-------------- onNew Ws Message -------------------------------------------
 	static void _handlerNewMessage(dynamic dataAsJs) async{
 		try {
 			final receiveData = dataAsJs.toString();
@@ -172,7 +167,7 @@ class WebsocketService {
 						break;
 					case HttpCodes.com_forceLogOff:
 						// ignore: unawaited_futures
-						LoginService.forceLogoff(userId);
+						LoginService.forceLogoff(userId: userId);
 						break;
 					case HttpCodes.com_forceLogOffAll:
 						// ignore: unawaited_futures

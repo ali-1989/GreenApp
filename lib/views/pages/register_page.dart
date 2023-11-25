@@ -1,3 +1,4 @@
+import 'package:app/services/login_service.dart';
 import 'package:flutter/material.dart';
 
 import 'package:iris_tools/api/checker.dart';
@@ -33,7 +34,7 @@ class RegisterPageState extends StateSuper<RegisterPage> {
   TextEditingController passwordCtr = TextEditingController();
   TextEditingController rePasswordCtr = TextEditingController();
   bool showErrors = false;
-  Requester requester = Requester();
+  Requester? requester;
 
   @override
   void initState() {
@@ -48,7 +49,7 @@ class RegisterPageState extends StateSuper<RegisterPage> {
     passwordCtr.dispose();
     rePasswordCtr.dispose();
 
-    requester.dispose();
+    requester?.dispose();
 
     super.dispose();
   }
@@ -332,18 +333,19 @@ class RegisterPageState extends StateSuper<RegisterPage> {
   void requestRegister(){
     showLoading();
 
-    final js = <String, dynamic>{};
-    js[Keys.request] = 'register_with_email';
-    js['name'] = nameCtr.text.trim();
-    js['family'] = familyCtr.text.trim();
-    js['email'] = emailCtr.text.trim();
-    js['password'] = Generator.generateMd5(passwordCtr.text.trim());
+    final body = <String, dynamic>{};
+    body[Keys.request] = 'register_user_with_email_password';
+    body['name'] = nameCtr.text.trim();
+    body['family'] = familyCtr.text.trim();
+    body['email'] = emailCtr.text.trim();
+    body['password'] = Generator.generateMd5(passwordCtr.text.trim());
 
-    requester.httpRequestEvents.onAnyState = (req) async {
+    final event = HttpRequestEvents();
+    event.onAnyState = (req) async {
       await hideLoading();
     };
 
-    requester.httpRequestEvents.onFailState = (req, res) async {
+    event.onFailState = (req, res) async {
       bool handled = HttpTools.handler(context, req.getBodyAsJson()?? {});
 
       if(!handled) {
@@ -351,7 +353,7 @@ class RegisterPageState extends StateSuper<RegisterPage> {
       }
     };
 
-    requester.httpRequestEvents.onStatusOk = (req, data) async {
+    event.onStatusOk = (req, data) async {
       AppSheet.showSheetOneAction(
           context,
           AppMessages.emailVerifyIsSentClickOn,
@@ -361,8 +363,6 @@ class RegisterPageState extends StateSuper<RegisterPage> {
       );
     };
 
-    requester.bodyJson = js;
-    requester.prepareUrl();
-    requester.request();
+    requester = LoginService.requestRegisterUser(body, event);
   }
 }

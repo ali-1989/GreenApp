@@ -178,6 +178,7 @@
   "pleaseWait" : "wait a moment",
   "errorOccur" : "error occurred",
   "errorOccurTryAgain" : "error occurred try again",
+  "selectYourGender": "لطفا جنسیت خود را انتخاب کنید",
   "selectYourLanguage" : "select your language",
   "wantToDeleteThisItem": "want to delete this item?",
   "wantToLeave": "do you want to leave?",
@@ -261,19 +262,10 @@
     "emailIsNotCorrect": "The email entered is not valid",
     "registerAgain": "مهلت تکمیل ثبت نام به پایان رسیده است. ثبت نام باید تکرار شود.",
     "thanksRegisterDescription" : "Your registration is done. You can login with your profile",
-    "validationDescription": "لطفا کد ارسال شده به شماره ی #1 را وارد کنید",
-    "selectYourGender": "لطفا جنسیت خود را انتخاب کنید"
+    "incorrectVerifyCode": "کد وارد شده نادرست است",
+    "thisUserNameExist": "این نام کاربری وجود دارد، لطفا یک نام دیگر وارد کنید",
+    "validationDescription": "لطفا کد ارسال شده به شماره ی #1 را وارد کنید"
   },
-
-  "roleSection" : {
-    "roles" : "نقش ها",
-    "rights" : "امتیازات",
-    "editRights" : "ویرایش امتیازات",
-    "editRoles" : "ویرایش نقشها",
-    "settingRights" : "تنظیم حقوق",
-    "createNewRole" : "ایجاد نقش جدید"
-  },
-
 
   "calendarOptions": {
     "gregorian": "gregorian",
@@ -325,5 +317,6 @@
   "pleaseConnectToWifi" : "please connect to a Wi-Fi network and get the router information by clicking the `Wi-Fi information` button",
   "IHaveAlreadySetupGreenMind" : "I have already setup GreenMind",
   "pleaseWaitForGreenMind" : "Please wait for GreenMind to connect to the server.",
+  "": "",
   "": ""
 }

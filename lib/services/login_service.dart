@@ -1,7 +1,6 @@
 import 'dart:async';
-import 'dart:io';
-import 'dart:math';
 
+import 'package:app/structures/middleWares/requester.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:dio/dio.dart';
@@ -18,14 +17,12 @@ import 'package:app/managers/settings_manager.dart';
 import 'package:app/services/google_sign_service.dart';
 import 'package:app/services/session_service.dart';
 import 'package:app/structures/enums/app_events.dart';
-import 'package:app/structures/models/country_model.dart';
 import 'package:app/structures/models/user_model.dart';
 import 'package:app/system/keys.dart';
 import 'package:app/tools/app/app_broadcast.dart';
 import 'package:app/tools/app/app_http_dio.dart';
 import 'package:app/tools/app/app_messages.dart';
 import 'package:app/tools/app/app_sheet.dart';
-import 'package:app/tools/app/app_toast.dart';
 import 'package:app/tools/device_info_tools.dart';
 import 'package:app/tools/route_tools.dart';
 
@@ -68,7 +65,7 @@ class LoginService {
       reqJs[Keys.requesterId] = user.userId;
       reqJs[Keys.forUserId] = user.userId;
 
-      DeviceInfoTools.attachDeviceInfo(reqJs, curUser: user);
+      DeviceInfoTools.attachDeviceAndTokenInfo(reqJs, curUser: user);
 
       final info = HttpItem();
       info.fullUrl = '${SettingsManager.localSettings.httpAddress}/graph-v1';
@@ -80,37 +77,39 @@ class LoginService {
     }
   }
 
-  static Future forceLogoff(String userId) async {
+  static Future<void> forceLogoff({String? userId}) async {
+    var user = SessionService.getExistLoginUserById(userId?? '');
     final lastUser = SessionService.getLastLoginUser();
 
-    if(lastUser != null) {
-      final isCurrent = lastUser.userId == userId;
+    if(user == null && lastUser == null) {
+      return;
+    }
 
-      if(lastUser.email != null){
-        final google = GoogleSignService();
-        await google.signOut();
+    user ??= lastUser;
 
-        if(await google.isSignIn()){
-          AppToast.showToast(RouteTools.getTopContext()!, AppMessages.inEmailSignOutError);
-          return;
-        }
+    final isCurrent = lastUser != null && lastUser.userId == user!.userId;
 
-        await SessionService.logoff(userId);
-      }
-      else {
-        await SessionService.logoff(userId);
-      }
+    if(user!.email != null){
+      /*final google = GoogleSignService();
+      await google.signOut();
 
-      UpdaterController.forId(AppBroadcast.drawerMenuRefresherId)?.update();
-      AppBroadcast.layoutPageKey.currentState?.scaffoldState.currentState?.closeDrawer();
+      if(await google.isSignIn()){
+        AppToast.showToast(RouteTools.getTopContext()!, AppMessages.inEmailSignOutError);
+        return;
+      }*/
+    }
 
-      if (isCurrent && RouteTools.materialContext != null) {
-        RouteTools.backToRoot(RouteTools.getTopContext()!);
+    await SessionService.logoff(user.userId);
 
-        Future.delayed(const Duration(milliseconds: 400), (){
-          AppBroadcast.reBuildMaterial();
-        });
-      }
+    UpdaterController.forId(AppBroadcast.drawerMenuRefresherId)?.update();
+    AppBroadcast.layoutPageKey.currentState?.scaffoldState.currentState?.closeDrawer();
+
+    if (isCurrent && RouteTools.materialContext != null) {
+      RouteTools.backToRoot(RouteTools.getTopContext()!);
+
+      Future.delayed(const Duration(milliseconds: 300), (){
+        AppBroadcast.reBuildMaterial();
+      });
     }
   }
 
@@ -141,80 +140,7 @@ class LoginService {
     }
   }
 
-  static Future<Map?> requestSendOtp({required CountryModel countryModel, required String phoneNumber}) async {
-    final http = HttpItem();
-    final result = Completer<Map?>();
-
-    final js = {};
-    js[Keys.request] = 'send_otp';
-    js[Keys.mobileNumber] = phoneNumber;
-    js.addAll(countryModel.toMap());
-    DeviceInfoTools.attachDeviceInfo(js);
-
-    http.fullUrl = ApiManager.serverApi;
-    http.method = 'POST';
-    http.setBodyJson(js);
-
-    final request = AppHttpDio.send(http);
-
-    var f = request.response.catchError((e){
-      result.complete(null);
-
-      return null;
-    });
-
-    f = f.then((Response? response){
-      if(response == null || !request.isOk) {
-        result.complete(null);
-        return;
-      }
-
-      result.complete(request.getBodyAsJson());
-      return null;
-    });
-
-    return result.future;
-  }
-
-  static Future<TwoStateReturn<Map, Exception>> requestVerifyOtp({required CountryModel countryModel, required String phoneNumber, required String code}) async {
-    final http = HttpItem();
-    final result = Completer<TwoStateReturn<Map, Exception>>();
-
-    final js = {};
-    js[Keys.request] = 'verify_otp';
-    js[Keys.mobileNumber] = phoneNumber;
-    js['code'] = code;
-    js.addAll(countryModel.toMap());
-    js.addAll(DeviceInfoTools.mapDeviceInfo());
-    DeviceInfoTools.attachDeviceInfo(js);
-
-    http.fullUrl = ApiManager.serverApi;
-    http.method = 'POST';
-    http.setBodyJson(js);
-
-    final request = AppHttpDio.send(http);
-
-    var f = request.response.catchError((e){
-      result.complete(TwoStateReturn(r2: e));
-
-      return null;
-    });
-
-    f = f.then((Response? response){
-      if(response == null || !request.isOk) {
-        result.complete(TwoStateReturn(r2: Exception()));
-        return;
-      }
-
-      final resJs = request.getBodyAsJson()!;
-      result.complete(TwoStateReturn(r1: resJs));
-      return null;
-    });
-
-    return result.future;
-  }
-
-  static Future<TwoStateReturn<Map, Exception>> requestVerifyGmail({required String email}) async {
+  static Future<TwoStateReturn<Map, Exception>> requestVerifyAuthEmail({required String email}) async {
     final http = HttpItem();
     final result = Completer<TwoStateReturn<Map, Exception>>();
 
@@ -222,7 +148,7 @@ class LoginService {
     js[Keys.request] = 'verify_email';
     js['email'] = email;
     js.addAll(DeviceInfoTools.mapDeviceInfo());
-    DeviceInfoTools.attachDeviceInfo(js);
+    DeviceInfoTools.attachDeviceAndTokenInfo(js);
 
     http.fullUrl = ApiManager.serverApi;
     http.method = 'POST';
@@ -254,6 +180,54 @@ class LoginService {
     return result.future;
   }
 
+  static Future<bool> loginWithAuthEmail({required String email}) async {
+    final http = HttpItem();
+    final result = Completer<bool>();
+
+    final js = {};
+    js[Keys.request] = 'login_with_auth_email';
+    js['email'] = email;
+    DeviceInfoTools.attachDeviceAndTokenInfo(js);
+
+    http.fullUrl = ApiManager.serverApi;
+    http.method = 'POST';
+    http.setBodyJson(js);
+
+    final request = AppHttpDio.send(http);
+
+    var f = request.response.catchError((e){
+      result.complete(false);
+
+      return null;
+    });
+
+    f = f.then((Response? response) async {
+      if(response == null || !request.isOk) {
+        if(!result.isCompleted){
+          result.complete(false);
+        }
+
+        return;
+      }
+
+      final status = request.getBodyAsJson()![Keys.status];
+
+      if(status == Keys.error){
+        if(!result.isCompleted){
+          result.complete(false);
+        }
+        return;
+      }
+      final resJs = request.getBodyAsJson()!;
+      await SessionService.login$newProfileData(resJs);
+
+      result.complete(true);
+      return null;
+    });
+
+    return result.future;
+  }
+
   static Future<(EmailVerifyStatus, String?)> requestCheckEmailAndSendVerify({required String email, required String password}) async {
     final Completer<(EmailVerifyStatus, String?)> res = Completer();
     final http = HttpItem();
@@ -263,7 +237,7 @@ class LoginService {
     js['email'] = email;
     js['hash_password'] = Generator.generateMd5(password);
     js.addAll(DeviceInfoTools.mapDeviceInfo());
-    DeviceInfoTools.attachDeviceInfo(js);
+    DeviceInfoTools.attachDeviceAndTokenInfo(js);
 
     http.fullUrl = ApiManager.serverApi;
     http.method = 'POST';
@@ -321,7 +295,7 @@ class LoginService {
     js['email'] = email;
     js['hash_password'] = Generator.generateMd5(password);
     js.addAll(DeviceInfoTools.mapDeviceInfo());
-    DeviceInfoTools.attachDeviceInfo(js);
+    DeviceInfoTools.attachDeviceAndTokenInfo(js);
 
     http.fullUrl = ApiManager.serverApi;
     http.method = 'POST';
@@ -389,7 +363,7 @@ class LoginService {
     js[Keys.request] = 'is_email_verify';
     js['code'] = code;
     js.addAll(DeviceInfoTools.mapDeviceInfo());
-    DeviceInfoTools.attachDeviceInfo(js);
+    DeviceInfoTools.attachDeviceAndTokenInfo(js);
 
     http.fullUrl = ApiManager.serverApi;
     http.method = 'POST';
@@ -461,108 +435,13 @@ class LoginService {
     }
   }
 
-  static Future<String> findCountryWithIP() async {
-    var res = await findCountryWithIP1();
-    res ??= await findCountryWithIP2();
-    res ??= await findCountryWithIP3();
-    res ??= await findCountryWithIP4();
+  static Requester requestRegisterUser(Map<String, dynamic> body, HttpRequestEvents eventHandler){
+    final request = Requester();
+    request.bodyJson = body;
+    request.httpRequestEvents = eventHandler;
+    request.prepareUrl();
+    request.request();
 
-    return res?? 'US';
-  }
-
-  static Future<String?> findCountryWithIP1() async {
-    final url = 'https://api.country.is';
-
-    HttpItem http = HttpItem(fullUrl: url);
-    http.method = 'GET';
-
-    final res = AppHttpDio.send(http);
-
-    return res.response.then((value) async {
-          if(res.isOk){
-            return res.getBodyAsJson()!['country'] as String;
-          }
-
-          return null;
-    })
-    .onError((error, stackTrace) => null);
-  }
-
-  static Future<String?> findCountryWithIP2() async {
-    final url = 'http://ip-api.com/json';
-
-    HttpItem http = HttpItem(fullUrl: url);
-    http.method = 'GET';
-
-    final res = AppHttpDio.send(http);
-
-    return res.response.then((value) {
-      if(res.isOk){
-        return res.getBodyAsJson()!['countryCode'] as String;
-      }
-
-      return null;
-    })
-        .onError((error, stackTrace) => null);
-  }
-
-  static Future<String?> findCountryWithIP3() async {
-    final url = 'https://api.db-ip.com/v2/free/self';
-
-    HttpItem http = HttpItem(fullUrl: url);
-    http.method = 'GET';
-
-    final res = AppHttpDio.send(http);
-
-    return res.response.then((value) {
-      if(res.isOk){
-        return res.getBodyAsJson()!['countryCode'] as String;
-      }
-
-      return null;
-    })
-        .onError((error, stackTrace) => null);
-  }
-
-  static Future<String?> findCountryWithIP4() async {
-    final url = 'https://hutils.loxal.net/whois';
-
-    HttpItem http = HttpItem(fullUrl: url);
-    http.method = 'GET';
-
-    final res = AppHttpDio.send(http);
-
-    return res.response.then((value) {
-      if(res.isOk){
-        return res.getBodyAsJson()!['countryIso'] as String;
-      }
-
-      return null;
-    })
-        .onError((error, stackTrace) => null);
-  }
-
-  static Future<InternetAddress> retrieveIPAddress() async {
-    int code = Random().nextInt(255);
-    final dgSocket = await RawDatagramSocket.bind(InternetAddress.anyIPv4, 0);
-    dgSocket.readEventsEnabled = true;
-    dgSocket.broadcastEnabled = true;
-
-    Future<InternetAddress> ret = dgSocket.timeout(const Duration(milliseconds: 100), onTimeout: (sink) {
-      sink.close();
-    }).expand<InternetAddress>((event) {
-      if (event == RawSocketEvent.read) {
-        Datagram? dg = dgSocket.receive();
-
-        if (dg != null && dg.data.length == 1 && dg.data[0] == code) {
-          dgSocket.close();
-          return [dg.address];
-        }
-      }
-      return [];
-    }).firstWhere((InternetAddress? a) => a != null);
-
-    dgSocket.send([code], InternetAddress('255.255.255.255'), dgSocket.port);
-    return ret;
+    return request;
   }
 }
