@@ -188,7 +188,7 @@ class AppSheet {
   }
 
   static Future<T?> showSheetNotice<T>(BuildContext context, String msg, {bool isDismissible = true}) {
-    return showSheetOneAction(context, msg, title: AppMessages.notice, isDismissible: isDismissible);
+    return showSheetOneAction(context, msg, title: AppMessages.notice.capitalize, isDismissible: isDismissible);
   }
 
   static Future<T?> showSheetYesNo<T>(

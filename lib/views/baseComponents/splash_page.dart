@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:app/managers/settings_manager.dart';
 import 'package:app/managers/splash_manager.dart';
 import 'package:app/managers/version_manager.dart';
-import 'package:app/services/session_service.dart';
 import 'package:app/structures/abstract/state_super.dart';
 import 'package:app/tools/app/app_broadcast.dart';
 import 'package:app/tools/app/app_locale.dart';
@@ -81,7 +80,6 @@ class SplashPageState extends StateSuper<SplashPage> {
     await SplashManager.appInitial(context);
     SettingsManager.init();
     SplashManager.appLazyInit();
-    await SessionService.fetchLoginUsers();
     await VersionManager.checkVersionOnLaunch();
     connectToServer();
 

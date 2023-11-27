@@ -74,14 +74,14 @@ class HttpCodes {
   static int cCode$NotUpload = 75;
   static int cCode$LoginDataIncorrect = 80;
   //------------ sections -----------------------------------------------------
-  static const sec_command = 'command';
-  static const sec_userData = 'UserData';
+  static const command$section = 'command';
+  static const userData$section = 'UserData';
   //------------ commands -----------------------------------------------------
   static const com_forceLogOff = 'ForceLogOff';
   static const com_forceLogOffAll = 'ForceLogOffAll';
   static const com_talkMeWho = 'TalkMeWho';
   static const com_sendDeviceInfo = 'SendDeviceInfo';
   static const com_messageForUser = 'messageForUser';
-  static const com_dailyText = 'dailyText';
-  static const com_updateProfileSettings = 'UpdateProfileSettings';
+  static const updateProfileSettings$command = 'UpdateProfileSettings';
+  static const newGreenMain$command = 'newGreenMain';
 }

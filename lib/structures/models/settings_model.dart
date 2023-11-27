@@ -9,7 +9,7 @@ class SettingsModel {
   static const defaultHttpAddress = 'http://green.vosatezehn.com:20010';
   static const defaultWsAddress = 'ws://192.168.1.104:20015/ws';
   static const Locale defaultAppLocale = Locale('en', 'US');
-  static const CalendarType defaultCalendarType = CalendarType.solarHijri;
+  static const CalendarType defaultCalendarType = CalendarType.gregorian;
   static final defaultDateFormat = DateFormat.yyyyMmDd.format();
   static int webSocketPeriodicHeartMinutes = 3;
   static int drawerMenuTimeMill = 350;

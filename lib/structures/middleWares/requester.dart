@@ -210,8 +210,8 @@ class HttpRequestEvents {
   Future Function(HttpRequester)? onAnyState;
   Future Function(HttpRequester requester, Response? response)? onFailState;
   Future Function(HttpRequester)? onNetworkError;
-  Future Function(HttpRequester, Map)? manageResponse;
-  Future Function(HttpRequester, Map)? onStatusOk;
+  Future Function(HttpRequester req, Map response)? manageResponse;
+  Future Function(HttpRequester req, Map response)? onStatusOk;
   
   void clear(){
     onAnyState = null;

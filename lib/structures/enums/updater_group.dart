@@ -1,7 +1,8 @@
 import 'package:iris_tools/modules/stateManagers/updater_state.dart';
 
 enum UpdaterGroup implements UpdaterGroupId {
-  grinMindListUpdate(100);
+  greenMindListUpdate(100),
+  greenClientUpdate(101);
 
   final int _number;
 

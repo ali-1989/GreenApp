@@ -1,3 +1,7 @@
+import 'package:app/tools/app/app_decoration.dart';
+import 'package:app/tools/app/app_sheet.dart';
+import 'package:app/views/pages/device_info_page.dart';
+import 'package:app/views/pages/rename_green_mind.dart';
 import 'package:flutter/material.dart';
 
 import 'package:iris_tools/modules/stateManagers/updater_state.dart';
@@ -14,6 +18,8 @@ import 'package:app/tools/app/app_messages.dart';
 import 'package:app/tools/route_tools.dart';
 import 'package:app/views/pages/add_green_mind_page.dart';
 import 'package:app/views/states/user_guide_box.dart';
+import 'package:iris_tools/widgets/icon/circular_icon.dart';
+import 'package:iris_tools/widgets/circle.dart';
 
 class DevicesPage extends StatefulWidget {
   // ignore: prefer_const_constructors_in_immutables
@@ -39,7 +45,7 @@ class DevicesPageState extends StateSuper<DevicesPage> {
   @override
   Widget build(BuildContext context) {
     return UpdaterBuilder(
-      groupIds: const [UpdaterGroup.grinMindListUpdate],
+      groupIds: const [UpdaterGroup.greenMindListUpdate],
       builder: (_, ctr, data) {
         return buildBody();
       }
@@ -63,6 +69,8 @@ class DevicesPageState extends StateSuper<DevicesPage> {
           ),
         ),
 
+        SizedBox(height: 15 * hRel),
+
         Expanded(
           child: Builder(
               builder: (context) {
@@ -78,6 +86,8 @@ class DevicesPageState extends StateSuper<DevicesPage> {
               }
           ),
         ),
+
+        SizedBox(height: 16 * hRel),
       ],
     );
   }
@@ -86,23 +96,45 @@ class DevicesPageState extends StateSuper<DevicesPage> {
     final itm = GreenMindManager.items[index];
 
     return Padding(
+      key: ValueKey(itm.id),
       padding: const EdgeInsets.symmetric(vertical: 5),
-      child: CustomCard(
-        color: Colors.black,
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+      child: Column(
+        children: [
+          CustomCard(
+            color: Colors.black,
+              borderRadius: const BorderRadius.only(
+                topRight: Radius.circular(8),
+                topLeft: Radius.circular(8),
+              ),
+              radius: 0,
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('GreenMind')
-                  .color(Colors.grey),
+                  Circle(
+                    size: 10,
+                    color: itm.getStatusColor(),
+                  ),
+
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: ()=> onGreenMindClick(itm),
+                      behavior: HitTestBehavior.translucent,
+                      child: Center(
+                        child: Text(itm.getCaption(),
+                          maxLines: 1,
+                          textAlign: TextAlign.center,
+
+                        )
+                            .color(Colors.white).fsRRatio(3).bold(),
+                      ),
+                    ),
+                  ),
 
                   IconButton(
-                    padding: EdgeInsets.zero,
-                      visualDensity: VisualDensity(vertical: -4),
-                      constraints: BoxConstraints.tightFor(),
+                      padding: EdgeInsets.zero,
+                      visualDensity: const VisualDensity(vertical: -4),
+                      constraints: const BoxConstraints.tightFor(),
                       iconSize: 20,
                       splashRadius: 14,
                       onPressed: onGreenMindSettingsClick(itm),
@@ -110,44 +142,40 @@ class DevicesPageState extends StateSuper<DevicesPage> {
                   ),
                 ],
               ),
-
-              Row(
-                children: [
-
-                  Flexible(
-                    flex: 3,
-                    fit: FlexFit.tight,
-                    child: Text('ID: ${itm.id}')
-                        .color(Colors.white).fsRRatio(3),
-                  ),
-
-                  Flexible(
-                    flex: 7,
-                    child: Text('SN: ${itm.serialNumber}')
-                        .color(Colors.white).fsRRatio(3),
-                  ),
-                ],
-              ),
-
-              SizedBox(height: 4 * hRel),
-              Row(
-                children: [
-                  Flexible(
-                    flex: 5,
-                    fit: FlexFit.tight,
-                    child: Text('G-Sights: 2')
-                        .color(Colors.white).fsRRatio(3),
-                  ),
-
-                  Flexible(
-                    flex: 5,
-                    child: Text('G-Guides: 1')
-                        .color(Colors.white).fsRRatio(3),
-                  ),
-                ],
-              ),
-            ],
           ),
+
+          CustomCard(
+            color: Colors.grey.shade800,
+            borderRadius: const BorderRadius.only(
+              bottomLeft: Radius.circular(8),
+              bottomRight: Radius.circular(8),
+            ),
+            radius: 0,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 4 * hRel),
+                  Row(
+                    children: [
+                      Flexible(
+                        flex: 5,
+                        fit: FlexFit.tight,
+                        child: Text('G-Sights: ${itm.countOfSights()}')
+                            .color(Colors.white).fsRRatio(2),
+                      ),
+
+                      Flexible(
+                        flex: 5,
+                        child: Text('G-Guides: ${itm.countOfGuids()}')
+                            .color(Colors.white).fsRRatio(2),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+          ),
+        ],
       ),
     );
   }
@@ -169,8 +197,54 @@ class DevicesPageState extends StateSuper<DevicesPage> {
   }
 
   VoidCallback onGreenMindSettingsClick(GreenMindModel greenMind) {
-    return (){
+    List<Widget> widgets = [];
 
+    widgets.add(
+      Padding(
+        padding: const EdgeInsets.only(bottom: 20.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: (){
+                RouteTools.popIfCan(context);
+              },
+              child: const CircularIcon(
+                icon: AppIcons.close,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    
+    widgets.add(
+      GestureDetector(
+        onTap: (){
+          RouteTools.popIfCan(context);
+          RouteTools.pushPage(context, RenameGreenMind(greenMind: greenMind));
+        },
+        child: Row(
+          children: [
+            const Icon(AppIcons.pencil, color: AppDecoration.secondColor,),
+            const SizedBox(width: 10),
+            Text(AppMessages.transCap('rename')).bold(),
+          ],
+        ),
+      )
+    );
+
+    return (){
+      AppSheet.showSheetMenu(
+          context,
+          widgets,
+          'mind-settings',
+      padding: const EdgeInsets.only(left: 20, right: 20, bottom: 30, top: 8),
+      );
     };
+  }
+
+  void onGreenMindClick(GreenMindModel itm) {
+    RouteTools.pushPage(context, DeviceInfoPage(greenMind: itm));
   }
 }

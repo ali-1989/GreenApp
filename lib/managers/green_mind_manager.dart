@@ -1,6 +1,11 @@
 import 'dart:async';
 
+import 'package:app/services/session_service.dart';
+import 'package:app/structures/enums/app_events.dart';
+import 'package:app/structures/middleWares/requester.dart';
+import 'package:app/system/extensions.dart';
 import 'package:iris_db/iris_db.dart';
+import 'package:iris_notifier/iris_notifier.dart';
 import 'package:iris_tools/modules/stateManagers/updater_state.dart';
 
 import 'package:app/structures/enums/updater_group.dart';
@@ -13,6 +18,7 @@ class GreenMindManager {
 
 	static final List<GreenMindModel> _itemList = [];
 	static bool _isInit = false;
+	static Timer? _refreshTimer;
 
 	static List<GreenMindModel> get items => _itemList;
 	static Future init() async {
@@ -20,8 +26,14 @@ class GreenMindManager {
 			return true;
 		}
 
-		fetchAll();
 		_isInit = true;
+		EventNotifierService.addListener(AppEvents.networkConnected, _netListener);
+		fetchAll();
+		requestGreenMinds();
+	}
+
+	static void _netListener({data}){
+		requestGreenMinds();
 	}
 
 	static void fetchAll() async {
@@ -48,8 +60,8 @@ class GreenMindManager {
 		return res > -1;
 	}
 
-	static bool exist(GreenMindModel greenMind){
-		return _itemList.indexWhere((element) => element.id == greenMind.id) != -1;
+	static GreenMindModel? findById(int id){
+		return _itemList.firstWhereSafe((element) => element.id == id);
 	}
 
 	static void addGreenMind(dynamic greenMind, {bool notify = true}){
@@ -57,11 +69,15 @@ class GreenMindManager {
 			greenMind = GreenMindModel.fromMap(greenMind);
 		}
 
-		if(exist(greenMind)){
-			return;
+		final old = findById(greenMind.id);
+
+		if(old != null){
+			old.matchBy(greenMind);
+		}
+		else {
+			_itemList.add(greenMind);
 		}
 
-		_itemList.add(greenMind);
 		sink(greenMind);
 
 		if(notify) {
@@ -78,6 +94,86 @@ class GreenMindManager {
 	}
 
 	static void notifyUpdate(){
-		UpdaterController.updateByGroup(UpdaterGroup.grinMindListUpdate);
+		UpdaterController.updateByGroup(UpdaterGroup.greenMindListUpdate);
+	}
+
+	static void newGreenMindFromWs(dynamic data){
+		if(data is Map<String, dynamic>) {
+			addGreenMind(GreenMindModel.fromMap(data));
+		}
+
+		if(data is List) {
+			final gList = data.map((e) => e as Map<String, dynamic>).toList();
+			addGreenMinds(gList);
+		}
+	}
+
+	static Requester requestGreenMinds(){
+		final requester = Requester();
+
+		requester.httpRequestEvents.onStatusOk = (res, response) async {
+			final data = response[Keys.data];
+
+			if(data is List){
+				final corList = data.map<Map>((e) => e as Map).toList();
+				addGreenMinds(corList);
+			}
+		};
+
+		final js = <String, dynamic>{};
+		js[Keys.request] = 'get_green_minds';
+		js[Keys.requesterId] = SessionService.getLastLoginUserId();
+		js[Keys.userId] = SessionService.getLastLoginUserId();
+
+		requester.bodyJson = js;
+		requester.prepareUrl();
+		requester.request();
+
+		return requester;
+	}
+
+	static Future<bool> requestReNameGreenMind(GreenMindModel greenMind, String caption){
+		final requester = Requester();
+		final Completer<bool> ret = Completer();
+
+		requester.httpRequestEvents.onStatusOk = (res, response) async {
+			greenMind.caption = caption;
+			sink(greenMind);
+			ret.complete(true);
+		};
+
+		requester.httpRequestEvents.onFailState = (res, response) async {
+			ret.complete(false);
+		};
+
+		final js = <String, dynamic>{};
+		js[Keys.request] = 'rename_green_mind';
+		js[Keys.requesterId] = SessionService.getLastLoginUserId();
+		js['caption'] = caption;
+		js['mind_id'] = greenMind.id;
+
+		requester.bodyJson = js;
+		requester.prepareUrl();
+		requester.request();
+
+		return ret.future;
+	}
+
+  static void startRefreshGreenMindTimer() {
+		if(_refreshTimer == null || !_refreshTimer!.isActive){
+			_refreshTimer = Timer.periodic(const Duration(seconds: 29), _refreshGreenMindFn);
+			requestGreenMinds();
+		}
+	}
+
+	static void stopRefreshGreenMindTimer() {
+		if(_refreshTimer != null && _refreshTimer!.isActive){
+			_refreshTimer?.cancel();
+			_refreshTimer = null;
+		}
+	}
+
+	static void _refreshGreenMindFn(Timer _){
+		requestGreenMinds();
 	}
 }

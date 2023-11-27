@@ -1,9 +1,12 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:app/managers/green_mind_manager.dart';
+import 'package:app/structures/enums/app_events.dart';
+import 'package:app/tools/log_tools.dart';
 import 'package:flutter/material.dart';
+import 'package:iris_notifier/iris_notifier.dart';
 
-import 'package:iris_tools/api/checker.dart';
 import 'package:iris_tools/api/helpers/jsonHelper.dart';
 import 'package:iris_websocket/iris_websocket.dart';
 
@@ -27,6 +30,7 @@ class WebsocketService {
 
 	static GetSocket? _ws;
 	static String? _uri;
+	static bool _isInit = false;
 	static bool _isConnected = false;
 	static bool canReconnectState = true;
 	static Duration reconnectInterval = const Duration(seconds: 6);
@@ -35,17 +39,32 @@ class WebsocketService {
 	static String? get address => _uri;
 	static bool get isConnected => _isConnected;
 
-	static Future<void> prepareWebSocket(String uri) async{
-		_uri = uri;
-		_isConnected = false;
-		//await PublicAccess.logger.logToAll('@@@@@@@@@ ws: isConnected:$isConnected');//todo.
+	static Future<void> startWebSocket(String uri) async {
+		if(!_isInit){
+			EventNotifierService.addListener(AppEvents.networkConnected, _netListener);
+			_isInit = true;
+		}
 
+		_uri = uri;
+		_close();
+		connect();
+	}
+
+	static void _netListener({data}) {
+		if(isConnected) {
+			return;
+		}
+
+		_close();
+		connect();
+	}
+
+	static void _close() {
 		try {
-				_ws?.close(1000); //normal Close
+			_isConnected = false;
+			_ws?.close(1000);
 		}
 		catch(e){/**/}
-
-		connect();
 	}
 
 	static void connect() async {
@@ -55,18 +74,11 @@ class WebsocketService {
 
 		try {
 			_ws = GetSocket(_uri!);
-			//(_ws as BaseWebSocket).allowSelfSigned = false;
+			//(_ws as BaseWebSocket).allowSelfSigned = true;
 			_ws!.addOpenListener(_onConnected);
-			/// onData
 			_ws!.addMessageListener(_handlerNewMessage);
-
-			_ws!.addCloseListener((c) {
-				_onDisConnected();
-			});
-
-			_ws!.addErrorListener((e) {
-				_onDisConnected();
-			});
+			_ws!.addCloseListener((c) => _onDisConnected());
+			_ws!.addErrorListener((e) => _onDisConnected());
 
 			_ws!.connect();
 		}
@@ -76,55 +88,56 @@ class WebsocketService {
 	}
 
 	static void _reconnect([Duration? delay]){
-		if(canReconnectState) {
-			reconnectTimer?.cancel();
-
-			reconnectTimer = Timer(delay?? reconnectInterval, () {
-				if(AppBroadcast.isNetConnected) {
-					connect();
-				}
-			});
-
-			var temp = reconnectInterval.inSeconds;
-			temp = min<int>((temp * 1.3).floor(), 600);
-			reconnectInterval = Duration(seconds: temp);
+		if(!canReconnectState) {
+			return;
 		}
+
+		reconnectTimer?.cancel();
+
+		reconnectTimer = Timer(delay?? reconnectInterval, () {
+			if(AppBroadcast.isNetConnected) {
+				connect();
+			}
+		});
+
+		var temp = reconnectInterval.inSeconds;
+		temp = min<int>((temp * 1.3).floor(), 600);
+		reconnectInterval = Duration(seconds: temp);
 	}
 
 	static void shutdown(){
-		_isConnected = false;
-		_ws?.close();
+		_close();
 		periodicHeartTimer?.cancel();
 	}
 
 	static void sendData(dynamic data){
 		_ws!.send(data);
 	}
-	///-------------- on disConnect ----------------------------------------------
+
 	static void _onDisConnected() async {
 		_isConnected = false;
-		//await PublicAccess.logger.logToAll('@@@@@@@@@ ws: is ok:$isConnected');//todo.
 		periodicHeartTimer?.cancel();
-
 		ApplicationSignal.onWsDisConnectedListener();
 
 		_reconnect();
 	}
+
 	///-------------- on new Connect ---------------------------------------------
 	static void _onConnected() async {
 		_isConnected = true;
-		//await PublicAccess.logger.logToAll('@@@@@@@@@ ws: is ok:$isConnected');//todo.
 		reconnectInterval = const Duration(seconds: 6);
 
-		sendData(JsonHelper.mapToJson(ApiManager.getHeartMap()));
+		sendHeartAndUsers();
 		ApplicationSignal.onWsConnectedListener();
 
 		periodicHeartTimer?.cancel();
-		periodicHeartTimer = Timer.periodic(Duration(minutes: SettingsModel.webSocketPeriodicHeartMinutes), (timer) {
+		periodicHeartTimer = Timer.periodic(
+				Duration(minutes: SettingsModel.webSocketPeriodicHeartMinutes), (timer) {
 			sendHeartAndUsers();
 		});
 	}
-	///------------ heart every 3 min ---------------------------------------------------
+
+	///------------ heart every 3 min --------------------------------------------
 	static void sendHeartAndUsers() {
 		final heart = ApiManager.getHeartMap();
 
@@ -134,7 +147,7 @@ class WebsocketService {
 		catch(e){
 			_isConnected = false;
 			periodicHeartTimer?.cancel();
-			_reconnect(const Duration(seconds: 3));
+			_reconnect(const Duration(seconds: 6));
 		}
 	}
 
@@ -142,28 +155,29 @@ class WebsocketService {
 
 
 	///-------------- onNew Ws Message -------------------------------------------
-	static void _handlerNewMessage(dynamic dataAsJs) async{
-		try {
-			final receiveData = dataAsJs.toString();
+	static void _handlerNewMessage(dynamic wsData) async {
+		Map<String, dynamic> js;
 
-			if(!Checker.isJson(receiveData)) {
-				return;
+		try {
+			if(wsData is! Map<String, dynamic>){
+				js = JsonHelper.jsonToMap<String, dynamic>(wsData)!;
+			}
+			else {
+				js = wsData;
 			}
 
-			final js = JsonHelper.jsonToMap<String, dynamic>(receiveData)!;
+
 			/// section: UserData, Command, none
 			final String section = js[Keys.section]?? 'none';
 			final String command = js[Keys.command]?? '';
 			final userId = js[Keys.userId]?? 0;
 			final data = js[Keys.data];
-			//--------------------------------------------------
-			if(section == HttpCodes.sec_command || section == 'none') {
+
+			///---------- process ----------------------------------------
+			if(section == HttpCodes.command$section || section == 'none') {
 				switch (command) {
 					case HttpCodes.com_messageForUser:
 						messageForUser(js);
-						break;
-					case HttpCodes.com_dailyText:
-						dailyText(js);
 						break;
 					case HttpCodes.com_forceLogOff:
 						// ignore: unawaited_futures
@@ -181,18 +195,23 @@ class WebsocketService {
 						break;
 				}
 			}
-			//--------------------------------------------------
-			if(section == HttpCodes.sec_userData){
-				userDataSection(command, data, userId, js);
+
+			if(section == HttpCodes.userData$section){
+				userDataSection(userId, command, data, js);
 			}
 		}
-		catch(e){/**/}
+		catch(e){
+			LogTools.logger.logToAll('== Websocket error: $e');
+		}
 	}
 
-	static void userDataSection(String command, Map<String, dynamic> data, int userId, Map js) async {
-		/// new profile =======================
-		if(command == HttpCodes.com_updateProfileSettings) {
+	static void userDataSection(int userId, String command, dynamic data, Map js) async {
+		if(command == HttpCodes.updateProfileSettings$command) {
 			await SessionService.newProfileData(data);
+		}
+
+		if(command == HttpCodes.newGreenMain$command) {
+			GreenMindManager.newGreenMindFromWs(data);
 		}
 	}
 
@@ -213,20 +232,6 @@ class WebsocketService {
 				_promptDialog(RouteTools.getTopContext()!, message);
 				AppDB.addToList(Keys.setting$userMessageIds, messageId);
 			}
-		}
-	}
-
-	static void dailyText(Map js) async {
-		final data = js[Keys.data];
-		final message = data['message'];
-		final title = data['title'];
-		final messageId = data['id'];
-
-		final ids = AppDB.fetchAsList(Keys.setting$dailyTextIds);
-
-		if(!ids.contains(messageId)) {
-			_promptNotification(title, message);
-			AppDB.addToList(Keys.setting$dailyTextIds, messageId);
 		}
 	}
 

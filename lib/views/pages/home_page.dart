@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:app/managers/green_mind_manager.dart';
 import 'package:app/managers/home_chart_manager.dart';
 import 'package:app/structures/abstract/state_super.dart';
-import 'package:app/structures/middleWares/requester.dart';
 import 'package:app/system/extensions.dart';
 import 'package:app/tools/app/app_broadcast.dart';
 import 'package:app/tools/app/app_images.dart';
@@ -25,18 +24,14 @@ class HomePage extends StatefulWidget {
 }
 ///=============================================================================
 class HomePageState extends StateSuper<HomePage> {
-  Requester requester = Requester();
 
   @override
   void initState(){
     super.initState();
-    request();
   }
 
   @override
   void dispose(){
-    requester.dispose();
-
     super.dispose();
   }
 
@@ -81,19 +76,7 @@ class HomePageState extends StateSuper<HomePage> {
     );
   }
 
-  void request(){
-    requester.httpRequestEvents.onStatusOk = (res, data) async {
-      print(data);//todo.
-      callState();
-    };
 
-    requester.httpItem.method = 'POST';
-    requester.httpItem.fullUrl = 'http://45.61.49.32:20010/test';
-    requester.bodyJson = {};
-    requester.bodyJson!['request'] = 'get_green_minds';
-
-    requester.request();
-  }
 
   Widget? listItemBuilder(BuildContext context, int index) {
   }

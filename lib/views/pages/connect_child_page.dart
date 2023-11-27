@@ -8,6 +8,7 @@ import 'dart:async';
 import 'package:app/managers/green_mind_manager.dart';
 import 'package:app/services/websocket_service.dart';
 import 'package:app/structures/enums/updater_group.dart';
+import 'package:app/structures/models/green_mind_model.dart';
 import 'package:app/tools/app/app_sheet.dart';
 import 'package:app/tools/app/app_toast.dart';
 import 'package:flutter/material.dart';
@@ -30,15 +31,17 @@ import 'package:app/views/states/user_guide_box.dart';
 /// BSSID is the MAC address.
 /// SSID is the technical term for a network name.
 
-class ConnectGreenMindPage extends StatefulWidget {
+class ConnectChildPage extends StatefulWidget {
+  final GreenMindModel greenMind;
+
   // ignore: prefer_const_constructors_in_immutables
-  ConnectGreenMindPage({super.key});
+  ConnectChildPage({super.key, required this.greenMind});
 
   @override
-  State createState() => _ConnectGreenMindPageState();
+  State createState() => _ConnectChildPageState();
 }
 ///=============================================================================
-class _ConnectGreenMindPageState extends StateSuper<ConnectGreenMindPage> {
+class _ConnectChildPageState extends StateSuper<ConnectChildPage> {
   bool mustShowRetryButton = false;
   String retryUpdaterId = 'retryUpdaterId';
   int counter = 60;
@@ -49,7 +52,7 @@ class _ConnectGreenMindPageState extends StateSuper<ConnectGreenMindPage> {
   void initState(){
     super.initState();
 
-    beforeDeviceCount = GreenMindManager.items.length;
+    beforeDeviceCount = widget.greenMind.children.length;
     WebsocketService.connect();
     UpdaterController.addGroupListener([UpdaterGroup.greenMindListUpdate], onNewGreenMind);
     startTimer();
@@ -86,13 +89,13 @@ class _ConnectGreenMindPageState extends StateSuper<ConnectGreenMindPage> {
         children: [
           SizedBox(height: 25* hRel),
 
-          CustomAppBar(title: AppMessages.transCap('findGreenMind')),
+          CustomAppBar(title: AppMessages.transCap('addNewDeviceToMind')),
 
           SizedBox(height: 50* hRel),
           Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40.0),
-              child: UserGuideBox(message: AppMessages.trans('pleaseWaitForGreenMind')),
+              child: UserGuideBox(message: AppMessages.trans('gm254')),
             ),
           ),
 
@@ -183,7 +186,7 @@ class _ConnectGreenMindPageState extends StateSuper<ConnectGreenMindPage> {
   }
 
   void onNewGreenMind(UpdaterGroupId p1) {
-    final newCount = GreenMindManager.items.length;
+    final newCount = widget.greenMind.children.length;
 
     if(newCount <= beforeDeviceCount){
       return;
@@ -193,7 +196,7 @@ class _ConnectGreenMindPageState extends StateSuper<ConnectGreenMindPage> {
 
     AppSheet.showSheetOneAction(
         context,
-        AppMessages.trans('congratulationForNewGreenMind'),
+        AppMessages.trans('congratulationForNewGreenChild'),
       onButton: (){
           RouteTools.popIfCan(context);
       }

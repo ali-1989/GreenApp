@@ -33,6 +33,7 @@ class AppDB {
     await AppDB.db.openTable(AppDB.tbKv);
     await AppDB.db.openTable(AppDB.tbUsers);
     await AppDB.db.openTable(AppDB.tbGreenMind);
+    await AppDB.db.openTable(AppDB.tbGreenClient);
 
     return AppDB.db;
   }
@@ -40,6 +41,7 @@ class AppDB {
   static String tbKv = 'KvTable';
   static String tbUsers = 'Users';
   static String tbGreenMind = 'GreenMind';
+  static String tbGreenClient = 'GreenClient';
 
 
   static Future<bool> firstLaunch() async {

@@ -71,6 +71,10 @@ class SessionService {
 		return _lastLoginUser;
 	}
 
+	static String? getLastLoginUserId(){
+		return getLastLoginUser()?.userId;
+	}
+
 	static void _setLastLoginUser(UserModel? newUser){
 		_lastLoginUser = newUser;
 		SettingsManager.localSettings.lastUserId = newUser?.userId;

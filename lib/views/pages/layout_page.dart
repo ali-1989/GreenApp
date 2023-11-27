@@ -1,3 +1,4 @@
+import 'package:app/managers/green_mind_manager.dart';
 import 'package:flutter/material.dart';
 
 import 'package:awesome_bottom_bar/awesome_bottom_bar.dart';
@@ -132,11 +133,7 @@ class LayoutPageState extends StateSuper<LayoutPage> {
       sizeInside: 55,
       chipStyle: const ChipStyle(background: AppDecoration.mainColor, color: Colors.white, convexBridge: false, notchSmoothness: NotchSmoothness.softEdge),
       indexSelected: selectedPage,
-      onTap: (position) {
-          selectedPage = position;
-          callState();
-          pageController.jumpToPage(selectedPage);
-        },
+      onTap: onChangePage,
       items: [
         TabItem(icon: Image.asset(AppImages.icoBNavigatorSetting, width: icoSize, height: icoSize)),
         TabItem(icon: Image.asset(AppImages.icoBNavigatorDevices, width: icoSize, height: icoSize)),
@@ -153,5 +150,19 @@ class LayoutPageState extends StateSuper<LayoutPage> {
 
     //bottomBarKey = ValueKey(bottomBarKey.value +1);
     setState(() {});
+  }
+
+  onChangePage(int position) {
+    selectedPage = position;
+    callState();
+    pageController.jumpToPage(selectedPage);
+
+    /// for detect disConnected devices and show.
+    if(position == 1){
+      GreenMindManager.startRefreshGreenMindTimer();
+    }
+    else {
+      GreenMindManager.stopRefreshGreenMindTimer();
+    }
   }
 }

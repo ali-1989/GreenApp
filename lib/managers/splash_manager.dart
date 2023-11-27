@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:app/managers/green_client_manager.dart';
+import 'package:app/services/session_service.dart';
 import 'package:app/services/websocket_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -63,9 +65,11 @@ class SplashManager {
         //await precacheImage(AppCache.screenBack!, context);
       }
 
+      await SessionService.fetchLoginUsers();
       await HomeChartManager.init();
       await UserGuidingManager.init();
       await GreenMindManager.init();
+      await GreenClientManager.init();
       SplashManager.isFullInitialOk = true;
     }
     catch (e){
@@ -102,7 +106,7 @@ class SplashManager {
       WakeupService.init();
       NativeCallService.init();
       NativeCallService.assistanceBridge?.invokeMethod('setAppIsRun');
-      WebsocketService.prepareWebSocket(SettingsManager.localSettings.wsAddress);
+      WebsocketService.startWebSocket(SettingsManager.localSettings.wsAddress);
       //LoginService.init();
       //DownloadUploadService.init();
       await FireBaseService.start();

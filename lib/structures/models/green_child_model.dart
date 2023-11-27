@@ -1,78 +1,70 @@
 import 'package:app/structures/enums/green_child_type.dart';
+import 'package:app/system/keys.dart';
 import 'package:app/tools/date_tools.dart';
 import 'package:flutter/material.dart';
 import 'package:iris_tools/dateSection/dateHelper.dart';
 
-import 'package:app/structures/models/green_child_model.dart';
-import 'package:app/system/keys.dart';
 
-class GreenMindModel {
+class GreenChildModel {
   late int id;
-  late String serialNumber;
-  int? firmwareVersion;
+  late int mindId;
   String? caption;
+  late String serialNumber;
+  GreenChildType type = GreenChildType.unKnow;
+  int? firmwareVersion;
+  int? batteryLevel;
   DateTime? productDate;
   late DateTime registerDate;
   DateTime? communicationDate;
-  List<GreenChildModel> children = [];
 
-  GreenMindModel();
+  GreenChildModel();
 
-  GreenMindModel.fromMap(Map map){
+  GreenChildModel.fromMap(Map map){
     id = map[Keys.id];
+    mindId = map['mind_id'];
     serialNumber = map['serial_number'];
     firmwareVersion = map['firmware_version'];
     caption = map['caption'];
+    batteryLevel = map['battery_level'];
+    type = GreenChildType.from(map['type']);
     productDate = DateHelper.timestampToSystem(map['product_date']);
     registerDate = DateHelper.timestampToSystem(map['register_date'])!;
     communicationDate = DateHelper.timestampToSystem(map['communication_date']);
-
-    List? childrenList = map['children'];
-
-    if(childrenList != null && childrenList.isNotEmpty && childrenList.first != null){
-      children = childrenList.map((e) => GreenChildModel.fromMap(e)).toList();
-    }
   }
 
   Map<String, dynamic> toMap(){
     final ret = <String, dynamic>{};
     ret[Keys.id] = id;
+    ret['mind_id'] = mindId;
     ret['serial_number'] = serialNumber;
     ret['firmware_version'] = firmwareVersion;
     ret['caption'] = caption;
+    ret['battery_level'] = batteryLevel;
+    ret['type'] = type.serialize();
     ret['product_date'] = DateHelper.toTimestampNullable(productDate);
     ret['register_date'] = DateHelper.toTimestampNullable(registerDate);
     ret['communication_date'] = DateHelper.toTimestampNullable(communicationDate);
-    ret['children'] = children.map((e) => e.toMap()).toList();
 
     return ret;
   }
 
-  matchBy(GreenMindModel model){
-    caption = model.caption;
-    serialNumber = model.serialNumber;
-    firmwareVersion = model.firmwareVersion;
-    registerDate = model.registerDate;
-    productDate = model.productDate;
-    communicationDate = model.communicationDate;
-
-    children.clear();
-    children.addAll(model.children);
+  String getCaption(){
+    return caption?? serialNumber;
   }
 
-  String getCaption(){
-    if(caption != null){
-      return caption!;
-    }
+  bool isSight() {
+    return type == GreenChildType.sight;
+  }
 
-    return 'SN: $serialNumber';
+  Color typeColor() {
+    return isSight()? Colors.blue : Colors.pinkAccent;
   }
 
   Color getStatusColor() {
     DateTime lastDate = communicationDate?? registerDate;
     lastDate = DateHelper.utcToLocal(lastDate);
 
-    if(DateHelper.isPastOf(lastDate, const Duration(seconds: 31))){
+    if(DateHelper.isPastOf(lastDate, const Duration(hours: 6))){
       return Colors.orange;
     }
 
@@ -89,13 +81,5 @@ class GreenMindModel {
     }
 
     return DateTools.dateAndHmRelative(communicationDate);
-  }
-
-  int countOfGuids(){
-    return children.where((e) => e.type == GreenChildType.guide).length;
-  }
-
-  int countOfSights(){
-    return children.where((e) => e.type == GreenChildType.sight).length;
   }
 }
