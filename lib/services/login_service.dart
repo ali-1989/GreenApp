@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:app/structures/middleWares/requester.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:dio/dio.dart';
@@ -17,6 +16,7 @@ import 'package:app/managers/settings_manager.dart';
 import 'package:app/services/google_sign_service.dart';
 import 'package:app/services/session_service.dart';
 import 'package:app/structures/enums/app_events.dart';
+import 'package:app/structures/middleWares/requester.dart';
 import 'package:app/structures/models/user_model.dart';
 import 'package:app/system/keys.dart';
 import 'package:app/tools/app/app_broadcast.dart';

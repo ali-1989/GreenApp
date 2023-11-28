@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:app/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 
 import 'package:iris_tools/api/system.dart';
 import 'package:iris_tools/plugins/javaBridge.dart';
 
 import 'package:app/main.dart';
+import 'package:app/services/firebase_service.dart';
 import 'package:app/tools/log_tools.dart';
 
 @pragma('vm:entry-point')

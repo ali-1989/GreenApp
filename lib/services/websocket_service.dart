@@ -1,18 +1,17 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:app/managers/green_mind_manager.dart';
-import 'package:app/structures/enums/app_events.dart';
-import 'package:app/tools/log_tools.dart';
 import 'package:flutter/material.dart';
-import 'package:iris_notifier/iris_notifier.dart';
 
+import 'package:iris_notifier/iris_notifier.dart';
 import 'package:iris_tools/api/helpers/jsonHelper.dart';
 import 'package:iris_websocket/iris_websocket.dart';
 
 import 'package:app/managers/api_manager.dart';
+import 'package:app/managers/green_mind_manager.dart';
 import 'package:app/services/login_service.dart';
 import 'package:app/services/session_service.dart';
+import 'package:app/structures/enums/app_events.dart';
 import 'package:app/structures/models/settings_model.dart';
 import 'package:app/system/application_signal.dart';
 import 'package:app/system/keys.dart';
@@ -23,6 +22,7 @@ import 'package:app/tools/app/app_messages.dart';
 import 'package:app/tools/app/app_notification.dart';
 import 'package:app/tools/device_info_tools.dart';
 import 'package:app/tools/http_tools.dart';
+import 'package:app/tools/log_tools.dart';
 import 'package:app/tools/route_tools.dart';
 
 class WebsocketService {

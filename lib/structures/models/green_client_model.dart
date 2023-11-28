@@ -1,6 +1,6 @@
-import 'package:app/structures/enums/client_type.dart';
 import 'package:iris_tools/dateSection/dateHelper.dart';
 
+import 'package:app/structures/enums/client_type.dart';
 import 'package:app/system/keys.dart';
 
 class GreenClientModel {
