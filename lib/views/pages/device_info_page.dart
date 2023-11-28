@@ -1,6 +1,15 @@
 // one file so that all of the examples are visible on https://pub.dev/packages/esptouch_flutter/example
 
 
+import 'package:flutter/material.dart';
+
+import 'package:iris_tools/modules/stateManagers/updater_state.dart';
+import 'package:iris_tools/widgets/circle.dart';
+import 'package:iris_tools/widgets/custom_card.dart';
+import 'package:iris_tools/widgets/icon/circular_icon.dart';
+import 'package:iris_tools/widgets/text/custom_rich.dart';
+
+import 'package:app/structures/abstract/state_super.dart';
 import 'package:app/structures/enums/updater_group.dart';
 import 'package:app/structures/models/green_child_model.dart';
 import 'package:app/structures/models/green_mind_model.dart';
@@ -8,22 +17,13 @@ import 'package:app/system/extensions.dart';
 import 'package:app/tools/app/app_decoration.dart';
 import 'package:app/tools/app/app_dialog_iris.dart';
 import 'package:app/tools/app/app_icons.dart';
+import 'package:app/tools/app/app_images.dart';
 import 'package:app/tools/app/app_messages.dart';
 import 'package:app/tools/date_tools.dart';
 import 'package:app/tools/route_tools.dart';
+import 'package:app/views/baseComponents/appbar_builder.dart';
 import 'package:app/views/pages/child_info_page.dart';
 import 'package:app/views/pages/connect_child_page.dart';
-import 'package:flutter/material.dart';
-
-
-import 'package:app/structures/abstract/state_super.dart';
-import 'package:app/tools/app/app_images.dart';
-import 'package:app/views/baseComponents/appbar_builder.dart';
-import 'package:iris_tools/modules/stateManagers/updater_state.dart';
-import 'package:iris_tools/widgets/circle.dart';
-import 'package:iris_tools/widgets/custom_card.dart';
-import 'package:iris_tools/widgets/icon/circular_icon.dart';
-import 'package:iris_tools/widgets/text/custom_rich.dart';
 
 /// BSSID is the MAC address.
 /// SSID is the technical term for a network name.

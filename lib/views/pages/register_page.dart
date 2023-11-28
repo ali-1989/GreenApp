@@ -1,4 +1,3 @@
-import 'package:app/services/login_service.dart';
 import 'package:flutter/material.dart';
 
 import 'package:iris_tools/api/checker.dart';
@@ -6,6 +5,7 @@ import 'package:iris_tools/api/generator.dart';
 import 'package:iris_tools/api/helpers/focusHelper.dart';
 import 'package:iris_tools/widgets/text/text_field_wrapper.dart';
 
+import 'package:app/services/login_service.dart';
 import 'package:app/structures/abstract/state_super.dart';
 import 'package:app/structures/middleWares/requester.dart';
 import 'package:app/system/extensions.dart';
