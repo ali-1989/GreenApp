@@ -9,6 +9,7 @@ import 'package:app/tools/app/app_decoration.dart';
 import 'package:app/tools/app/app_dialog_iris.dart';
 import 'package:app/tools/app/app_icons.dart';
 import 'package:app/tools/app/app_messages.dart';
+import 'package:app/tools/app/app_toast.dart';
 import 'package:app/tools/date_tools.dart';
 import 'package:app/tools/route_tools.dart';
 import 'package:app/views/pages/child_info_page.dart';
@@ -28,17 +29,17 @@ import 'package:iris_tools/widgets/text/custom_rich.dart';
 /// BSSID is the MAC address.
 /// SSID is the technical term for a network name.
 
-class DeviceInfoPage extends StatefulWidget {
+class MindInfoPage extends StatefulWidget {
   final GreenMindModel greenMind;
 
   // ignore: prefer_const_constructors_in_immutables
-  DeviceInfoPage({super.key, required this.greenMind});
+  MindInfoPage({super.key, required this.greenMind});
 
   @override
-  State createState() => _DeviceInfoPageState();
+  State createState() => _MindInfoPageState();
 }
 ///=============================================================================
-class _DeviceInfoPageState extends StateSuper<DeviceInfoPage> {
+class _MindInfoPageState extends StateSuper<MindInfoPage> {
   late GreenMindModel greenMind;
   late TextStyle keyStyle;
   late TextStyle valueStyle;
@@ -62,7 +63,7 @@ class _DeviceInfoPageState extends StateSuper<DeviceInfoPage> {
     return SafeArea(
       top: false,
       child: UpdaterBuilder(
-        groupIds: const [UpdaterGroup.greenMindListUpdate],
+        groupIds: const [UpdaterGroup.greenMindUpdate],
         builder: (_, ctr, data) {
           return Scaffold(
             body: buildBody(),
@@ -218,12 +219,16 @@ class _DeviceInfoPageState extends StateSuper<DeviceInfoPage> {
 
                 const SizedBox(width: 10),
 
-                const CircularIcon(
-                  icon: AppIcons.lineChart,
-                  itemColor: Colors.white,
-                  backColor: AppDecoration.differentColor,
-                  size: 24,
-                  padding: 8,
+                GestureDetector(
+                  onTap: onDisconnectedChartClick,
+                  behavior: HitTestBehavior.translucent,
+                  child: const CircularIcon(
+                    icon: AppIcons.lineChart,
+                    itemColor: Colors.white,
+                    backColor: AppDecoration.differentColor,
+                    size: 24,
+                    padding: 8,
+                  ),
                 ),
               ],
             ),
@@ -339,5 +344,9 @@ class _DeviceInfoPageState extends StateSuper<DeviceInfoPage> {
 
   void onChildClick(GreenChildModel itm) {
     RouteTools.pushPage(context, ChildInfoPage(greenMind: greenMind, greenChild: itm));
+  }
+
+  void onDisconnectedChartClick() {
+    AppToast.showToast(context, AppMessages.comingSoon);
   }
 }

@@ -51,7 +51,7 @@ class _ConnectGreenMindPageState extends StateSuper<ConnectGreenMindPage> {
 
     beforeDeviceCount = GreenMindManager.items.length;
     WebsocketService.connect();
-    UpdaterController.addGroupListener([UpdaterGroup.greenMindListUpdate], onNewGreenMind);
+    UpdaterController.addGroupListener([UpdaterGroup.greenMindUpdate], onNewGreenMind);
     startTimer();
   }
 

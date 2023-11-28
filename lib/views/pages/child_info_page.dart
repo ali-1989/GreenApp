@@ -11,6 +11,8 @@ import 'package:app/system/extensions.dart';
 import 'package:app/tools/app/app_decoration.dart';
 import 'package:app/tools/app/app_icons.dart';
 import 'package:app/tools/date_tools.dart';
+import 'package:app/tools/route_tools.dart';
+import 'package:app/views/pages/rename_green_child.dart';
 import 'package:flutter/material.dart';
 
 
@@ -18,7 +20,6 @@ import 'package:app/structures/abstract/state_super.dart';
 import 'package:app/tools/app/app_images.dart';
 import 'package:app/views/baseComponents/appbar_builder.dart';
 import 'package:iris_tools/modules/stateManagers/updater_state.dart';
-import 'package:iris_tools/widgets/circle.dart';
 import 'package:iris_tools/widgets/custom_card.dart';
 import 'package:iris_tools/widgets/icon/circular_icon.dart';
 import 'package:iris_tools/widgets/text/custom_rich.dart';
@@ -38,18 +39,14 @@ class _ChildInfoPageState extends StateSuper<ChildInfoPage> {
   late GreenChildModel greenChild;
   late TextStyle keyStyle;
   late TextStyle valueStyle;
-
-  List<GreenClientModel> get getList {
-    return GreenClientManager.items.where(
-            (element) => element.ownerId == greenChild.mindId
-    ).toList();
-  }
+  List<GreenClientModel> itemList = [];
 
   @override
   void initState() {
     super.initState();
 
     greenChild = widget.greenChild;
+    prepareList();
     GreenClientManager.requestClientsFor(greenChild);
     keyStyle = TextStyle(color: Colors.grey.shade300);
     valueStyle = const TextStyle(color: Colors.white, fontWeight: FontWeight.bold);
@@ -65,8 +62,9 @@ class _ChildInfoPageState extends StateSuper<ChildInfoPage> {
     return SafeArea(
       top: false,
       child: UpdaterBuilder(
-        groupIds: const [UpdaterGroup.greenClientUpdate],
+        groupIds: const [UpdaterGroup.greenClientUpdate, UpdaterGroup.greenMindUpdate],
         builder: (_, ctr, data) {
+          prepareList();
           return Scaffold(
             body: buildBody(),
           );
@@ -107,7 +105,7 @@ class _ChildInfoPageState extends StateSuper<ChildInfoPage> {
           Expanded(
               child: ListView.builder(
                 padding: const EdgeInsets.symmetric(horizontal: 30),
-                itemCount: getList.length + 1,
+                itemCount: itemList.length + 1 + (getSwitches().isEmpty? 0: 1),
                   itemBuilder: itemBuilder
               )
           )
@@ -169,11 +167,14 @@ class _ChildInfoPageState extends StateSuper<ChildInfoPage> {
 
                   const SizedBox(width: 10),
 
-                  const CircularIcon(
-                    icon: AppIcons.edit,
-                    itemColor: Colors.white,
-                    backColor: AppDecoration.differentColor,
-                    size: 24,
+                  GestureDetector(
+                    onTap: onRenameClick,
+                    child: const CircularIcon(
+                      icon: AppIcons.edit,
+                      itemColor: Colors.white,
+                      backColor: AppDecoration.differentColor,
+                      size: 24,
+                    ),
                   )
                 ],
               ),
@@ -186,7 +187,7 @@ class _ChildInfoPageState extends StateSuper<ChildInfoPage> {
                 CustomRich(
                     children: [
                       Text('client count: ', style: keyStyle),
-                      Text('${getList.length}', style: valueStyle),
+                      Text('${itemList.length}', style: valueStyle),
                     ]
                 ),
               ],
@@ -297,11 +298,11 @@ class _ChildInfoPageState extends StateSuper<ChildInfoPage> {
       return buildDetail();
     }
 
-    /*if(index == 1){
+    if(index == 1 && getSwitches().isNotEmpty){
       return buildSwitches();
-    }*/
+    }
 
-   final itm = getList[index-1];
+   final itm = itemList[index- (getSwitches().isNotEmpty? 2:1)];
 
     return buildSightGuideRow(itm);
   }
@@ -330,11 +331,19 @@ class _ChildInfoPageState extends StateSuper<ChildInfoPage> {
     );
   }
 
+  void prepareList(){
+    itemList.clear();
+    itemList.addAll(GreenClientManager.items.where(
+            (element) => element.ownerId == greenChild.id
+    ));
+  }
+
   List getSwitches(){
-    return getList.where(
+    return itemList.where(
             (element) => element.type == ClientType.volume)
         .toList();
   }
   void onRenameClick() {
+    RouteTools.pushPage(context, RenameGreenChild(greenChild: greenChild));
   }
 }

@@ -13,6 +13,8 @@ class GreenChildModel {
   GreenChildType type = GreenChildType.unKnow;
   int? firmwareVersion;
   int? batteryLevel;
+  bool isRemoved = false;
+  int status = 1;
   DateTime? productDate;
   late DateTime registerDate;
   DateTime? communicationDate;
@@ -26,6 +28,8 @@ class GreenChildModel {
     firmwareVersion = map['firmware_version'];
     caption = map['caption'];
     batteryLevel = map['battery_level'];
+    isRemoved = map['is_removed']?? false;
+    status = map['status']?? 1;
     type = GreenChildType.from(map['type']);
     productDate = DateHelper.timestampToSystem(map['product_date']);
     registerDate = DateHelper.timestampToSystem(map['register_date'])!;
@@ -41,6 +45,8 @@ class GreenChildModel {
     ret['caption'] = caption;
     ret['battery_level'] = batteryLevel;
     ret['type'] = type.serialize();
+    ret['is_removed'] = isRemoved;
+    ret['status'] = status;
     ret['product_date'] = DateHelper.toTimestampNullable(productDate);
     ret['register_date'] = DateHelper.toTimestampNullable(registerDate);
     ret['communication_date'] = DateHelper.toTimestampNullable(communicationDate);
@@ -64,7 +70,7 @@ class GreenChildModel {
     DateTime lastDate = communicationDate?? registerDate;
     lastDate = DateHelper.utcToLocal(lastDate);
 
-    if(DateHelper.isPastOf(lastDate, const Duration(hours: 6))){
+    if(status == 2){
       return Colors.orange;
     }
 
@@ -82,4 +88,19 @@ class GreenChildModel {
 
     return DateTools.dateAndHmRelative(communicationDate);
   }
+
+  void matchBy(GreenChildModel other) {
+    serialNumber = other.serialNumber;
+    mindId = other.mindId;
+    caption = other.caption;
+    status = other.status;
+    firmwareVersion = other.firmwareVersion;
+    isRemoved = other.isRemoved;
+    type = other.type;
+    batteryLevel = other.batteryLevel;
+    productDate = other.productDate;
+    registerDate = other.registerDate;
+    communicationDate = other.communicationDate;
+  }
 }
+

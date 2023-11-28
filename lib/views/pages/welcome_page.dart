@@ -1,6 +1,7 @@
 import 'package:app/services/login_service.dart';
 import 'package:app/tools/app/app_broadcast.dart';
 import 'package:app/tools/app/app_snack.dart';
+import 'package:app/tools/app/app_toast.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -187,6 +188,7 @@ class WelcomePageState extends StateSuper<WelcomePage> {
   }
 
   void onLinkedInClick() async {
+    AppToast.showToast(context, AppMessages.comingSoon);
     //await GoogleSignService().signOut();
     /*showLoading();
     final res = await GithubSignService().signIn();
@@ -199,9 +201,11 @@ class WelcomePageState extends StateSuper<WelcomePage> {
   }
 
   void onFaceBookClick() {
+    AppToast.showToast(context, AppMessages.comingSoon);
   }
 
   void onTwitterClick() async {
+    AppToast.showToast(context, AppMessages.comingSoon);
     //TwitterService.login();
   }
 

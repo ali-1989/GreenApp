@@ -66,7 +66,7 @@ class GreenClientManager {
 		List<GreenClientModel> ret = [];
 
 		for(final i in _itemList){
-			if(i.mindId != null && mindId == mindId){
+			if(i.mindId == mindId){
 				ret.add(i);
 			}
 		}

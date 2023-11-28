@@ -5,11 +5,13 @@ import 'package:app/system/keys.dart';
 
 class GreenClientModel {
   late int id;
-  int? mindId;
+  late int mindId;
   late int ownerId;
   late int number;
   ClientType type = ClientType.unKnow;
   late String bus;
+  bool isRemoved = false;
+  int status = 1;
   String? caption;
   DateTime? registerDate;
 
@@ -23,6 +25,8 @@ class GreenClientModel {
     number = map['number'];
     caption = map['caption'];
     bus = map['bus'];
+    isRemoved = map['is_removed'];
+    status = map['status'];
     type = ClientType.from(map['type']);
     registerDate = DateHelper.timestampToSystem(map['register_date']);
   }
@@ -35,6 +39,8 @@ class GreenClientModel {
     ret['number'] = number;
     ret['caption'] = caption;
     ret['bus'] = bus;
+    ret['is_removed'] = isRemoved;
+    ret['status'] = status;
     ret['type'] = type.serialize();
     ret['register_date'] = DateHelper.toTimestampNullable(registerDate);
 
@@ -48,11 +54,12 @@ class GreenClientModel {
     caption = model.caption;
     bus = model.bus;
     type = model.type;
+    status = model.status;
+    isRemoved = model.isRemoved;
     registerDate = model.registerDate;
   }
 
   String getCaption(){
     return caption?? 'N-$number';
   }
-
 }

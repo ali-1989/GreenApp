@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:app/services/session_service.dart';
 import 'package:app/structures/enums/app_events.dart';
 import 'package:app/structures/middleWares/requester.dart';
+import 'package:app/structures/models/green_child_model.dart';
 import 'package:app/system/extensions.dart';
+import 'package:app/tools/app/app_cache.dart';
 import 'package:iris_db/iris_db.dart';
 import 'package:iris_notifier/iris_notifier.dart';
 import 'package:iris_tools/modules/stateManagers/updater_state.dart';
@@ -64,6 +66,12 @@ class GreenMindManager {
 		return _itemList.firstWhereSafe((element) => element.id == id);
 	}
 
+	static GreenMindModel? findByChildId(int childId){
+		return _itemList.firstWhereSafe(
+						(element)
+				=> element.children.any((element) => element.id == childId));
+	}
+
 	static void addGreenMind(dynamic greenMind, {bool notify = true}){
 		if(greenMind is Map){
 			greenMind = GreenMindModel.fromMap(greenMind);
@@ -94,7 +102,7 @@ class GreenMindManager {
 	}
 
 	static void notifyUpdate(){
-		UpdaterController.updateByGroup(UpdaterGroup.greenMindListUpdate);
+		UpdaterController.updateByGroup(UpdaterGroup.greenMindUpdate);
 	}
 
 	static void newGreenMindFromWs(dynamic data){
@@ -108,7 +116,11 @@ class GreenMindManager {
 		}
 	}
 
-	static Requester requestGreenMinds(){
+	static Requester? requestGreenMinds(){
+		if(!AppCache.canCallMethodAgain('requestGreenMinds')){
+			return null;
+		}
+
 		final requester = Requester();
 
 		requester.httpRequestEvents.onStatusOk = (res, response) async {
@@ -132,6 +144,30 @@ class GreenMindManager {
 		return requester;
 	}
 
+	static Future<bool> requestChangeToAddDeviceMode(int mindId){
+		final requester = Requester();
+		final Completer<bool> ret = Completer();
+
+		requester.httpRequestEvents.onStatusOk = (res, response) async {
+			ret.complete(true);
+		};
+
+		requester.httpRequestEvents.onFailState = (res, response) async {
+			ret.complete(false);
+		};
+
+		final js = <String, dynamic>{};
+		js[Keys.request] = 'add_new_device_state_for_hardware';
+		js[Keys.requesterId] = SessionService.getLastLoginUserId();
+		js['mind_id'] = mindId;
+
+		requester.bodyJson = js;
+		requester.prepareUrl();
+		requester.request();
+
+		return ret.future;
+	}
+
 	static Future<bool> requestReNameGreenMind(GreenMindModel greenMind, String caption){
 		final requester = Requester();
 		final Completer<bool> ret = Completer();
@@ -151,6 +187,33 @@ class GreenMindManager {
 		js[Keys.requesterId] = SessionService.getLastLoginUserId();
 		js['caption'] = caption;
 		js['mind_id'] = greenMind.id;
+
+		requester.bodyJson = js;
+		requester.prepareUrl();
+		requester.request();
+
+		return ret.future;
+	}
+
+  static Future<bool> requestReNameGreenChild(GreenChildModel greenChild, String caption){
+		final requester = Requester();
+		final Completer<bool> ret = Completer();
+
+		requester.httpRequestEvents.onStatusOk = (res, response) async {
+			greenChild.caption = caption;
+			sink(findById(greenChild.mindId));
+			ret.complete(true);
+		};
+
+		requester.httpRequestEvents.onFailState = (res, response) async {
+			ret.complete(false);
+		};
+
+		final js = <String, dynamic>{};
+		js[Keys.request] = 'rename_green_child';
+		js[Keys.requesterId] = SessionService.getLastLoginUserId();
+		js['caption'] = caption;
+		js['child_id'] = greenChild.id;
 
 		requester.bodyJson = js;
 		requester.prepareUrl();

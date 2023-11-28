@@ -54,14 +54,15 @@ class _ConnectChildPageState extends StateSuper<ConnectChildPage> {
 
     beforeDeviceCount = widget.greenMind.children.length;
     WebsocketService.connect();
-    UpdaterController.addGroupListener([UpdaterGroup.greenMindListUpdate], onNewGreenMind);
+    UpdaterController.addGroupListener([UpdaterGroup.greenMindUpdate], onNewDevice);
     startTimer();
+    requestForAddDeviceMode();
   }
 
   @override
   void dispose() {
     timer?.cancel();
-    UpdaterController.removeGroupListener(onNewGreenMind);
+    UpdaterController.removeGroupListener(onNewDevice);
 
     super.dispose();
   }
@@ -162,7 +163,7 @@ class _ConnectChildPageState extends StateSuper<ConnectChildPage> {
     startTimer();
 
     UpdaterController.forId(retryUpdaterId)?.update();
-    GreenMindManager.requestGreenMinds();
+    GreenMindManager.requestChangeToAddDeviceMode(widget.greenMind.id);
   }
 
   void startTimer() {
@@ -185,14 +186,14 @@ class _ConnectChildPageState extends StateSuper<ConnectChildPage> {
     UpdaterController.forId(retryUpdaterId)!.update();
   }
 
-  void onNewGreenMind(UpdaterGroupId p1) {
+  void onNewDevice(UpdaterGroupId p1) {
     final newCount = widget.greenMind.children.length;
 
     if(newCount <= beforeDeviceCount){
       return;
     }
 
-    UpdaterController.removeGroupListener(onNewGreenMind);
+    UpdaterController.removeGroupListener(onNewDevice);
 
     AppSheet.showSheetOneAction(
         context,
@@ -201,5 +202,9 @@ class _ConnectChildPageState extends StateSuper<ConnectChildPage> {
           RouteTools.popIfCan(context);
       }
     );
+  }
+
+  void requestForAddDeviceMode() {
+    GreenMindManager.requestChangeToAddDeviceMode(widget.greenMind.id);
   }
 }

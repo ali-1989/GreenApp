@@ -1,7 +1,7 @@
 import 'package:app/managers/green_mind_manager.dart';
 import 'package:app/structures/abstract/state_super.dart';
 import 'package:app/structures/enums/updater_group.dart';
-import 'package:app/structures/models/green_mind_model.dart';
+import 'package:app/structures/models/green_child_model.dart';
 import 'package:app/system/extensions.dart';
 import 'package:app/tools/app/app_decoration.dart';
 import 'package:app/tools/app/app_messages.dart';
@@ -13,65 +13,69 @@ import 'package:flutter/material.dart';
 import 'package:iris_tools/api/helpers/focusHelper.dart';
 import 'package:iris_tools/modules/stateManagers/updater_state.dart';
 
-class RenameGreenMind extends StatefulWidget {
-  final GreenMindModel greenMind;
-  
-  const RenameGreenMind({super.key, required this.greenMind});
+class RenameGreenChild extends StatefulWidget {
+  final GreenChildModel greenChild;
+
+  const RenameGreenChild({super.key, required this.greenChild});
 
   @override
-  State createState() => RenameGreenMindState();
+  State createState() => RenameGreenChildState();
 }
 ///=============================================================================
-class RenameGreenMindState extends StateSuper<RenameGreenMind> {
+class RenameGreenChildState extends StateSuper<RenameGreenChild> {
   TextEditingController nameCtr = TextEditingController();
   
   @override
   void initState(){
     super.initState();
     
-    nameCtr.text = widget.greenMind.caption?? '';
+    nameCtr.text = widget.greenChild.caption?? '';
   }
   
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          const SizedBox(height: 40),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8.0),
-            child: BackBtn(),
-          ),
+      body: buildBody(),
+    );
+  }
 
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 10),
+  Widget buildBody() {
+    return Column(
+      children: [
+        const SizedBox(height: 40),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8.0),
+          child: BackBtn(),
+        ),
 
-                Text(AppMessages.transCap('renameGreenMind')).fsR(2),
-                const SizedBox(height: 5),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 10),
 
-                TextField(
-                  controller: nameCtr,
-                  decoration: AppDecoration.outlineBordersInputDecoration,
+              Text(AppMessages.transCap('renameDevice')).fsR(2),
+              const SizedBox(height: 5),
+
+              TextField(
+                controller: nameCtr,
+                decoration: AppDecoration.outlineBordersInputDecoration,
+              ),
+
+              const SizedBox(height: 30),
+
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                    onPressed: onSaveClick,
+                    child: Text(AppMessages.trans('save'))
                 ),
-
-                const SizedBox(height: 30),
-
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                      onPressed: onSaveClick,
-                      child: Text(AppMessages.trans('save'))
-                  ),
-                )
-              ],
-            ),
+              )
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -86,7 +90,7 @@ class RenameGreenMindState extends StateSuper<RenameGreenMind> {
     await FocusHelper.hideKeyboardByUnFocusRootWait();
 
     showLoading();
-    final res = await GreenMindManager.requestReNameGreenMind(widget.greenMind, caption);
+    final res = await GreenMindManager.requestReNameGreenChild(widget.greenChild, caption);
     await hideLoading();
 
     if(res){

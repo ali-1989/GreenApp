@@ -34,9 +34,11 @@ class SettingsPageState extends StateSuper<SettingsPage> {
   Widget buildBody() {
     return Column(
       children: [
+        SizedBox(height: 50,),
+
         ElevatedButton(
             onPressed: onLogoutClick,
-            child: Text(context.t('logout')!),
+            child: Text('SignOut account'),
         )
       ],
     );

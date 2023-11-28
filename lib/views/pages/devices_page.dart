@@ -1,6 +1,6 @@
 import 'package:app/tools/app/app_decoration.dart';
 import 'package:app/tools/app/app_sheet.dart';
-import 'package:app/views/pages/device_info_page.dart';
+import 'package:app/views/pages/mind_info_page.dart';
 import 'package:app/views/pages/rename_green_mind.dart';
 import 'package:flutter/material.dart';
 
@@ -45,7 +45,7 @@ class DevicesPageState extends StateSuper<DevicesPage> {
   @override
   Widget build(BuildContext context) {
     return UpdaterBuilder(
-      groupIds: const [UpdaterGroup.greenMindListUpdate],
+      groupIds: const [UpdaterGroup.greenMindUpdate],
       builder: (_, ctr, data) {
         return buildBody();
       }
@@ -245,6 +245,6 @@ class DevicesPageState extends StateSuper<DevicesPage> {
   }
 
   void onGreenMindClick(GreenMindModel itm) {
-    RouteTools.pushPage(context, DeviceInfoPage(greenMind: itm));
+    RouteTools.pushPage(context, MindInfoPage(greenMind: itm));
   }
 }

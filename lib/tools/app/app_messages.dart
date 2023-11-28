@@ -434,6 +434,10 @@ class AppMessages {
     return _getContext().t('setupGreenMind')?? _noText;
   }
 
+  static String get comingSoon {
+    return _getContext().t('comingSoon')?? _noText;
+  }
+
   static String espDeviceFound(int count) {
     final t = _getContext().t('espDeviceFound')?? _noText;
     return t.replaceAll('#', '$count');

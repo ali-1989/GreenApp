@@ -324,5 +324,7 @@
   "doYouAddGreenSight": "Do you want to connect a new device to GreenMaid?",
   "addNewDeviceToMind": "add new device",
   "gm254": "Please hold the power button on the GreenMind and the device for 5 seconds to connect to each other.",
+  "renameDevice": "Rename device",
+  "comingSoon": "Coming soon...",
   "": ""
 }

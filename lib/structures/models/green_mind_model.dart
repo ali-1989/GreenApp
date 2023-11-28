@@ -1,4 +1,5 @@
 import 'package:app/structures/enums/green_child_type.dart';
+import 'package:app/system/extensions.dart';
 import 'package:app/tools/date_tools.dart';
 import 'package:flutter/material.dart';
 import 'package:iris_tools/dateSection/dateHelper.dart';
@@ -56,8 +57,13 @@ class GreenMindModel {
     productDate = model.productDate;
     communicationDate = model.communicationDate;
 
-    children.clear();
-    children.addAll(model.children);
+    for(final i in children){
+      final newObj = model.children.firstWhereSafe((e)=> e.id == i.id);
+
+      if(newObj != null){
+        i.matchBy(newObj);
+      }
+    }
   }
 
   String getCaption(){
