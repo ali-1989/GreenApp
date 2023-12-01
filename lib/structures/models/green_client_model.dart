@@ -1,11 +1,13 @@
+import 'package:iris_tools/api/converter.dart';
 import 'package:iris_tools/dateSection/dateHelper.dart';
 
 import 'package:app/structures/enums/client_type.dart';
 import 'package:app/system/keys.dart';
 
 class GreenClientModel {
+  String? userId;
+
   late int id;
-  late int mindId;
   late int ownerId;
   late int number;
   ClientType type = ClientType.unKnow;
@@ -20,7 +22,6 @@ class GreenClientModel {
 
   GreenClientModel.fromMap(Map map){
     id = map[Keys.id];
-    mindId = map['mind_id'];
     ownerId = map['owner_id'];
     number = map['number'];
     caption = map['caption'];
@@ -29,12 +30,13 @@ class GreenClientModel {
     status = map['status'];
     type = ClientType.from(map['type']);
     registerDate = DateHelper.timestampToSystem(map['register_date']);
+
+    userId = Converter.correctType<String>(map[Keys.userId]);
   }
 
   Map<String, dynamic> toMap(){
     final ret = <String, dynamic>{};
     ret[Keys.id] = id;
-    ret['mind_id'] = mindId;
     ret['owner_id'] = ownerId;
     ret['number'] = number;
     ret['caption'] = caption;
@@ -44,11 +46,12 @@ class GreenClientModel {
     ret['type'] = type.serialize();
     ret['register_date'] = DateHelper.toTimestampNullable(registerDate);
 
+    ret[Keys.userId] = userId;
+
     return ret;
   }
 
   matchBy(GreenClientModel model){
-    mindId = model.mindId;
     ownerId = model.ownerId;
     number = model.number;
     caption = model.caption;

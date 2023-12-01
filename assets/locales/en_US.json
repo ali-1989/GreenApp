@@ -239,6 +239,7 @@
     "passwordRecovery": "recovery",
     "passwordRecoveryDescription": "شماره همراه خود را جهت ارسال اطلاعات وارد کنید",
     "phoneNumberNotExist": "این شماره وجود ندارد",
+    "accountNotFound" : "no account with this info was found",
     "mustLoginFirstByAccount" : "You must first log in with your account",
     "noUserLoginYet": "No user logged in, please login",
     "doYouWantLogoutYourAccount": "Do you want to log out of your account?",
@@ -326,5 +327,6 @@
   "gm254": "Please hold the power button on the GreenMind and the device for 5 seconds to connect to each other.",
   "renameDevice": "Rename device",
   "comingSoon": "Coming soon...",
+  "withoutDevice": "Without Device",
   "": ""
 }

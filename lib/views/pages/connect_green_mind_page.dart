@@ -49,7 +49,7 @@ class _ConnectGreenMindPageState extends StateSuper<ConnectGreenMindPage> {
   void initState(){
     super.initState();
 
-    beforeDeviceCount = GreenMindManager.items.length;
+    beforeDeviceCount = GreenMindManager.current!.items.length;
     WebsocketService.connect();
     UpdaterController.addGroupListener([UpdaterGroup.greenMindUpdate], onNewGreenMind);
     startTimer();
@@ -159,7 +159,7 @@ class _ConnectGreenMindPageState extends StateSuper<ConnectGreenMindPage> {
     startTimer();
 
     UpdaterController.forId(retryUpdaterId)?.update();
-    GreenMindManager.requestGreenMinds();
+    GreenMindManager.current?.requestGreenMinds();
   }
 
   void startTimer() {
@@ -183,7 +183,7 @@ class _ConnectGreenMindPageState extends StateSuper<ConnectGreenMindPage> {
   }
 
   void onNewGreenMind(UpdaterGroupId p1) {
-    final newCount = GreenMindManager.items.length;
+    final newCount = GreenMindManager.current!.items.length;
 
     if(newCount <= beforeDeviceCount){
       return;

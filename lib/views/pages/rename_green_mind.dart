@@ -88,7 +88,7 @@ class RenameGreenMindState extends StateSuper<RenameGreenMind> {
     await FocusHelper.hideKeyboardByUnFocusRootWait();
 
     showLoading();
-    final res = await GreenMindManager.requestReNameGreenMind(widget.greenMind, caption);
+    final res = await GreenMindManager.current!.requestReNameGreenMind(widget.greenMind, caption);
     await hideLoading();
 
     if(res){

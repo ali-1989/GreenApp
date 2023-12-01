@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app/structures/enums/client_type.dart';
 import 'package:iris_db/iris_db.dart';
 import 'package:iris_tools/modules/stateManagers/updater_state.dart';
 
@@ -12,31 +13,66 @@ import 'package:app/system/extensions.dart';
 import 'package:app/system/keys.dart';
 import 'package:app/tools/app/app_db.dart';
 
-class GreenClientManager {
-	GreenClientManager._();
+/// clients => Sensors and switches
 
-	static final List<GreenClientModel> _itemList = [];
+class GreenClientManager {
+	GreenClientManager._(this.userId);
+
+	static final List<GreenClientManager> _userHolder = [];
 	static bool _isInit = false;
 
-	static List<GreenClientModel> get items => _itemList;
-	static Future init() async {
+	static GreenClientManager getManagerFor(String userId){
+		for(final kv in _userHolder){
+			if(kv.userId == userId){
+				return kv;
+			}
+		}
+
+		final newItm = GreenClientManager._(userId);
+		_userHolder.add(newItm);
+		return newItm;
+	}
+
+	static GreenClientManager? get current {
+		final cUserId = SessionService.getLastLoginUserId();
+
+		if(cUserId == null){
+			return null;
+		}
+
+		return getManagerFor(cUserId);
+	}
+
+	static void init() {
 		if(_isInit){
-			return true;
+			return;
 		}
 
 		_isInit = true;
-		//EventNotifierService.addListener(AppEvents.networkConnected, _netListener);
-		fetchAll();
-		//requestClientsFor();
 	}
 
-	/*static void _netListener({data}){
-		requestClientsFor();
-	}*/
+	static void dataFromWs(String userId, List<Map> clients){
+		final cur = current;
 
-	static void fetchAll() async {
+		if(cur == null || cur.userId != userId){
+			return;
+		}
+
+		current?.addClients(clients);
+	}
+	///---------------------------------------------------------------------------
+	final String userId;
+	final List<GreenClientModel> _itemList = [];
+	List<GreenClientModel> get items => _itemList;
+
+	Future<void> start() async {
+		await fetchAll();
+	}
+
+	Future<void> fetchAll() async {
 		final con = Conditions();
 		con.add(Condition(ConditionType.DefinedNotNull)..key = Keys.id);
+		con.add(Condition(ConditionType.EQUAL)..key = Keys.userId..value = userId);
 
 		final res = AppDB.db.query(AppDB.tbGreenClient, con);
 
@@ -45,36 +81,31 @@ class GreenClientManager {
 		}
 	}
 
-	static Future<bool> sink(dynamic client) async {
+	Future<bool> sink(dynamic client) async {
+		final Map<String, dynamic> map;
+
 		if(client is GreenClientModel){
-			client = client.toMap();
+			map = client.toMap();
+		}
+		else {
+			map = client;
 		}
 
-		final con = Conditions();
-		con.add(Condition()..key = Keys.id .. value = client[Keys.id]);
+		map[Keys.userId] ??= userId;
 
-		final res = await AppDB.db.insertOrUpdate(AppDB.tbGreenClient, client, con);
+		final con = Conditions();
+		con.add(Condition()..key = Keys.id .. value = map[Keys.id]);
+
+		final res = await AppDB.db.insertOrUpdate(AppDB.tbGreenClient, map, con);
 
 		return res > -1;
 	}
 
-	static GreenClientModel? findById(int id){
+	GreenClientModel? findById(int id){
 		return _itemList.firstWhereSafe((element) => element.id == id);
 	}
 
-	static List<GreenClientModel> filterForMind(int mindId){
-		List<GreenClientModel> ret = [];
-
-		for(final i in _itemList){
-			if(i.mindId == mindId){
-				ret.add(i);
-			}
-		}
-
-		return ret;
-	}
-
-	static List<GreenClientModel> filterForChild(int childId){
+	List<GreenClientModel> filterForChild(int childId){
 		List<GreenClientModel> ret = [];
 
 		for(final i in _itemList){
@@ -86,28 +117,35 @@ class GreenClientManager {
 		return ret;
 	}
 
-	static void addClient(dynamic client, {bool notify = true}){
-		if(client is Map){
-			client = GreenClientModel.fromMap(client);
-		}
+	void addClient(dynamic obj, {bool notify = true}){
+		GreenClientModel gClient;
 
-		final old = findById(client.id);
-
-		if(old != null){
-			old.matchBy(client);
+		if(obj is Map){
+			gClient = GreenClientModel.fromMap(obj);
 		}
 		else {
-			_itemList.add(client);
+			gClient = obj;
 		}
 
-		sink(client);
+		gClient.userId ??= userId;
+
+		final old = findById(gClient.id);
+
+		if(old != null){
+			old.matchBy(gClient);
+		}
+		else {
+			_itemList.add(gClient);
+		}
+
+		sink(gClient);
 
 		if(notify) {
-			notifyUpdate(client);
+			notifyUpdate(gClient);
 		}
 	}
 
-	static void addClients(List<Map> mapList){
+	void addClients(List<Map> mapList){
 		for(final x in mapList){
 			addClient(x, notify: false);
 		}
@@ -115,13 +153,13 @@ class GreenClientManager {
 		notifyUpdate(null);
 	}
 
-	static void notifyUpdate(GreenClientModel? model){
-		UpdaterController.updateByGroup(UpdaterGroup.greenClientUpdate, stateData: model);
+	void notifyUpdate(GreenClientModel? model){
+		UpdaterController.updateByGroup(UpdaterGroup.greenClientUpdate, data: model);
 	}
 
-	static void newClientFromWs(dynamic data){
+	void newClientFromWs(dynamic data){
 		if(data is Map<String, dynamic>) {
-			addClient(GreenClientModel.fromMap(data));
+			addClient(data);
 		}
 
 		if(data is List) {
@@ -130,7 +168,7 @@ class GreenClientManager {
 		}
 	}
 
-	static Requester requestClientsFor(GreenChildModel childModel){
+	Requester requestClientsFor(GreenChildModel childModel){
 		final requester = Requester();
 
 		requester.httpRequestEvents.onStatusOk = (res, response) async {
@@ -144,7 +182,7 @@ class GreenClientManager {
 
 		final js = <String, dynamic>{};
 		js[Keys.request] = 'get_clients_for';
-		js[Keys.requesterId] = SessionService.getLastLoginUserId();
+		js[Keys.requesterId] = userId;
 		js['mind_id'] = childModel.mindId;
 		js['child_id'] = childModel.id;
 
@@ -155,7 +193,7 @@ class GreenClientManager {
 		return requester;
 	}
 
-	static Future<bool> requestReNameClient(GreenClientModel client, String caption){
+	Future<bool> requestReNameClient(GreenClientModel client, String caption){
 		final requester = Requester();
 		final Completer<bool> ret = Completer();
 
@@ -180,5 +218,36 @@ class GreenClientManager {
 		requester.request();
 
 		return ret.future;
+	}
+
+	static GreenClientModel? getById(int id){
+		for(final u in _userHolder){
+			for(final c in u.items){
+				if(c.id == id){
+					return c;
+				}
+			}
+		}
+
+		return null;
+	}
+
+  static Future<bool> isVolume(int clientId) async {
+		final itm = getById(clientId);
+
+		if(itm != null){
+			return itm.type == ClientType.volume;
+		}
+
+		final cons = Conditions();
+		cons.add(Condition()..key = 'client_id'..value = clientId);
+
+		final res = await AppDB.db.queryFirst(AppDB.tbGreenClient, cons);
+
+		if(res != null){
+			return GreenClientModel.fromMap(res).type == ClientType.volume;
+		}
+
+		return false;
 	}
 }

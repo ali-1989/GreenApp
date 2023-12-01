@@ -245,11 +245,10 @@ class LoginPageState extends StateSuper<LoginPage> {
         return;
       }
 
-      await SessionService.login$newProfileData(data);
+      await SessionService.loginByProfileData(data);
       RouteTools.backToRoot(RouteTools.getTopContext()!);
       AppBroadcast.reBuildMaterial();
     };
-
 
     showLoading();
     requester = LoginService.requestRegisterUser(body, events);

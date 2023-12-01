@@ -68,8 +68,10 @@ class SplashManager {
       await SessionService.fetchLoginUsers();
       await HomeChartManager.init();
       await UserGuidingManager.init();
-      await GreenMindManager.init();
-      await GreenClientManager.init();
+      GreenMindManager.init();
+      await GreenMindManager.current?.start();
+      GreenClientManager.init();
+      await GreenClientManager.current?.start();
       SplashManager.isFullInitialOk = true;
     }
     catch (e){

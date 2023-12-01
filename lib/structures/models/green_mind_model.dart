@@ -2,12 +2,15 @@ import 'package:app/structures/enums/green_child_type.dart';
 import 'package:app/system/extensions.dart';
 import 'package:app/tools/date_tools.dart';
 import 'package:flutter/material.dart';
+import 'package:iris_tools/api/converter.dart';
 import 'package:iris_tools/dateSection/dateHelper.dart';
 
 import 'package:app/structures/models/green_child_model.dart';
 import 'package:app/system/keys.dart';
 
 class GreenMindModel {
+  /// added for database
+  String? userId;
   late int id;
   late String serialNumber;
   int? firmwareVersion;
@@ -33,6 +36,8 @@ class GreenMindModel {
     if(childrenList != null && childrenList.isNotEmpty && childrenList.first != null){
       children = childrenList.map((e) => GreenChildModel.fromMap(e)).toList();
     }
+
+    userId = Converter.correctType<String>(map[Keys.userId]);
   }
 
   Map<String, dynamic> toMap(){
@@ -46,10 +51,11 @@ class GreenMindModel {
     ret['communication_date'] = DateHelper.toTimestampNullable(communicationDate);
     ret['children'] = children.map((e) => e.toMap()).toList();
 
+    ret[Keys.userId] = userId;
     return ret;
   }
 
-  matchBy(GreenMindModel model){
+  void matchBy(GreenMindModel model){
     caption = model.caption;
     serialNumber = model.serialNumber;
     firmwareVersion = model.firmwareVersion;
@@ -57,11 +63,23 @@ class GreenMindModel {
     productDate = model.productDate;
     communicationDate = model.communicationDate;
 
-    for(final i in children){
-      final newObj = model.children.firstWhereSafe((e)=> e.id == i.id);
+    for(final i in model.children){
+      final oldModel = children.firstWhereSafe((e)=> e.id == i.id);
 
-      if(newObj != null){
-        i.matchBy(newObj);
+      if(oldModel != null){
+        oldModel.matchBy(i);
+      }
+      else {
+        children.add(i);
+      }
+    }
+  }
+
+  void matchChild(GreenChildModel model){
+    for(final i in children){
+      if(i.id == model.id){
+        i.matchBy(model);
+        break;
       }
     }
   }

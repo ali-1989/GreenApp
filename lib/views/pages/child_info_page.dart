@@ -1,6 +1,8 @@
 // one file so that all of the examples are visible on https://pub.dev/packages/esptouch_flutter/example
 
 
+import 'dart:ui';
+
 import 'package:app/managers/green_client_manager.dart';
 import 'package:app/structures/enums/client_type.dart';
 import 'package:app/structures/enums/updater_group.dart';
@@ -8,8 +10,10 @@ import 'package:app/structures/models/green_child_model.dart';
 import 'package:app/structures/models/green_client_model.dart';
 import 'package:app/structures/models/green_mind_model.dart';
 import 'package:app/system/extensions.dart';
+import 'package:app/tools/app/app_db.dart';
 import 'package:app/tools/app/app_decoration.dart';
 import 'package:app/tools/app/app_icons.dart';
+import 'package:app/tools/app/app_messages.dart';
 import 'package:app/tools/date_tools.dart';
 import 'package:app/tools/route_tools.dart';
 import 'package:app/views/pages/rename_green_child.dart';
@@ -47,7 +51,7 @@ class _ChildInfoPageState extends StateSuper<ChildInfoPage> {
 
     greenChild = widget.greenChild;
     prepareList();
-    GreenClientManager.requestClientsFor(greenChild);
+    GreenClientManager.current!.requestClientsFor(greenChild);
     keyStyle = TextStyle(color: Colors.grey.shade300);
     valueStyle = const TextStyle(color: Colors.white, fontWeight: FontWeight.bold);
   }
@@ -64,7 +68,10 @@ class _ChildInfoPageState extends StateSuper<ChildInfoPage> {
       child: UpdaterBuilder(
         groupIds: const [UpdaterGroup.greenClientUpdate, UpdaterGroup.greenMindUpdate],
         builder: (_, ctr, data) {
-          prepareList();
+          AppDB.db.logRows(AppDB.tbClientData);//todo.
+         print('oooooooooooooooooooooooooooooooo ${AppDB.db.getRowCount(AppDB.tbClientData)}');
+
+         prepareList();
           return Scaffold(
             body: buildBody(),
           );
@@ -100,8 +107,6 @@ class _ChildInfoPageState extends StateSuper<ChildInfoPage> {
 
           SizedBox(height: 30 * hRel),
 
-          //buildDetail(),
-          //buildSwitches(),
           Expanded(
               child: ListView.builder(
                 padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -115,147 +120,167 @@ class _ChildInfoPageState extends StateSuper<ChildInfoPage> {
   }
 
   Widget buildDetail(){
-    return CustomCard(
-        color: Colors.black,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Detail').color(Colors.white).bold(),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Divider(color: Colors.grey.shade200),
-            ),
-
-            /// ID
-            Row(
+    return Column(
+      children: [
+        CustomCard(
+            color: Colors.black,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                    child: CustomRich(
-                        children: [
-                          Text('ID: ', style: keyStyle),
-                          Text('${greenChild.id}', style: valueStyle),
-                        ]
-                    )
+                const Text('Detail').color(Colors.white).bold(),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Divider(color: Colors.grey.shade200),
                 ),
 
-                Expanded(
-                    child: CustomRich(
+                /// ID
+                Row(
+                  children: [
+                    Expanded(
+                        child: CustomRich(
+                            children: [
+                              Text('ID: ', style: keyStyle),
+                              Text('${greenChild.id}', style: valueStyle),
+                            ]
+                        )
+                    ),
+
+                    Expanded(
+                        child: CustomRich(
+                            children: [
+                              Text('SN: ', style: keyStyle),
+                              Text(greenChild.serialNumber, style: valueStyle),
+                            ]
+                        )
+                    ),
+                  ],
+                ),
+
+                /// name
+                SizedBox(height: 2 * hRel),
+                GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: onRenameClick,
+                  child: Row(
+                    children: [
+                      CustomRich(
+                          children: [
+                            Text('name: ', style: keyStyle),
+                            Text(greenChild.getCaption(), style: valueStyle),
+                          ]
+                      ),
+
+                      const SizedBox(width: 10),
+
+                      GestureDetector(
+                        onTap: onRenameClick,
+                        child: const CircularIcon(
+                          icon: AppIcons.edit,
+                          itemColor: Colors.white,
+                          backColor: AppDecoration.differentColor,
+                          size: 24,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+
+                /// children
+                SizedBox(height: 5 * hRel),
+                Row(
+                  children: [
+                    CustomRich(
                         children: [
-                          Text('SN: ', style: keyStyle),
-                          Text(greenChild.serialNumber, style: valueStyle),
+                          Text('client count: ', style: keyStyle),
+                          Text('${itemList.length}', style: valueStyle),
                         ]
-                    )
+                    ),
+                  ],
+                ),
+
+                /// version
+                SizedBox(height: 10 * hRel),
+                Row(
+                  children: [
+                    Expanded(
+                        child: CustomRich(
+                            children: [
+                              Text('version of Firmware: ', style: keyStyle),
+                              Text('${greenChild.firmwareVersion}', style: valueStyle),
+                            ]
+                        )
+                    ),
+                  ],
+                ),
+
+                /// battery
+                SizedBox(height: 10 * hRel),
+                Row(
+                  children: [
+                    Expanded(
+                        child: CustomRich(
+                            children: [
+                              Text('battery: ', style: keyStyle),
+                              Text('${greenChild.batteryLevel?? '-'}', style: valueStyle),
+                            ]
+                        )
+                    ),
+                  ],
+                ),
+
+                /// register time
+                SizedBox(height: 10 * hRel),
+                Row(
+                  children: [
+                    Expanded(
+                        child: CustomRich(
+                            children: [
+                              Text('added at: ', style: keyStyle),
+                              Text(DateTools.dateOnlyRelative(greenChild.registerDate), style: valueStyle),
+                            ]
+                        )
+                    ),
+                  ],
+                ),
+
+                /// connection time
+                SizedBox(height: 10 * hRel),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Flexible(
+                        child: CustomRich(
+                            children: [
+                              Text('time of last connection: ', style: keyStyle),
+                              Text(greenChild.lastConnectionTime(), style: valueStyle)
+                                  .color(greenChild.getStatusColor()),
+                            ]
+                        )
+                    ),
+                  ],
                 ),
               ],
-            ),
+            )
+        ),
 
-            /// name
-            SizedBox(height: 2 * hRel),
-            GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onTap: onRenameClick,
-              child: Row(
-                children: [
-                  CustomRich(
-                      children: [
-                        Text('name: ', style: keyStyle),
-                        Text(greenChild.getCaption(), style: valueStyle),
-                      ]
-                  ),
 
-                  const SizedBox(width: 10),
-
-                  GestureDetector(
-                    onTap: onRenameClick,
-                    child: const CircularIcon(
-                      icon: AppIcons.edit,
-                      itemColor: Colors.white,
-                      backColor: AppDecoration.differentColor,
-                      size: 24,
-                    ),
-                  )
-                ],
+        if(itemList.isEmpty)
+          BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10),
+            child: Padding(
+              padding: const EdgeInsets.only(top: 70),
+              child: CustomCard(
+                color: Colors.white.withAlpha(120),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 50),
+                  child: Text(AppMessages.transCap('withoutDevice')).bold(),
+                ),
               ),
             ),
-
-            /// children
-            SizedBox(height: 5 * hRel),
-            Row(
-              children: [
-                CustomRich(
-                    children: [
-                      Text('client count: ', style: keyStyle),
-                      Text('${itemList.length}', style: valueStyle),
-                    ]
-                ),
-              ],
-            ),
-
-            /// version
-            SizedBox(height: 10 * hRel),
-            Row(
-              children: [
-                Expanded(
-                    child: CustomRich(
-                        children: [
-                          Text('version of Firmware: ', style: keyStyle),
-                          Text('${greenChild.firmwareVersion}', style: valueStyle),
-                        ]
-                    )
-                ),
-              ],
-            ),
-
-            /// battery
-            SizedBox(height: 10 * hRel),
-            Row(
-              children: [
-                Expanded(
-                    child: CustomRich(
-                        children: [
-                          Text('battery: ', style: keyStyle),
-                          Text('${greenChild.batteryLevel?? '-'}', style: valueStyle),
-                        ]
-                    )
-                ),
-              ],
-            ),
-
-            /// register time
-            SizedBox(height: 10 * hRel),
-            Row(
-              children: [
-                Expanded(
-                    child: CustomRich(
-                        children: [
-                          Text('added at: ', style: keyStyle),
-                          Text(DateTools.dateOnlyRelative(greenChild.registerDate), style: valueStyle),
-                        ]
-                    )
-                ),
-              ],
-            ),
-
-            /// connection time
-            SizedBox(height: 10 * hRel),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Flexible(
-                    child: CustomRich(
-                        children: [
-                          Text('time of last connection: ', style: keyStyle),
-                          Text(greenChild.lastConnectionTime(), style: valueStyle)
-                              .color(greenChild.getStatusColor()),
-                        ]
-                    )
-                ),
-              ],
-            ),
-          ],
-        )
+          ),
+      ],
     );
   }
 
@@ -333,7 +358,7 @@ class _ChildInfoPageState extends StateSuper<ChildInfoPage> {
 
   void prepareList(){
     itemList.clear();
-    itemList.addAll(GreenClientManager.items.where(
+    itemList.addAll(GreenClientManager.current!.items.where(
             (element) => element.ownerId == greenChild.id
     ));
   }

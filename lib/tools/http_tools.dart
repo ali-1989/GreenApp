@@ -1,3 +1,4 @@
+import 'package:app/system/extensions.dart';
 import 'package:flutter/material.dart';
 
 import 'package:app/system/keys.dart';
@@ -44,6 +45,10 @@ class HttpTools {
       AppSnack.showError(context, AppMessages.errorOccurredInSubmittedParameters);
       return true;
     }
+    else if(causeCode == HttpCodes.cCode$UserNotFound){
+      AppSnack.showError(context, AppMessages.accountNotFound.capitalize);
+      return true;
+    }
 
 
     return false;
@@ -84,4 +89,5 @@ class HttpCodes {
   static const com_messageForUser = 'messageForUser';
   static const updateProfileSettings$command = 'UpdateProfileSettings';
   static const newGreenMain$command = 'newGreenMain';
+  static const greenClientData$command = 'greenClientData';
 }

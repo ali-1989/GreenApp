@@ -1,6 +1,8 @@
 // one file so that all of the examples are visible on https://pub.dev/packages/esptouch_flutter/example
 
 
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 import 'package:iris_tools/modules/stateManagers/updater_state.dart';
@@ -240,45 +242,62 @@ class _MindInfoPageState extends StateSuper<MindInfoPage> {
   Widget buildAddNewDevice(){
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: .0, vertical: 20),
-      child: Stack(
-        clipBehavior: Clip.none,
+      child: Column(
         children: [
-          CustomCard(
-              color: Colors.black,
-              radius: 30,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CustomRich(
-                      children: [
-                        const Text('Sights')
-                            .color(Colors.blue).bold().fsRRatio(2),
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              CustomCard(
+                  color: Colors.black,
+                  radius: 30,
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text('Sights')
+                          .color(Colors.blue).bold().fsRRatio(2),
+                      const Circle(size: 10, color: Colors.blue),
+                      const Text(' And  ')
+                          .color(Colors.white),
 
-                        const Text(' And ')
-                            .color(Colors.white),
-
-                        const Text('Guides')
-                            .color(Colors.pinkAccent).bold().fsRRatio(2)
-                      ]
+                      const Text('Guides')
+                          .color(Colors.pinkAccent).bold().fsRRatio(2),
+                      const Circle(size: 10, color: Colors.pinkAccent),
+                    ],
                   )
-                ],
+              ),
+
+              Positioned(
+                  left: -4,
+                  top: -2.5,
+                  child: GestureDetector(
+                    onTap: onAddChildClick,
+                    child: const CircularIcon(
+                      icon:AppIcons.add,
+                      itemColor: Colors.white,
+                      backColor: AppDecoration.differentColor,
+                      size: 50,
+              ),
+                  )
               )
+            ],
           ),
-          
-          Positioned(
-              left: -4,
-              top: -2.5,
-              child: GestureDetector(
-                onTap: onAddChildClick,
-                child: const CircularIcon(
-                  icon:AppIcons.add,
-                  itemColor: Colors.white,
-                  backColor: AppDecoration.differentColor,
-                  size: 50,
-          ),
-              )
-          )
+
+          /// if there is not children
+          if(greenMind.children.isEmpty)
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10),
+              child: Padding(
+                  padding: const EdgeInsets.only(top: 70),
+                child: CustomCard(
+                  color: Colors.white.withAlpha(120),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 50),
+                    child: Text(AppMessages.transCap('withoutDevice')).bold(),
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -323,9 +342,9 @@ class _MindInfoPageState extends StateSuper<MindInfoPage> {
                     ],
                   ),
 
-                  ColoredBox(
+                  Circle(
                       color: itm.typeColor(),
-                    child: const SizedBox(width: 10, height: 20),
+                    size: 14,
                   ),
                 ],
               ),

@@ -16,31 +16,78 @@ import 'package:app/system/keys.dart';
 import 'package:app/tools/app/app_db.dart';
 
 class GreenMindManager {
-	GreenMindManager._();
+	GreenMindManager._(this.userId);
 
-	static final List<GreenMindModel> _itemList = [];
+	static final List<GreenMindManager> _userHolder = [];
 	static bool _isInit = false;
-	static Timer? _refreshTimer;
 
-	static List<GreenMindModel> get items => _itemList;
-	static Future init() async {
+	static GreenMindManager getManagerFor(String userId){
+		for(final kv in _userHolder){
+			if(kv.userId == userId){
+				return kv;
+			}
+		}
+
+		final newItm = GreenMindManager._(userId);
+		_userHolder.add(newItm);
+		return newItm;
+	}
+
+	static GreenMindManager? get current {
+		final cUserId = SessionService.getLastLoginUserId();
+
+		if(cUserId == null){
+			return null;
+		}
+
+		return getManagerFor(cUserId);
+	}
+
+	static void init() {
 		if(_isInit){
-			return true;
+			return;
 		}
 
 		_isInit = true;
 		EventNotifierService.addListener(AppEvents.networkConnected, _netListener);
-		fetchAll();
-		requestGreenMinds();
 	}
 
 	static void _netListener({data}){
+		current?.requestGreenMinds();
+	}
+
+	static void newGreenMindFromWs(String userId, dynamic data){
+		final cur = current;
+
+		if(cur == null || cur.userId != userId){
+			return;
+		}
+
+		if(data is Map<String, dynamic>) {
+			cur.addGreenMind(data);
+		}
+
+		if(data is List) {
+			final gList = data.map((e) => e as Map<String, dynamic>).toList();
+			cur.addGreenMinds(gList);
+		}
+	}
+	///---------------------------------------------------------------------------
+	final String userId;
+	final List<GreenMindModel> _itemList = [];
+	Timer? _refreshTimer;
+	List<GreenMindModel> get items => _itemList;
+
+
+	Future<void> start() async {
+		await fetchAll();
 		requestGreenMinds();
 	}
 
-	static void fetchAll() async {
+	Future<void> fetchAll() async {
 		final con = Conditions();
 		con.add(Condition(ConditionType.DefinedNotNull)..key = Keys.id);
+		con.add(Condition(ConditionType.EQUAL)..key = Keys.userId..value = userId);
 
 		final res = AppDB.db.query(AppDB.tbGreenMind, con);
 
@@ -49,33 +96,47 @@ class GreenMindManager {
 		}
 	}
 
-	static Future<bool> sink(dynamic greenMind) async {
+	Future<bool> sink(dynamic greenMind) async {
+		final Map<String, dynamic> map;
+
 		if(greenMind is GreenMindModel){
-			greenMind = greenMind.toMap();
+			map = greenMind.toMap();
+		}
+		else {
+			map = greenMind;
 		}
 
-		final con = Conditions();
-		con.add(Condition()..key = Keys.id .. value = greenMind[Keys.id]);
+		map[Keys.userId] ??= userId;
 
-		final res = await AppDB.db.insertOrUpdate(AppDB.tbGreenMind, greenMind, con);
+		final con = Conditions();
+		con.add(Condition()..key = Keys.id .. value = map[Keys.id]);
+
+		final res = await AppDB.db.insertOrUpdate(AppDB.tbGreenMind, map, con);
 
 		return res > -1;
 	}
 
-	static GreenMindModel? findById(int id){
+	GreenMindModel? findById(int id){
 		return _itemList.firstWhereSafe((element) => element.id == id);
 	}
 
-	static GreenMindModel? findByChildId(int childId){
+	GreenMindModel? findByChildId(int childId){
 		return _itemList.firstWhereSafe(
 						(element)
 				=> element.children.any((element) => element.id == childId));
 	}
 
-	static void addGreenMind(dynamic greenMind, {bool notify = true}){
-		if(greenMind is Map){
-			greenMind = GreenMindModel.fromMap(greenMind);
+	void addGreenMind(dynamic obj, {bool notify = true}){
+		GreenMindModel greenMind;
+
+		if(obj is Map){
+			greenMind = GreenMindModel.fromMap(obj);
 		}
+		else {
+			greenMind = obj;
+		}
+
+		greenMind.userId ??= userId;
 
 		final old = findById(greenMind.id);
 
@@ -93,7 +154,7 @@ class GreenMindManager {
 		}
 	}
 
-	static void addGreenMinds(List<Map> mapList){
+	void addGreenMinds(List<Map> mapList){
 		for(final x in mapList){
 			addGreenMind(x, notify: false);
 		}
@@ -101,22 +162,11 @@ class GreenMindManager {
 		notifyUpdate();
 	}
 
-	static void notifyUpdate(){
+	void notifyUpdate(){
 		UpdaterController.updateByGroup(UpdaterGroup.greenMindUpdate);
 	}
 
-	static void newGreenMindFromWs(dynamic data){
-		if(data is Map<String, dynamic>) {
-			addGreenMind(GreenMindModel.fromMap(data));
-		}
-
-		if(data is List) {
-			final gList = data.map((e) => e as Map<String, dynamic>).toList();
-			addGreenMinds(gList);
-		}
-	}
-
-	static Requester? requestGreenMinds(){
+	Requester? requestGreenMinds(){
 		if(!AppCache.canCallMethodAgain('requestGreenMinds')){
 			return null;
 		}
@@ -134,8 +184,8 @@ class GreenMindManager {
 
 		final js = <String, dynamic>{};
 		js[Keys.request] = 'get_green_minds';
-		js[Keys.requesterId] = SessionService.getLastLoginUserId();
-		js[Keys.userId] = SessionService.getLastLoginUserId();
+		js[Keys.requesterId] = userId;
+		js[Keys.userId] = userId;
 
 		requester.bodyJson = js;
 		requester.prepareUrl();
@@ -144,6 +194,78 @@ class GreenMindManager {
 		return requester;
 	}
 
+	Future<bool> requestReNameGreenMind(GreenMindModel greenMind, String caption){
+		final requester = Requester();
+		final Completer<bool> ret = Completer();
+
+		requester.httpRequestEvents.onStatusOk = (res, response) async {
+			greenMind.caption = caption;
+			sink(greenMind);
+			ret.complete(true);
+		};
+
+		requester.httpRequestEvents.onFailState = (res, response) async {
+			ret.complete(false);
+		};
+
+		final js = <String, dynamic>{};
+		js[Keys.request] = 'rename_green_mind';
+		js[Keys.requesterId] = userId;
+		js['caption'] = caption;
+		js['mind_id'] = greenMind.id;
+
+		requester.bodyJson = js;
+		requester.prepareUrl();
+		requester.request();
+
+		return ret.future;
+	}
+
+  Future<bool> requestReNameGreenChild(GreenChildModel greenChild, String caption){
+		final requester = Requester();
+		final Completer<bool> ret = Completer();
+
+		requester.httpRequestEvents.onStatusOk = (res, response) async {
+			greenChild.caption = caption;
+			sink(findById(greenChild.mindId));
+			ret.complete(true);
+		};
+
+		requester.httpRequestEvents.onFailState = (res, response) async {
+			ret.complete(false);
+		};
+
+		final js = <String, dynamic>{};
+		js[Keys.request] = 'rename_green_child';
+		js[Keys.requesterId] = userId;
+		js['caption'] = caption;
+		js['child_id'] = greenChild.id;
+
+		requester.bodyJson = js;
+		requester.prepareUrl();
+		requester.request();
+
+		return ret.future;
+	}
+
+  void startRefreshGreenMindTimer() {
+		if(_refreshTimer == null || !_refreshTimer!.isActive){
+			_refreshTimer = Timer.periodic(const Duration(seconds: 29), _refreshGreenMindFn);
+			requestGreenMinds();
+		}
+	}
+
+	void stopRefreshGreenMindTimer() {
+		if(_refreshTimer != null && _refreshTimer!.isActive){
+			_refreshTimer?.cancel();
+			_refreshTimer = null;
+		}
+	}
+
+	void _refreshGreenMindFn(Timer _){
+		requestGreenMinds();
+	}
+	///----- static --------------------------------------------------------------
 	static Future<bool> requestChangeToAddDeviceMode(int mindId){
 		final requester = Requester();
 		final Completer<bool> ret = Completer();
@@ -168,75 +290,12 @@ class GreenMindManager {
 		return ret.future;
 	}
 
-	static Future<bool> requestReNameGreenMind(GreenMindModel greenMind, String caption){
-		final requester = Requester();
-		final Completer<bool> ret = Completer();
-
-		requester.httpRequestEvents.onStatusOk = (res, response) async {
-			greenMind.caption = caption;
-			sink(greenMind);
-			ret.complete(true);
-		};
-
-		requester.httpRequestEvents.onFailState = (res, response) async {
-			ret.complete(false);
-		};
-
-		final js = <String, dynamic>{};
-		js[Keys.request] = 'rename_green_mind';
-		js[Keys.requesterId] = SessionService.getLastLoginUserId();
-		js['caption'] = caption;
-		js['mind_id'] = greenMind.id;
-
-		requester.bodyJson = js;
-		requester.prepareUrl();
-		requester.request();
-
-		return ret.future;
-	}
-
-  static Future<bool> requestReNameGreenChild(GreenChildModel greenChild, String caption){
-		final requester = Requester();
-		final Completer<bool> ret = Completer();
-
-		requester.httpRequestEvents.onStatusOk = (res, response) async {
-			greenChild.caption = caption;
-			sink(findById(greenChild.mindId));
-			ret.complete(true);
-		};
-
-		requester.httpRequestEvents.onFailState = (res, response) async {
-			ret.complete(false);
-		};
-
-		final js = <String, dynamic>{};
-		js[Keys.request] = 'rename_green_child';
-		js[Keys.requesterId] = SessionService.getLastLoginUserId();
-		js['caption'] = caption;
-		js['child_id'] = greenChild.id;
-
-		requester.bodyJson = js;
-		requester.prepareUrl();
-		requester.request();
-
-		return ret.future;
-	}
-
-  static void startRefreshGreenMindTimer() {
-		if(_refreshTimer == null || !_refreshTimer!.isActive){
-			_refreshTimer = Timer.periodic(const Duration(seconds: 29), _refreshGreenMindFn);
-			requestGreenMinds();
+  static void updateChildren(String userId, List<Map<dynamic, dynamic>> children) {
+		final m = getManagerFor(userId);
+		
+		for(final map in children){
+			final child = GreenChildModel.fromMap(map);
+			m.findById(child.mindId)?.matchChild(child);
 		}
-	}
-
-	static void stopRefreshGreenMindTimer() {
-		if(_refreshTimer != null && _refreshTimer!.isActive){
-			_refreshTimer?.cancel();
-			_refreshTimer = null;
-		}
-	}
-
-	static void _refreshGreenMindFn(Timer _){
-		requestGreenMinds();
 	}
 }

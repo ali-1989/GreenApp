@@ -143,7 +143,7 @@ class DrawerMenuBuilder {
         child: Column(
           children: [
             StreamBuilder(
-              stream: EventNotifierService.getStream(AppEvents.userProfileChange),
+              stream: EventNotifierService.getStream(AppEvents.userPersonalInfoChange),
               builder: (ctx, data) {
                 return Builder(
                   builder: (ctx){

@@ -333,6 +333,10 @@ class AppMessages {
     return httpMessage('accountIsBlock');
   }
 
+  static String get accountNotFound {
+    return loginMessage('accountNotFound');
+  }
+
   static String get operationCannotBePerformed {
     return operationMessage('operationCannotBePerformed');
   }

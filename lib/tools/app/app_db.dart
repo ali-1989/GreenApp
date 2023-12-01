@@ -34,6 +34,7 @@ class AppDB {
     await AppDB.db.openTable(AppDB.tbUsers);
     await AppDB.db.openTable(AppDB.tbGreenMind);
     await AppDB.db.openTable(AppDB.tbGreenClient);
+    await AppDB.db.openTable(AppDB.tbClientData);
 
     return AppDB.db;
   }
@@ -42,6 +43,7 @@ class AppDB {
   static String tbUsers = 'Users';
   static String tbGreenMind = 'GreenMind';
   static String tbGreenClient = 'GreenClient';
+  static String tbClientData = 'ClientData';
 
 
   static Future<bool> firstLaunch() async {

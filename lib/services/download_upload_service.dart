@@ -23,7 +23,7 @@ class DownloadUploadService {
   static void commonDownloadListener(DownloadItem di) async {
     if(di.isComplete()) {
       if(di.isInCategory(DownloadCategory.userProfile)){
-        EventNotifierService.notify(AppEvents.userProfileChange);
+        EventNotifierService.notify(AppEvents.userPersonalInfoChange);
       }
     }
   }

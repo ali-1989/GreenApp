@@ -83,7 +83,7 @@ class HomePageState extends StateSuper<HomePage> {
 
   void onAddWidgetClick() {
     //UserGuideManager.userIsGuided(UserGuideKey.homePageAddWidget)
-    if(GreenMindManager.items.isEmpty){
+    if(GreenMindManager.current!.items.isEmpty){
       AppSheet.showSheetOneAction(
           context,
           AppMessages.addWidgetButtonGuideText,

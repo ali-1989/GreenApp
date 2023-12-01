@@ -159,10 +159,10 @@ class LayoutPageState extends StateSuper<LayoutPage> {
 
     /// for detect disConnected devices and show.
     if(position == 1){
-      GreenMindManager.startRefreshGreenMindTimer();
+      GreenMindManager.current!.startRefreshGreenMindTimer();
     }
     else {
-      GreenMindManager.stopRefreshGreenMindTimer();
+      GreenMindManager.current!.stopRefreshGreenMindTimer();
     }
   }
 }

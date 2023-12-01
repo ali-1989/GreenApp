@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:app/managers/green_client_manager.dart';
+import 'package:app/managers/green_mind_manager.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:dio/dio.dart';
@@ -45,11 +47,13 @@ class LoginService {
   LoginService._();
 
   static void init(){
-    EventNotifierService.addListener(AppEvents.userLogin, onLoginObservable);
+    EventNotifierService.addListener(AppEvents.newUserLogin, onLoginObservable);
     EventNotifierService.addListener(AppEvents.userLogoff, onLogoffObservable);
   }
 
   static void onLoginObservable({dynamic data}){
+    GreenMindManager.current?.start();
+    GreenClientManager.current?.start();
   }
 
   static void onLogoffObservable({dynamic data}){
@@ -104,12 +108,8 @@ class LoginService {
     UpdaterController.forId(AppBroadcast.drawerMenuRefresherId)?.update();
     AppBroadcast.layoutPageKey.currentState?.scaffoldState.currentState?.closeDrawer();
 
-    if (isCurrent && RouteTools.materialContext != null) {
-      RouteTools.backToRoot(RouteTools.getTopContext()!);
-
-      Future.delayed(const Duration(milliseconds: 300), (){
-        AppBroadcast.reBuildMaterial();
-      });
+    if(isCurrent){
+      resetApp();
     }
   }
 
@@ -130,12 +130,15 @@ class LoginService {
     UpdaterController.forId(AppBroadcast.drawerMenuRefresherId)?.update();
     AppBroadcast.layoutPageKey.currentState?.scaffoldState.currentState?.closeDrawer();
 
+    resetApp();
+  }
+
+  static void resetApp(){
     if (RouteTools.materialContext != null) {
       RouteTools.backToRoot(RouteTools.getTopContext()!);
 
-      Future.delayed(const Duration(milliseconds: 400), (){
+      Future.delayed(const Duration(milliseconds: 300), (){
         AppBroadcast.reBuildMaterial();
-        //RouteTools.pushReplacePage(RouteTools.getTopContext()!, LoginPage());
       });
     }
   }
@@ -219,7 +222,7 @@ class LoginService {
         return;
       }
       final resJs = request.getBodyAsJson()!;
-      await SessionService.login$newProfileData(resJs);
+      await SessionService.loginByProfileData(resJs);
 
       result.complete(true);
       return null;
@@ -331,10 +334,10 @@ class LoginService {
         final mustVerify = resJs['must_verify']?? false;
 
         if (userId != null) {
-          final userModel = await SessionService.login$newProfileData(resJs);
+          final userModel = await SessionService.loginByProfileData(resJs);
 
           if(userModel != null) {
-            AppBroadcast.reBuildMaterial();
+            resetApp();
             res.complete((EmailLoginStatus.ok, null));
           }
           else {
@@ -402,10 +405,10 @@ class LoginService {
           RouteTools.pushPage(context, RegisterPage(injectData: injectData));*/
         }
         else {
-          final userModel = await SessionService.login$newProfileData(resJs);
+          final userModel = await SessionService.loginByProfileData(resJs);
 
           if(userModel != null) {
-            AppBroadcast.reBuildMaterial();
+            resetApp();
           }
           else {
             if(context.mounted){
@@ -423,10 +426,10 @@ class LoginService {
 
   static loginGuestUser(BuildContext context) async {
     final gUser = SessionService.getGuestUser();
-    final userModel = await SessionService.login$newProfileData(gUser.toMap());
+    final userModel = await SessionService.loginByProfileData(gUser.toMap());
 
     if(userModel != null) {
-      AppBroadcast.reBuildMaterial();
+      resetApp();
     }
     else {
       if(context.mounted) {

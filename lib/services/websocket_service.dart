@@ -1,9 +1,12 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:app/managers/client_data_manager.dart';
+import 'package:app/managers/green_client_manager.dart';
 import 'package:flutter/material.dart';
 
 import 'package:iris_notifier/iris_notifier.dart';
+import 'package:iris_tools/api/converter.dart';
 import 'package:iris_tools/api/helpers/jsonHelper.dart';
 import 'package:iris_websocket/iris_websocket.dart';
 
@@ -211,7 +214,17 @@ class WebsocketService {
 		}
 
 		if(command == HttpCodes.newGreenMain$command) {
-			GreenMindManager.newGreenMindFromWs(data);
+			GreenMindManager.newGreenMindFromWs(userId.toString(), data);
+		}
+
+		if(command == HttpCodes.greenClientData$command) {
+			List<Map> children = Converter.correctList(data['children'])!;
+			List<Map> clients = Converter.correctList(data['clients'])!;
+			List<Map> values = Converter.correctList(data['values'])!;
+
+			GreenMindManager.updateChildren(userId.toString(), children);
+			GreenClientManager.dataFromWs(userId.toString(), clients);
+			ClientDataManager.dataFromWs(userId.toString(), values);
 		}
 	}
 

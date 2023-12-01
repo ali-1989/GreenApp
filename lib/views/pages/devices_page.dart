@@ -74,13 +74,13 @@ class DevicesPageState extends StateSuper<DevicesPage> {
         Expanded(
           child: Builder(
               builder: (context) {
-                if(GreenMindManager.items.isEmpty){
+                if(GreenMindManager.current!.items.isEmpty){
                   return buildWhenThereIsNoItems();
                 }
 
                 return ListView.builder(
                   padding: EdgeInsets.only(left: 25 * wRel, right: 25 * wRel, top: 15 * hRel),
-                  itemCount: GreenMindManager.items.length,
+                  itemCount: GreenMindManager.current!.items.length,
                   itemBuilder: listItemBuilder,
                 );
               }
@@ -93,7 +93,7 @@ class DevicesPageState extends StateSuper<DevicesPage> {
   }
 
   Widget? listItemBuilder(BuildContext context, int index) {
-    final itm = GreenMindManager.items[index];
+    final itm = GreenMindManager.current!.items[index];
 
     return Padding(
       key: ValueKey(itm.id),

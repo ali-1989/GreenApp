@@ -82,7 +82,7 @@ class SessionService {
 		SettingsManager.saveLocalSettingsAndNotify();
 	}
 
-	static Future<UserModel?> login$newProfileData(Map json) async {
+	static Future<UserModel?> loginByProfileData(Map json) async {
 		final userId = json[Keys.userId]?.toString();
 
 		if(userId == null) {
@@ -95,8 +95,8 @@ class SessionService {
 
 		newUser.loginDate = DateHelper.nowMinusUtcOffset();
 
-		final wasLoginUser = getExistLoginUserById(userId);
-		var oldDbUser = wasLoginUser;
+		final thisUserBeforeLogin = getExistLoginUserById(userId);
+		var oldDbUser = thisUserBeforeLogin;
 
 		oldDbUser ??= await fetchUserById(userId);
 
@@ -112,21 +112,21 @@ class SessionService {
 				Conditions().add(Condition()..key = Keys.userId..value = newUser.userId));
 
 		if(updateDb > 0) {
-			if(wasLoginUser != null) {
-				//final old = wasLoginUser.toMap();
+			if(thisUserBeforeLogin != null) {
+				//final old = thisUserBeforeLogin.toMap();
 
-				wasLoginUser.matchBy(newUser);
-				_setLastLoginUser(wasLoginUser);
+				thisUserBeforeLogin.matchBy(newUser);
+				_setLastLoginUser(thisUserBeforeLogin);
 
-				EventNotifierService.notify(AppEvents.userProfileChange, data: wasLoginUser);
+				EventNotifierService.notify(AppEvents.userPersonalInfoChange, data: thisUserBeforeLogin);
 
-				return wasLoginUser;
+				return thisUserBeforeLogin;
 			}
 			else {
 				currentLoginList.add(newUser);
 				_setLastLoginUser(newUser);
 
-				EventNotifierService.notify(AppEvents.userLogin, data: newUser);
+				EventNotifierService.notify(AppEvents.newUserLogin, data: newUser);
 
 				return newUser;
 			}
@@ -144,8 +144,8 @@ class SessionService {
 
 		final newUser = UserModel.fromMap(json);
 
-		final wasLoginUser = getExistLoginUserById(userId);
-		var oldDbUser = wasLoginUser;
+		final thisUserBeforeUpdate = getExistLoginUserById(userId);
+		var oldDbUser = thisUserBeforeUpdate;
 
 		oldDbUser ??= await fetchUserById(userId);
 
@@ -163,11 +163,11 @@ class SessionService {
 				Conditions().add(Condition()..key = Keys.userId..value = newUser.userId));
 
 		if(updateDb > 0) {
-			if(wasLoginUser != null) {
-				//final oldMap = wasLoginUser.toMap();
-				wasLoginUser.matchBy(newUser);
+			if(thisUserBeforeUpdate != null) {
+				//final oldMap = thisUserBeforeUpdate.toMap();
+				thisUserBeforeUpdate.matchBy(newUser);
 
-				EventNotifierService.notify(AppEvents.userProfileChange, data: wasLoginUser);
+				EventNotifierService.notify(AppEvents.userPersonalInfoChange, data: thisUserBeforeUpdate);
 			}
 		}
 	}
@@ -216,7 +216,7 @@ class SessionService {
 				Conditions().add(Condition()..key = Keys.userId..value = user.userId));
 
 		if(res > 0) {
-			EventNotifierService.notify(AppEvents.userProfileChange, data: user);
+			EventNotifierService.notify(AppEvents.userPersonalInfoChange, data: user);
 			return true;
 		}
 
