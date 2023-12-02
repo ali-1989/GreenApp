@@ -81,7 +81,7 @@ class GreenClientManager {
 		}
 	}
 
-	Future<bool> sink(dynamic client) async {
+	static Future<bool> sink(dynamic client, String userId) async {
 		final Map<String, dynamic> map;
 
 		if(client is GreenClientModel){
@@ -138,7 +138,7 @@ class GreenClientManager {
 			_itemList.add(gClient);
 		}
 
-		sink(gClient);
+		sink(gClient, userId);
 
 		if(notify) {
 			notifyUpdate(gClient);
@@ -193,13 +193,13 @@ class GreenClientManager {
 		return requester;
 	}
 
-	Future<bool> requestReNameClient(GreenClientModel client, String caption){
+	static Future<bool> requestReNameClient(GreenClientModel client, String caption, String userId){
 		final requester = Requester();
 		final Completer<bool> ret = Completer();
 
 		requester.httpRequestEvents.onStatusOk = (res, response) async {
 			client.caption = caption;
-			sink(client);
+			sink(client, userId);
 			ret.complete(true);
 		};
 

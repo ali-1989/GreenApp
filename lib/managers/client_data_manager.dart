@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:app/managers/green_client_manager.dart';
 import 'package:app/services/session_service.dart';
 import 'package:app/structures/models/client_data_model.dart';
+import 'package:app/system/extensions.dart';
 import 'package:iris_db/iris_db.dart';
 import 'package:iris_tools/api/helpers/databaseHelper.dart';
 import 'package:iris_tools/dateSection/dateHelper.dart';
@@ -51,7 +52,11 @@ class ClientDataManager {
 		}
 	}
 
-	static Future<ClientDataModel?> fetchLastData(int clientId) async {
+	static ClientDataModel? getVolumeById(int clientId){
+		return _itemList.firstWhereSafe((element) => element.clientId == clientId);
+	}
+
+	static Future<ClientDataModel?> fetchLastData(int clientId, bool notify) async {
 		final con = Conditions();
 		con.add(Condition()..key = 'client_id'..value = clientId);
 
@@ -65,7 +70,7 @@ class ClientDataManager {
 		final res = AppDB.db.queryFirst(AppDB.tbClientData, con, orderBy: sort);
 
 		if(res != null){
-			addData(res);
+			addData(res, notify: notify);
 			return ClientDataModel.fromMap(res);
 		}
 
@@ -104,12 +109,12 @@ class ClientDataManager {
 		}
 	}
 
-	static Future<ClientDataModel?> findBy(int clientId, String data, DateTime? time) async {
+	static ClientDataModel? findBy(int clientId, String data, DateTime? time) {
 		final x = List.unmodifiable(_itemList);
 
 		for(final i in x){
 			if(i.clientId == clientId){
-				if(await i.isVolume()){
+				if(i.isVolume()){
 					return i;
 				}
 
@@ -122,7 +127,7 @@ class ClientDataManager {
 		return null;
 	}
 
-	static void addData(dynamic obj, {bool notify = true}) async {
+	static void addData(dynamic obj, {bool notify = true}) {
 		ClientDataModel cData;
 
 		if(obj is Map){
@@ -132,7 +137,7 @@ class ClientDataManager {
 			cData = obj;
 		}
 
-		final old = await findBy(cData.clientId, cData.data, cData.hardwareDate);
+		final old = findBy(cData.clientId, cData.data, cData.hardwareDate);
 
 		if(old == null){
 			_itemList.add(cData);
@@ -172,7 +177,7 @@ class ClientDataManager {
 			}
 		};
 
-		final lastModel = await fetchLastData(childModel.id);
+		final lastModel = await fetchLastData(childModel.id, false);
 		DateTime lastDate = lastModel?.hardwareDate?? DateTime.now();
 
 		final js = <String, dynamic>{};

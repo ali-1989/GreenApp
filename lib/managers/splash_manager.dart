@@ -53,7 +53,8 @@ class SplashManager {
       await DeviceInfoTools.prepareDeviceId();
       TrustSsl.acceptBadCertificate();
       //AudioPlayerService.init();
-
+      //AppDB.db.clearTable(AppDB.tbGreenClient);
+      //AppDB.db.clearTable(AppDB.tbClientData);
       if (!kIsWeb) {
         //await AppNotification.initial();
         //AppNotification.startListenTap();

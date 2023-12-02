@@ -1,8 +1,11 @@
+import 'package:app/managers/client_data_manager.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:iris_tools/api/converter.dart';
 import 'package:iris_tools/dateSection/dateHelper.dart';
 
 import 'package:app/structures/enums/client_type.dart';
 import 'package:app/system/keys.dart';
+import 'package:line_icons/line_icons.dart';
 
 class GreenClientModel {
   String? userId;
@@ -64,5 +67,33 @@ class GreenClientModel {
 
   String getCaption(){
     return caption?? 'N-$number';
+  }
+
+  bool isVolume() {
+    return type == ClientType.volume;
+  }
+
+  IconData getTypeIcon() {
+    switch (type){
+      case ClientType.temperature:
+        return LineIcons.thermometer34Full;
+      case ClientType.light:
+        return LineIcons.haykal;//sun;
+      case ClientType.humidity:
+        return LineIcons.cloudWithRain;//tint;
+      case ClientType.soil:
+        return LineIcons.seedling;
+      default:
+        return LineIcons.adjust;
+    }
+  }
+  Future<String> lastConnectionTime() async {
+    final t = await ClientDataManager.fetchLastData(id, false);
+
+    if(t == null){
+      return '-';
+    }
+
+    return t.lastConnectionTime();
   }
 }
