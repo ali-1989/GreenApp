@@ -56,7 +56,6 @@ class _ChildInfoPageState extends StateSuper<ChildInfoPage> {
     greenChild = widget.greenChild;
     prepareList();
     expandCtr.expanded = itemList.isEmpty;
-
     GreenClientManager.current!.requestClientsFor(greenChild);
     keyStyle = TextStyle(color: Colors.grey.shade300);
     valueStyle = const TextStyle(color: Colors.white, fontWeight: FontWeight.bold);
@@ -72,7 +71,7 @@ class _ChildInfoPageState extends StateSuper<ChildInfoPage> {
     return SafeArea(
       top: false,
       child: UpdaterBuilder(
-        groupIds: const [UpdaterGroup.greenClientUpdate, UpdaterGroup.greenMindUpdate],
+        groupIds: const [UpdaterGroup.greenClientUpdate], // UpdaterGroup.greenMindUpdate
         builder: (_, ctr, data) {
          prepareList();
           return Scaffold(
@@ -112,14 +111,7 @@ class _ChildInfoPageState extends StateSuper<ChildInfoPage> {
 
           buildDetail(),
 
-          /*Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 30),
-                itemCount: itemList.length,
-                  itemBuilder: itemBuilder
-              )
-          )*/
-          Expanded(
+         Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: CustomScrollView(
@@ -137,162 +129,162 @@ class _ChildInfoPageState extends StateSuper<ChildInfoPage> {
 
   Widget buildDetail(){
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 30.0),
-      child: Column(
-        children: [
-          CustomCard(
-            color: Colors.black,
-            child: ExpandablePanel(
-              controller: expandCtr,
-                theme: const ExpandableThemeData(
-                  tapHeaderToExpand: false,
-                  iconColor: Colors.white,
-                ),
-                header: Padding(
-                  padding: const EdgeInsets.only(top: 10.0, left: 20, bottom: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('Detail').color(Colors.white).bold(),
-                      GestureDetector(
-                        onTap: onSettingClick,
-                          child: const Icon(AppIcons.settings, color: Colors.white, size: 20,)
-                      )
-                    ],
-                  ),
-                ),
-                collapsed: const SizedBox(),
-                expanded: Padding(
-                  padding: const EdgeInsets.only(left: 20.0, right: 20, bottom: 12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: Divider(color: Colors.grey.shade200),
-                      ),
-
-                      /// ID
-                      Row(
-                        children: [
-                          Expanded(
-                              child: CustomRich(
-                                  children: [
-                                    Text('ID: ', style: keyStyle),
-                                    Text('${greenChild.id}', style: valueStyle),
-                                  ]
-                              )
-                          ),
-
-                          Expanded(
-                              child: CustomRich(
-                                  children: [
-                                    Text('SN: ', style: keyStyle),
-                                    Text(greenChild.serialNumber, style: valueStyle),
-                                  ]
-                              )
-                          ),
-                        ],
-                      ),
-
-                      /// children
-                      SizedBox(height: 5 * hRel),
-                      Row(
-                        children: [
-                          CustomRich(
-                              children: [
-                                Text('client count: ', style: keyStyle),
-                                Text('${itemList.length}', style: valueStyle),
-                              ]
-                          ),
-                        ],
-                      ),
-
-                      /// version
-                      SizedBox(height: 10 * hRel),
-                      Row(
-                        children: [
-                          Expanded(
-                              child: CustomRich(
-                                  children: [
-                                    Text('version of Firmware: ', style: keyStyle),
-                                    Text('${greenChild.firmwareVersion}', style: valueStyle),
-                                  ]
-                              )
-                          ),
-                        ],
-                      ),
-
-                      /// battery
-                      SizedBox(height: 10 * hRel),
-                      Row(
-                        children: [
-                          Expanded(
-                              child: CustomRich(
-                                  children: [
-                                    Text('battery: ', style: keyStyle),
-                                    Text('${greenChild.batteryLevel?? '-'}', style: valueStyle),
-                                  ]
-                              )
-                          ),
-                        ],
-                      ),
-
-                      /// register time
-                      SizedBox(height: 10 * hRel),
-                      Row(
-                        children: [
-                          Expanded(
-                              child: CustomRich(
-                                  children: [
-                                    Text('added at: ', style: keyStyle),
-                                    Text(DateTools.dateOnlyRelative(greenChild.registerDate), style: valueStyle),
-                                  ]
-                              )
-                          ),
-                        ],
-                      ),
-
-                      /// connection time
-                      SizedBox(height: 10 * hRel),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Flexible(
-                              child: CustomRich(
-                                  children: [
-                                    Text('time of last connection: ', style: keyStyle),
-                                    Text(greenChild.lastConnectionTime(), style: valueStyle)
-                                        .color(greenChild.getStatusColor()),
-                                  ]
-                              )
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+    padding: const EdgeInsets.symmetric(horizontal: 30.0),
+    child: Column(
+      children: [
+        CustomCard(
+          color: Colors.black,
+          child: ExpandablePanel(
+            controller: expandCtr,
+              theme: const ExpandableThemeData(
+                tapHeaderToExpand: false,
+                iconColor: Colors.white,
+              ),
+              header: Padding(
+                padding: const EdgeInsets.only(top: 10.0, left: 20, bottom: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Detail').color(Colors.white).bold(),
+                    GestureDetector(
+                      onTap: onSettingClick,
+                        child: const Icon(AppIcons.settings, color: Colors.white, size: 20,)
+                    )
+                  ],
                 ),
               ),
-          ),
+              collapsed: const SizedBox(),
+              expanded: Padding(
+                padding: const EdgeInsets.only(left: 20.0, right: 20, bottom: 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
 
-          if(itemList.isEmpty)
-            BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10),
-              child: Padding(
-                padding: const EdgeInsets.only(top: 70),
-                child: CustomCard(
-                  color: Colors.white.withAlpha(120),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 50),
-                    child: Text(AppMessages.transCap('withoutDevice')).bold(),
-                  ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Divider(color: Colors.grey.shade200),
+                    ),
+
+                    /// ID
+                    Row(
+                      children: [
+                        Expanded(
+                            child: CustomRich(
+                                children: [
+                                  Text('ID: ', style: keyStyle),
+                                  Text('${greenChild.id}', style: valueStyle),
+                                ]
+                            )
+                        ),
+
+                        Expanded(
+                            child: CustomRich(
+                                children: [
+                                  Text('SN: ', style: keyStyle),
+                                  Text(greenChild.serialNumber, style: valueStyle),
+                                ]
+                            )
+                        ),
+                      ],
+                    ),
+
+                    /// children
+                    SizedBox(height: 5 * hRel),
+                    Row(
+                      children: [
+                        CustomRich(
+                            children: [
+                              Text('client count: ', style: keyStyle),
+                              Text('${itemList.length}', style: valueStyle),
+                            ]
+                        ),
+                      ],
+                    ),
+
+                    /// version
+                    SizedBox(height: 10 * hRel),
+                    Row(
+                      children: [
+                        Expanded(
+                            child: CustomRich(
+                                children: [
+                                  Text('version of Firmware: ', style: keyStyle),
+                                  Text('${greenChild.firmwareVersion}', style: valueStyle),
+                                ]
+                            )
+                        ),
+                      ],
+                    ),
+
+                    /// battery
+                    SizedBox(height: 10 * hRel),
+                    Row(
+                      children: [
+                        Expanded(
+                            child: CustomRich(
+                                children: [
+                                  Text('battery: ', style: keyStyle),
+                                  Text('${greenChild.batteryLevel?? '-'}', style: valueStyle),
+                                ]
+                            )
+                        ),
+                      ],
+                    ),
+
+                    /// register time
+                    SizedBox(height: 10 * hRel),
+                    Row(
+                      children: [
+                        Expanded(
+                            child: CustomRich(
+                                children: [
+                                  Text('added at: ', style: keyStyle),
+                                  Text(DateTools.dateOnlyRelative(greenChild.registerDate), style: valueStyle),
+                                ]
+                            )
+                        ),
+                      ],
+                    ),
+
+                    /// connection time
+                    SizedBox(height: 10 * hRel),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Flexible(
+                            child: CustomRich(
+                                children: [
+                                  Text('time of last connection: ', style: keyStyle),
+                                  Text(greenChild.lastConnectionTime(), style: valueStyle)
+                                      .color(greenChild.getStatusColor()),
+                                ]
+                            )
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ),
-        ],
-      ),
-    );
+        ),
+
+        if(itemList.isEmpty)
+          BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10),
+            child: Padding(
+              padding: const EdgeInsets.only(top: 70),
+              child: CustomCard(
+                color: Colors.white.withAlpha(120),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 50),
+                  child: Text(AppMessages.transCap('withoutDevice')).bold(),
+                ),
+              ),
+            ),
+          ),
+      ],
+    ),
+        );
   }
 
   Widget buildSwitches(){

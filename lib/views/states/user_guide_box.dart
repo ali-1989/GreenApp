@@ -56,6 +56,12 @@ class UserGuideBoxState extends State<UserGuideBox> with TickerProviderStateMixi
   }
 
   @override
+  void dispose(){
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: animation,

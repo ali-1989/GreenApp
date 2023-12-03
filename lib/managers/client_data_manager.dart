@@ -11,7 +11,6 @@ import 'package:iris_tools/modules/stateManagers/updater_state.dart';
 
 import 'package:app/structures/enums/updater_group.dart';
 import 'package:app/structures/middleWares/requester.dart';
-import 'package:app/structures/models/green_child_model.dart';
 import 'package:app/system/keys.dart';
 import 'package:app/tools/app/app_db.dart';
 
@@ -37,7 +36,7 @@ class ClientDataManager {
 	static final List<ClientDataModel> _itemList = [];
 	static List<ClientDataModel> get items => _itemList;
 
-	static Future<void> fetchFor(int clientId, DateTime from, {DateTime? to}) async {
+	static Future<List<ClientDataModel>> fetchFor(int clientId, DateTime from, {DateTime? to}) async {
 		final con = Conditions();
 		con.add(Condition(ConditionType.EQUAL)..key = 'client_id'..value = clientId);
 		con.add(Condition(ConditionType.IsAfterTs)..key = 'time_ts'..value = DateHelper.toTimestamp(from));
@@ -47,9 +46,15 @@ class ClientDataManager {
 		}
 		final res = AppDB.db.query(AppDB.tbClientData, con);
 
+		List<ClientDataModel> result = [];
+
 		for(final x in res){
-			_itemList.add(ClientDataModel.fromMap(x));
+			final i = ClientDataModel.fromMap(x);
+			_itemList.add(i);
+			result.add(i);
 		}
+
+		return result;
 	}
 
 	static ClientDataModel? getVolumeById(int clientId){
@@ -165,7 +170,7 @@ class ClientDataManager {
 		UpdaterController.updateByGroup(UpdaterGroup.greenClientUpdate, data: model);
 	}
 
-	static Future<Requester> requestData(GreenChildModel childModel) async {
+	static Future<Requester> requestNewDataFor(int clientId, {DateTime? from}) async {
 		final requester = Requester();
 
 		requester.httpRequestEvents.onStatusOk = (res, response) async {
@@ -177,13 +182,13 @@ class ClientDataManager {
 			}
 		};
 
-		final lastModel = await fetchLastData(childModel.id, false);
-		DateTime lastDate = lastModel?.hardwareDate?? DateTime.now();
+		final lastModel = await fetchLastData(clientId, false);
+		DateTime? lastDate = lastModel?.hardwareDate?? from;
 
 		final js = <String, dynamic>{};
 		js[Keys.request] = 'get_client_data';
 		js[Keys.requesterId] = SessionService.getLastLoginUserId();
-		js['child_id'] = childModel.id;
+		js['client_id'] = clientId;
 		js['last_date'] = DateHelper.toTimestampNullable(lastDate);
 
 		requester.bodyJson = js;
