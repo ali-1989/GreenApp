@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:app/managers/green_client_manager.dart';
+import 'package:app/managers/green_mind_manager.dart';
 import 'package:app/services/session_service.dart';
 import 'package:app/structures/models/client_data_model.dart';
 import 'package:app/system/extensions.dart';
@@ -30,9 +31,9 @@ class ClientDataManager {
 	}
 
 	static void dataFromWs(String userId, List<Map> list){
-		addDataList(list);
+		addDataList(list, true);
 	}
-	///---------------------------------------------------------------------------
+
 	static final List<ClientDataModel> _itemList = [];
 	static List<ClientDataModel> get items => _itemList;
 
@@ -69,13 +70,13 @@ class ClientDataManager {
 			final d1 = json1['time_ts'];
 			final d2 = json2['time_ts'];
 
-			return DateHelper.compareDatesTs(d1.value, d2.value);
+			return DateHelper.compareDatesTs(d2.value, d1.value);
 		}
 
 		final res = AppDB.db.queryFirst(AppDB.tbClientData, con, orderBy: sort);
 
 		if(res != null){
-			addData(res, notify: notify);
+			addData(res, notify: notify, withSink: false);
 			return ClientDataModel.fromMap(res);
 		}
 
@@ -99,7 +100,6 @@ class ClientDataManager {
 			con.add(Condition()..key = 'client_id' .. value = map['client_id']);
 
 			final res = await AppDB.db.insertOrUpdate(AppDB.tbClientData, map, con);
-
 			return res > -1;
 		}
 		else {
@@ -132,7 +132,7 @@ class ClientDataManager {
 		return null;
 	}
 
-	static void addData(dynamic obj, {bool notify = true}) {
+	static Future<void> addData(dynamic obj, {bool notify = true, bool withSink = true}) async {
 		ClientDataModel cData;
 
 		if(obj is Map){
@@ -151,16 +151,18 @@ class ClientDataManager {
 			old.matchBy(cData);
 		}
 
-		sink(cData);
+		if(withSink) {
+			await sink(cData);
+		}
 
 		if(notify) {
 			notifyUpdate(cData);
 		}
 	}
 
-	static void addDataList(List<Map> mapList){
+	static Future<void> addDataList(List<Map> mapList, bool withSink) async {
 		for(final x in mapList){
-			addData(x, notify: false);
+			await addData(x, notify: false, withSink: withSink);
 		}
 
 		notifyUpdate(null);
@@ -178,7 +180,7 @@ class ClientDataManager {
 
 			if(data is List){
 				final corList = data.map<Map>((e) => e as Map).toList();
-				addDataList(corList);
+				addDataList(corList, false);
 			}
 		};
 
@@ -196,5 +198,40 @@ class ClientDataManager {
 		requester.request();
 
 		return requester;
+	}
+
+	static Future<bool> requestChangeSwitch(ClientDataModel dataModel, bool state) async {
+		final requester = Requester();
+		final result = Completer<bool>();
+
+		requester.httpRequestEvents.onFailState = (res, response) async {
+			result.complete(false);
+		};
+
+		requester.httpRequestEvents.onStatusOk = (res, response) async {
+			sink(dataModel);
+			result.complete(true);
+		};
+
+
+		final client = GreenClientManager.getById(dataModel.clientId)!;
+		final child = GreenMindManager.current!.findChildById(client.ownerId);
+		final mind = GreenMindManager.current!.findByChildId(client.ownerId);
+
+		final js = <String, dynamic>{};
+		js[Keys.request] = 'set_switch_state';
+		js[Keys.requesterId] = SessionService.getLastLoginUserId();
+		js['mind_id'] = mind?.id;
+		js['child_id'] = child?.id;
+		js['bus'] = client.bus;
+		js['client_id'] = dataModel.clientId;
+		js['state'] = state;
+		js['number'] = client.number;
+
+		requester.bodyJson = js;
+		requester.prepareUrl();
+		requester.request();
+
+		return result.future;
 	}
 }

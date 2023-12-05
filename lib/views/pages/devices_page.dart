@@ -30,8 +30,6 @@ class DevicesPage extends StatefulWidget {
 }
 ///=============================================================================
 class DevicesPageState extends StateSuper<DevicesPage> {
-
-
   @override
   void initState(){
     super.initState();

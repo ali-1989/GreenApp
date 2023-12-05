@@ -1,6 +1,7 @@
 import 'package:app/managers/green_client_manager.dart';
 import 'package:app/structures/enums/client_type.dart';
 import 'package:app/tools/date_tools.dart';
+import 'package:iris_tools/api/helpers/mathHelper.dart';
 import 'package:iris_tools/dateSection/dateHelper.dart';
 
 class ClientDataModel {
@@ -42,6 +43,15 @@ class ClientDataModel {
 
   bool isVolume() {
     return type == ClientType.volume;
+  }
+
+  bool isVolumeActive() {
+    if(!isVolume()){
+      return false;
+    }
+
+    final v = MathHelper.clearToInt(data);
+    return  v == 1 || v == 100;
   }
 
   Future<bool> isVolumeInParentTable() {

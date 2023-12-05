@@ -1,3 +1,4 @@
+import 'package:app/tools/app/app_broadcast.dart';
 import 'package:flutter/material.dart';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -47,9 +48,11 @@ class ApplicationSignal {
     EventNotifierService.notify(AppEvents.networkStateChange);
 
     if(connectivityResult != ConnectivityResult.none) {
+      AppBroadcast.isNetConnected = true;
       EventNotifierService.notify(AppEvents.networkConnected);
     }
     else {
+      AppBroadcast.isNetConnected = false;
       EventNotifierService.notify(AppEvents.networkDisConnected);
 
       AppCache.clearDownloading();
@@ -57,11 +60,14 @@ class ApplicationSignal {
   }
 
   static void onWsConnectedListener(){
+    AppBroadcast.isWsConnected = true;
     EventNotifierService.notify(AppEvents.webSocketStateChange);
     EventNotifierService.notify(AppEvents.webSocketConnected);
   }
 
   static void onWsDisConnectedListener(){
+    AppBroadcast.isWsConnected = false;
+    EventNotifierService.notify(AppEvents.webSocketStateChange);
     EventNotifierService.notify(AppEvents.webSocketDisConnected);
   }
 }

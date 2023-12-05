@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:app/managers/client_data_manager.dart';
 import 'package:app/managers/green_client_manager.dart';
 import 'package:app/structures/enums/client_type.dart';
 import 'package:app/structures/enums/updater_group.dart';
@@ -16,6 +15,7 @@ import 'package:app/tools/app/app_sheet.dart';
 import 'package:app/tools/date_tools.dart';
 import 'package:app/tools/route_tools.dart';
 import 'package:app/views/components/live_and_chart_view.dart';
+import 'package:app/views/components/switch_view.dart';
 import 'package:app/views/pages/rename_client_page.dart';
 import 'package:app/views/pages/rename_green_child.dart';
 import 'package:expandable/expandable.dart';
@@ -29,7 +29,6 @@ import 'package:iris_tools/modules/stateManagers/updater_state.dart';
 import 'package:iris_tools/widgets/custom_card.dart';
 import 'package:iris_tools/widgets/icon/circular_icon.dart';
 import 'package:iris_tools/widgets/text/custom_rich.dart';
-import 'package:lite_rolling_switch/lite_rolling_switch.dart';
 
 class ChildInfoPage extends StatefulWidget {
   final GreenMindModel greenMind;
@@ -298,97 +297,8 @@ class _ChildInfoPageState extends StateSuper<ChildInfoPage> {
           mainAxisExtent: 140,
         ),
         itemBuilder: (_, idx){
-          return buildSwitch(items[idx]);
+          return SwitchView(clientModel: items[idx]);
         }
-    );
-  }
-
-  Widget buildSwitch(GreenClientModel itm){
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      child: CustomCard(
-          color: Colors.black,
-          radius: 30,
-          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-          child: Column(
-              children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(
-                      height: 40,
-                      child: LiteRollingSwitch(
-                        width: 90,
-                        value: true,
-                        textOn: 'on',
-                        textOff: 'off',
-                        colorOn: Colors.greenAccent[700]!,
-                        colorOff: Colors.redAccent[700]!,
-                        iconOn: Icons.lightbulb_outline,
-                        iconOff: Icons.power_settings_new,
-                        textSize: 16.0,
-                        onChanged: (bool state) {
-
-                        },
-                        onTap: (){},
-                        onDoubleTap: (){},
-                        onSwipe: (){
-
-                        },
-                      ),
-                    ),
-
-                    const SizedBox(width: 10),
-                    Builder(
-                      builder: (context) {
-                        return GestureDetector(
-                          onTap: onSettingOnSwitchClick(itm, context),
-                            child: const Icon(AppIcons.settings, color: Colors.white, size: 20)
-                        );
-                      }
-                    )
-                  ],
-                ),
-
-                const SizedBox(height: 10),
-
-                Text(itm.getCaption())
-                    .color(Colors.blue).bold().fsRRatio(2),
-
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.access_time_filled_outlined, color: Colors.white, size: 18),
-
-                    const SizedBox(width: 4),
-
-                    Builder(
-                      builder: (context) {
-                        final data = ClientDataManager.getVolumeById(itm.id);
-
-                        if(data != null){
-                          return Text(data.lastConnectionTime())
-                              .color(Colors.white);
-                        }
-
-                        return FutureBuilder(
-                            future: itm.lastConnectionTime(),
-                            builder: (_, snap){
-                              if(snap.data == null || snap.hasError){
-                                return const SizedBox();
-                              }
-
-                              return Text(snap.data!)
-                                  .color(Colors.white);
-                            }
-                        );
-                      }
-                    ),
-                  ],
-                )
-              ]
-          )
-      ),
     );
   }
 
@@ -405,11 +315,16 @@ class _ChildInfoPageState extends StateSuper<ChildInfoPage> {
   }
 
   void prepareList(){
+    final beforeCount = itemList.length;
+
     itemList.clear();
     itemList.addAll(GreenClientManager.current!.items.where(
             (element) => element.ownerId == greenChild.id
     ));
 
+    if(itemList.isNotEmpty && beforeCount < 1){
+      expandCtr.expanded = false;
+    }
 
     final sortConditions = [
       ClientType.volume,

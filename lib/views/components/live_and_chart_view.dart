@@ -1,5 +1,6 @@
 import 'package:app/managers/client_data_manager.dart';
 import 'package:app/structures/abstract/state_super.dart';
+import 'package:app/structures/enums/app_events.dart';
 import 'package:app/structures/enums/chart_dim_type.dart';
 import 'package:app/structures/enums/updater_group.dart';
 import 'package:app/structures/models/client_data_model.dart';
@@ -9,6 +10,7 @@ import 'package:app/tools/app/app_decoration.dart';
 import 'package:app/tools/app/app_messages.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:iris_notifier/iris_notifier.dart';
 import 'package:iris_tools/api/helpers/mathHelper.dart';
 import 'package:iris_tools/dateSection/dateHelper.dart';
 import 'package:iris_tools/modules/stateManagers/updater_state.dart';
@@ -39,8 +41,12 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
   ClientDataModel? lastDataModel;
   List<ClientDataModel> dataList = [];
   List<String> bottomTexts = [];
+  double minValue = 0;
+  double maxValue = 1;
   double hLineStep = 1;
   late ChartDimType chartDim;
+  List<FlSpot> dots = [];
+  //Timer todo. timer for update every 3 h
 
   @override
   void initState(){
@@ -51,19 +57,21 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
       prepareLastModel();
       prepareDataList();
       UpdaterController.addGroupListener([UpdaterGroup.greenClientUpdate], onNewDataListener);
-      ClientDataManager.requestNewDataFor(widget.clientModel.id);
+      EventNotifierService.addListener(AppEvents.networkConnected, onReConnectNet);
+      requestNewData();
     });
   }
 
   @override
   void dispose(){
     UpdaterController.removeGroupListener(onNewDataListener);
+    EventNotifierService.removeListener(AppEvents.networkConnected, onReConnectNet);
 
     super.dispose();
   }
   @override
   Widget build(BuildContext context) {
-    print('>>>>>>>>>>. live chart build <<<<<<<<< ');
+    //print('>>>>>>>>>>. live chart build <<<<<<<<< ');
     if(lastDataModel == null && !widget.forceShowView){
       return const SizedBox();
     }
@@ -179,8 +187,9 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
   LineChartData genChartData() {
     final bars = <LineChartBarData>[];
 
-    bars.add(LineChartBarData(
-      show: true,
+    bars.add(
+      LineChartBarData(
+          show: true,
         isCurved: true,
         color: Colors.white,
         barWidth: 1,
@@ -188,12 +197,7 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
         curveSmoothness: 0.2,
         //lineChartStepData: LineChartStepData(stepDirection: 5),
         isStepLineChart: false, //break Line, no Curve
-        spots: [
-          const FlSpot(1, 5),
-          const FlSpot(2, 8),
-          const FlSpot(4, 22),
-          const FlSpot(8, 30),
-        ]
+        spots: dots
       ),
     );
 
@@ -201,8 +205,8 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
       backgroundColor: AppDecoration.mainColor,
       minX: 0,
       maxX: 8,
-      minY: 0,
-      maxY: 30,
+      minY: minValue,
+      maxY: maxValue,
       lineBarsData: bars,
       titlesData: FlTitlesData(
         show: true,
@@ -225,7 +229,7 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
           sideTitles: SideTitles(
             showTitles: true,
             getTitlesWidget: leftTitleWidgets,
-            reservedSize: maxValueInList(),
+            reservedSize: 25,
             interval: hLineStep,
           ),
         ),
@@ -238,10 +242,10 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
         show: true,
         drawHorizontalLine: true,
         drawVerticalLine: false,
-        horizontalInterval: 10,
+        horizontalInterval: hLineStep,
         getDrawingHorizontalLine: (v){
           return const FlLine(
-            color: Colors.white,
+            color: Colors.white60,
             strokeWidth: .5,
             dashArray: [3,5]
           );
@@ -253,37 +257,30 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
   Widget leftTitleWidgets(double value, TitleMeta meta) {
     const style = TextStyle(
       fontWeight: FontWeight.bold,
-      fontSize: 12,
+      fontSize: 12,color: Colors.white
     );
-    print('======== $value');
+
     String text;
-    switch (value.toInt()) {
-      case 1:
-        text = '10K ';
-        break;
-      case 3:
-        text = '30k';
-        break;
-      case 5:
-        text = '50k';
-        break;
-      default:
-        return Container();
+
+    if(value == minValue || value == maxValue){
+      text = '';
+    }
+    else {
+      text = '${value.toInt().toString()} ';
     }
 
     return Text(text, style: style, textAlign: TextAlign.right);
   }
 
   Widget bottomTitleWidgets(double value, TitleMeta meta) {
-    /// value: 0  to  maxX
-
+    /// value: minX  to  maxX
     /*String text = '';
 
     if(value >= 1.0){
       text = value.ceil().toString().replaceFirst('.0', '');
     }*/
 
-    Widget view = Text(bottomTexts[MathHelper.toInt(meta.formattedValue)]);
+    Widget view = Text(bottomTexts[value.toInt()]).color(Colors.white);
 
     return SideTitleWidget(
       axisSide: meta.axisSide,
@@ -301,6 +298,14 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
   void onNewDataListener(UpdaterGroupId p1) {
     prepareLastModel();
     prepareDataList();
+  }
+
+  void requestNewData() {
+    ClientDataManager.requestNewDataFor(widget.clientModel.id);
+  }
+
+  void onReConnectNet({data}) {
+    requestNewData();
   }
 
   void prepareLastModel() async {
@@ -334,6 +339,8 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
     dataList.addAll(list);
 
     prepareBottomTexts(from);
+    prepareMinMaxAndDots(from);
+
     callState();
   }
 
@@ -341,28 +348,66 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
     from = DateHelper.utcToLocal(from);
 
     if(chartDim == ChartDimType.day){
-      bottomTexts.add('');
 
-      for(int i=0; i<8; i++){
-        from = from.add(const Duration(hours: 3));
+      for(int i=0; i<9; i++){
         int h = from.hour;
         bottomTexts.add('$h"');
+        from = from.add(const Duration(hours: 3));
+      }
+    }
+  }
+
+  void prepareMinMaxAndDots(DateTime base) {
+    dots.clear();
+
+    if(dataList.isEmpty){
+      minValue = 0;
+      maxValue = 1;
+      hLineStep = 1;
+      return;
+    }
+
+    minValue = MathHelper.clearToDouble(dataList[0].data);
+    maxValue = MathHelper.clearToDouble(dataList[0].data);
+
+    {/// first dot
+      final date = dataList[0].hardwareDate!;
+      final difDur = DateHelper.difference(base, date);
+      /// 24*60 = 1440
+      /// 1440/8 = 180
+      final d = FlSpot(difDur.inMinutes / 180, minValue);
+      dots.add(d);
+    }
+
+    for(int i=1; i< dataList.length; i++){
+      final date = dataList[i].hardwareDate!;
+      final difDur = DateHelper.difference(base, date);
+
+      double v = MathHelper.clearToDouble(dataList[i].data);
+
+      final d = FlSpot(difDur.inMinutes/180, v);
+      dots.add(d);
+
+      if(v > maxValue){
+        maxValue = v;
+      }
+      else if(v < minValue) {
+        minValue = v;
       }
     }
 
-  }
+    double diff = maxValue - minValue;
 
-  double maxValueInList() {
-    String max = dataList.reduce((value, element) {
-      double v1 = MathHelper.clearToDouble(value.data);
-      double v2 = MathHelper.clearToDouble(element.data);
-
-      return v1 > v2? value : element;
-    }).data;
-
-    double res = MathHelper.clearToDouble(max);
-    hLineStep = res/6;
-
-    return res;
+    if(diff < 8){
+      hLineStep = 1;
+      minValue -= dataList.length < 2?  4 : 1;
+      maxValue += dataList.length < 2?  4 : 1;
+    }
+    else {
+      minValue -= 1;
+      maxValue += 1;
+      diff = maxValue - minValue;
+      hLineStep = diff / 6;
+    }
   }
 }

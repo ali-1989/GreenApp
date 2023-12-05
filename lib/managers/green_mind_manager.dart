@@ -126,6 +126,18 @@ class GreenMindManager {
 				=> element.children.any((element) => element.id == childId));
 	}
 
+	GreenChildModel? findChildById(int childId){
+		for(final x in _itemList){
+			for(final x2 in x.children){
+				if(x2.id == childId){
+					return x2;
+				}
+			}
+		}
+
+		return null;
+	}
+
 	void addGreenMind(dynamic obj, {bool notify = true}){
 		GreenMindModel greenMind;
 

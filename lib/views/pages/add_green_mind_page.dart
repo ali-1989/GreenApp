@@ -1,5 +1,3 @@
-// one file so that all of the examples are visible on https://pub.dev/packages/esptouch_flutter/example
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -52,7 +50,9 @@ class _AddGreenMindPageState extends StateSuper<AddGreenMindPage> {
   void initState(){
     super.initState();
 
-    addPostOrCall(fn: onGetWifiInfoClick);
+    Future.delayed(const Duration(milliseconds: 800), (){
+      onGetWifiInfoClick();
+    });
   }
 
   @override
@@ -204,6 +204,7 @@ class _AddGreenMindPageState extends StateSuper<AddGreenMindPage> {
       bssidCtr.text = await WifiInfoTools.bssid ?? '';
     }
     finally {
+
       if(ssidCtr.text.isEmpty){
         showGetWifiDataButton = true;
         Future.delayed(const Duration(milliseconds: 200), (){

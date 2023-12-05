@@ -1,3 +1,4 @@
+import 'package:app/services/websocket_service.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:dio/dio.dart';
@@ -138,10 +139,11 @@ class Requester {
             '\ndata:$response'
             '\n_._._._._._._.__._._._._._._.__._._._._._._.__._._._._._._._';
 
-        //Tools.verboseLog(pr);
+        Tools.verboseLog(pr);
       }
 
-      /*if(_httpRequester.responseData?.statusCode == 401 && SessionService.getLastLoginUser() != null){
+      /* refresh token
+       if(_httpRequester.responseData?.statusCode == 401 && SessionService.getLastLoginUser() != null){
         JwtService.stopRefreshService();
         final getNewToken = await JwtService.requestNewToken(SessionService.getLastLoginUser()!);
 
@@ -168,6 +170,7 @@ class Requester {
         return;
       }
 
+      WebsocketService.connect();
       final Map? js = _httpRequester.getBodyAsJson();
 
       if (js == null) {

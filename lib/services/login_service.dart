@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:app/managers/green_client_manager.dart';
 import 'package:app/managers/green_mind_manager.dart';
+import 'package:app/services/websocket_service.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:dio/dio.dart';
@@ -52,6 +53,7 @@ class LoginService {
   }
 
   static void onLoginObservable({dynamic data}){
+    WebsocketService.sendHeartAndUsers();
     GreenMindManager.current?.start();
     GreenClientManager.current?.start();
   }
@@ -438,7 +440,7 @@ class LoginService {
     }
   }
 
-  static Requester requestRegisterUser(Map<String, dynamic> body, HttpRequestEvents eventHandler){
+  static Requester requestALoginCommand(Map<String, dynamic> body, HttpRequestEvents eventHandler){
     final request = Requester();
     request.bodyJson = body;
     request.httpRequestEvents = eventHandler;

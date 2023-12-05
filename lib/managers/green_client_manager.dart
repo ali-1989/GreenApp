@@ -51,14 +51,14 @@ class GreenClientManager {
 		_isInit = true;
 	}
 
-	static void dataFromWs(String userId, List<Map> clients){
+	static void dataFromWs(String userId, List<Map> clients, bool notify){
 		final cur = current;
 
 		if(cur == null || cur.userId != userId){
 			return;
 		}
 
-		current?.addClients(clients);
+		current?.addClients(clients, notify);
 	}
 	///---------------------------------------------------------------------------
 	final String userId;
@@ -145,27 +145,18 @@ class GreenClientManager {
 		}
 	}
 
-	void addClients(List<Map> mapList){
+	void addClients(List<Map> mapList, bool notify){
 		for(final x in mapList){
 			addClient(x, notify: false);
 		}
 
-		notifyUpdate(null);
+		if(notify) {
+			notifyUpdate(null);
+		}
 	}
 
 	void notifyUpdate(GreenClientModel? model){
 		UpdaterController.updateByGroup(UpdaterGroup.greenClientUpdate, data: model);
-	}
-
-	void newClientFromWs(dynamic data){
-		if(data is Map<String, dynamic>) {
-			addClient(data);
-		}
-
-		if(data is List) {
-			final gList = data.map((e) => e as Map<String, dynamic>).toList();
-			addClients(gList);
-		}
 	}
 
 	Requester requestClientsFor(GreenChildModel childModel){
@@ -176,7 +167,7 @@ class GreenClientManager {
 
 			if(data is List){
 				final corList = data.map<Map>((e) => e as Map).toList();
-				addClients(corList);
+				addClients(corList, true);
 			}
 		};
 

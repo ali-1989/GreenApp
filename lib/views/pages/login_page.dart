@@ -251,6 +251,6 @@ class LoginPageState extends StateSuper<LoginPage> {
     };
 
     showLoading();
-    requester = LoginService.requestRegisterUser(body, events);
+    requester = LoginService.requestALoginCommand(body, events);
   }
 }

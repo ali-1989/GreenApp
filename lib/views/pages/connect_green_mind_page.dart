@@ -1,7 +1,4 @@
-// Usually, I would prefer splitting up an app into smaller files, but as this
-// is an example app for a published plugin, it's better to have everything in
-// one file so that all of the examples are visible on https://pub.dev/packages/esptouch_flutter/example
-
+// examples are visible on https://pub.dev/packages/esptouch_flutter/example
 
 import 'dart:async';
 

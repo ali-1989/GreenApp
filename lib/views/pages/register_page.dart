@@ -363,6 +363,6 @@ class RegisterPageState extends StateSuper<RegisterPage> {
       );
     };
 
-    requester = LoginService.requestRegisterUser(body, event);
+    requester = LoginService.requestALoginCommand(body, event);
   }
 }

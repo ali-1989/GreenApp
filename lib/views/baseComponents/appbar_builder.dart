@@ -1,4 +1,8 @@
+import 'package:app/structures/enums/app_events.dart';
+import 'package:app/tools/app/app_broadcast.dart';
 import 'package:flutter/material.dart';
+import 'package:iris_notifier/iris_notifier.dart';
+import 'package:iris_tools/widgets/circle.dart';
 
 import 'package:iris_tools/widgets/colored_space.dart';
 import 'package:iris_tools/widgets/path/paths.dart';
@@ -19,12 +23,29 @@ class CustomAppBar extends StatefulWidget {
 }
 ///=============================================================================
 class _CustomAppBarState extends StateSuper<CustomAppBar> {
+
+  @override
+  void initState(){
+    super.initState();
+    EventNotifierService.addListener(AppEvents.networkStateChange, onNetChange);
+    EventNotifierService.addListener(AppEvents.webSocketStateChange, onWsChange);
+  }
+
+  @override
+  void dispose(){
+    EventNotifierService.removeListener(AppEvents.networkStateChange, onNetChange);
+    EventNotifierService.removeListener(AppEvents.webSocketStateChange, onWsChange);
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
       textDirection: TextDirection.ltr,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
+
+        /// image
         Padding(
             padding: EdgeInsets.only(left: 25* wRel, right: 25* wRel),
           child: Builder(
@@ -60,6 +81,7 @@ class _CustomAppBarState extends StateSuper<CustomAppBar> {
         ),
 
 
+        /// title
         Expanded(
             child: DecoratedBox(
               decoration: const BoxDecoration(
@@ -68,14 +90,35 @@ class _CustomAppBarState extends StateSuper<CustomAppBar> {
               ),
               child: SizedBox(
                 height: 35 * hRel,
-                child: Center(
-                  child: widget.titleView?? Text(widget.title?? '')
-                      .bold().color(Colors.white).fsRRatio(3),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Center(
+                        child: widget.titleView?? Text(widget.title?? '')
+                            .bold().color(Colors.white).fsRRatio(3),
+                      ),
+                    ),
+
+                    Column(
+                      children: [
+                        Circle(size: 3, color: AppBroadcast.isNetConnected? Colors.green : Colors.red),
+                        Circle(size: 3, color: AppBroadcast.isWsConnected? Colors.green : Colors.red),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             )
         )
       ],
     );
+  }
+
+  void onNetChange({data}) {
+    callState();
+  }
+
+  void onWsChange({data}) {
+    callState();
   }
 }
