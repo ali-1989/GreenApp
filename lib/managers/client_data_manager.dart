@@ -180,7 +180,7 @@ class ClientDataManager {
 
 			if(data is List){
 				final corList = data.map<Map>((e) => e as Map).toList();
-				addDataList(corList, false);
+				addDataList(corList, true);
 			}
 		};
 

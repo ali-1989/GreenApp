@@ -176,7 +176,7 @@ class WelcomePageState extends StateSuper<WelcomePage> {
 
       if(reLaunch){
         RouteTools.backToRoot(RouteTools.getTopContext()!);
-        AppBroadcast.reBuildMaterial();
+        AppBroadcast.reBuildApp();
       }
 
       await GoogleSignService().getCredentialInfo();

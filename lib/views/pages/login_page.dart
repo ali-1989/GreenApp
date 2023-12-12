@@ -247,7 +247,7 @@ class LoginPageState extends StateSuper<LoginPage> {
 
       await SessionService.loginByProfileData(data);
       RouteTools.backToRoot(RouteTools.getTopContext()!);
-      AppBroadcast.reBuildMaterial();
+      AppBroadcast.reBuildApp();
     };
 
     showLoading();

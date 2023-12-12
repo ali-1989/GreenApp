@@ -18,7 +18,6 @@ class ApiManager {
   ApiManager._();
 
   static String serverApi = '${SettingsManager.localSettings.httpAddress}/app-v1';
-  //static String serverApi = 'http://192.168.1.104:20010/app-v1';
   static String errorReportApi = '${SettingsManager.localSettings.httpAddress}/errors/add';
   static String fcmTopic = 'daily_text';
 

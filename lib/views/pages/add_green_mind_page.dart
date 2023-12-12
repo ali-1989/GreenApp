@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:app/services/session_service.dart';
+import 'package:app/tools/permission_tools.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -14,7 +16,6 @@ import 'package:app/tools/app/app_messages.dart';
 import 'package:app/tools/app/app_sheet.dart';
 import 'package:app/tools/app/app_snack.dart';
 import 'package:app/tools/app/app_toast.dart';
-import 'package:app/tools/device_info_tools.dart';
 import 'package:app/tools/route_tools.dart';
 import 'package:app/tools/wifi_info_tools.dart';
 import 'package:app/views/baseComponents/appbar_builder.dart';
@@ -135,22 +136,22 @@ class _AddGreenMindPageState extends StateSuper<AddGreenMindPage> {
                   TextField(
                     controller: ssidCtr,
                     enabled: false,
+                    style: const TextStyle(color: Colors.white),
                     decoration: AppDecoration.getFilledInputDecoration().copyWith(
                       hintText: 'SSID (wifi router\'s name)',
-                      fillColor: Colors.grey,
+                      fillColor: Colors.grey.shade400,
                     ),
                   ),
 
-                  SizedBox(height: 6* hRel),
-
-                  /*TextField(
+                  /*SizedBox(height: 6* hRel),
+                  TextField(
                     controller: bssidCtr,
                     decoration: AppDecoration.getFilledInputDecoration().copyWith(
                       hintText: 'BSSID (MAC address) : 00:a0:c9:14:c8:29',
                     ),
-                  ),
+                  ),*/
 
-                  SizedBox(height: 6* hRel),*/
+                  SizedBox(height: 6* hRel),
 
                   TextField(
                     controller: passwordCtr,
@@ -190,6 +191,9 @@ class _AddGreenMindPageState extends StateSuper<AddGreenMindPage> {
     final ctr = UpdaterController.forId(fetchingWifiInfoId);
     ctr!.addStateAndUpdate(fetchingWifiInfoState);
 
+    await PermissionTools.requestWifiPermission();
+    await PermissionTools.requestLocationPermission();
+
     try {
       var temp = await WifiInfoTools.ssid ?? '';
       if(temp.startsWith('"')){
@@ -204,7 +208,6 @@ class _AddGreenMindPageState extends StateSuper<AddGreenMindPage> {
       bssidCtr.text = await WifiInfoTools.bssid ?? '';
     }
     finally {
-
       if(ssidCtr.text.isEmpty){
         showGetWifiDataButton = true;
         Future.delayed(const Duration(milliseconds: 200), (){
@@ -223,7 +226,7 @@ class _AddGreenMindPageState extends StateSuper<AddGreenMindPage> {
   Future<void> createTask() async {
     String pass = passwordCtr.text.length.toString().padLeft(2, '0');
     pass += passwordCtr.text;
-    pass += await DeviceInfoTools.getDeviceId();
+    pass += SessionService.getLastLoginUserId()?? '';
 
     task = ESPTouchTask(
       ssid: ssidCtr.text,

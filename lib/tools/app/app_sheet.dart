@@ -132,7 +132,7 @@ class AppSheet {
       }) {
 
     buttonText ??= AppMessages.ok;
-    padding ??= EdgeInsets.symmetric(vertical: 18, horizontal: 13 * AppSizes.instance.heightRelative);
+    EdgeInsets pad = padding ?? EdgeInsets.symmetric(vertical: 18, horizontal: 13 * AppSizes.instance.heightRelative);
     final theme = _genTheme();
 
     void close() {
@@ -165,7 +165,7 @@ class AppSheet {
           description: content,
           contentColor: theme.contentColor,
           title: titleView,
-          descriptionPadding: padding,
+          descriptionPadding: pad,
           positiveButton: posBtn,
         );
       },

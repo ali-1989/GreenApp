@@ -6,11 +6,8 @@ import 'package:app/system/keys.dart';
 import 'package:app/tools/date_tools.dart';
 
 class SettingsModel {
-  //static const defaultHttpAddress = 'http://green.vosatezehn.com:20010';
-  static const defaultHttpAddress = 'http://192.168.1.104:20010';
-  //static const defaultHttpAddress = 'http://45.61.49.32:20010';
-  static const defaultWsAddress = 'ws://192.168.1.104:20015/ws';
-  //static const defaultWsAddress = 'ws://45.61.49.32:20015/ws';
+  static const defaultHttpAddress = 'http://45.61.49.32:20010'; // http://green.vosatezehn.com:20010
+  static const defaultWsAddress = 'ws://45.61.49.32:20015/ws';
   static const Locale defaultAppLocale = Locale('en', 'US');
   static const CalendarType defaultCalendarType = CalendarType.gregorian;
   static final defaultDateFormat = DateFormat.yyyyMmDd.format();

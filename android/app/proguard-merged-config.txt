@@ -118,7 +118,6 @@
 -keep class com.google.firebase.messaging.FirebaseMessagingService { <init>(); }
 -keep class com.google.firebase.provider.FirebaseInitProvider { <init>(); }
 -keep class com.maru.twitter_login.chrome_custom_tabs.ChromeCustomTabsActivity { <init>(); }
--keep class com.zt.shareextend.ShareExtendProvider { <init>(); }
 -keep class io.flutter.plugins.firebase.messaging.FlutterFirebaseMessagingBackgroundService { <init>(); }
 -keep class io.flutter.plugins.firebase.messaging.FlutterFirebaseMessagingInitProvider { <init>(); }
 -keep class io.flutter.plugins.firebase.messaging.FlutterFirebaseMessagingReceiver { <init>(); }
@@ -240,7 +239,7 @@
 -keep class androidx.lifecycle.DefaultLifecycleObserver
 
 # End of content from E:\Programming\Projects\FlutterProjects\Green\GreenApp\build\flutter_plugin_android_lifecycle\intermediates\consumer_proguard_dir\release\lib0\proguard.txt
-# The proguard configuration file for the following section is E:\Programming\.gradle\caches\transforms-3\e786ceb601f378dbc87b5f74cc60c8c5\transformed\jetified-firebase-auth-22.2.0\proguard.txt
+# The proguard configuration file for the following section is E:\Programming\.gradle\caches\transforms-3\404c342b26cb44f769780ca7a12cee83\transformed\jetified-firebase-auth-22.3.0\proguard.txt
 -dontwarn com.google.appengine.api.**
 -dontwarn okio.**
 -dontwarn org.apache.**
@@ -265,11 +264,11 @@
 # We keep all fields for every generated proto file as the runtime uses
 # reflection over them that ProGuard cannot detect. Without this keep
 # rule, fields may be removed that would cause runtime failures.
--keepclassmembers class * extends com.google.android.gms.internal.firebase-auth-api.zzair {
+-keepclassmembers class * extends com.google.android.gms.internal.firebase-auth-api.zzajc {
   <fields>;
 }
 
-# End of content from E:\Programming\.gradle\caches\transforms-3\e786ceb601f378dbc87b5f74cc60c8c5\transformed\jetified-firebase-auth-22.2.0\proguard.txt
+# End of content from E:\Programming\.gradle\caches\transforms-3\404c342b26cb44f769780ca7a12cee83\transformed\jetified-firebase-auth-22.3.0\proguard.txt
 # The proguard configuration file for the following section is E:\Programming\.gradle\caches\transforms-3\956cc39df18f2299fe853385f7fad22b\transformed\jetified-recaptcha-18.1.2\proguard.txt
 # Proguard cannot process META-INF/versions/9.
 # See https://discuss.gradle.org/t/meta-inf-version-duplicate-error-when-using-proguard/31380

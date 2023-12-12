@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:app/managers/client_data_manager.dart';
 import 'package:app/managers/green_client_manager.dart';
+import 'package:app/tools/app/app_broadcast.dart';
 import 'package:flutter/material.dart';
 
 import 'package:iris_notifier/iris_notifier.dart';
@@ -28,11 +30,11 @@ import 'package:app/tools/route_tools.dart';
 class WebsocketService {
 	WebsocketService._();
 
-	static GetSocket? _ws;
+	static IrisWebSocket? _ws;
 	static String? _uri;
 	static bool _isInit = false;
 	static bool _isConnected = false;
-	static Duration reconnectInterval = const Duration(seconds: 4);
+	static const Duration reconnectInterval = Duration(seconds: 3);
 	static Timer? periodicHeartTimer;
 	static Timer? reconnectTimer;
 	static int _tryReconnect = 0;
@@ -51,7 +53,7 @@ class WebsocketService {
 	}
 
 	static void _netListener({data}) {
-		if(isConnected  || _ws != null) {
+		if(isConnected || _ws != null) {
 			return;
 		}
 
@@ -61,9 +63,15 @@ class WebsocketService {
 
 	static void _close() {
 		try {
+			final lastState = _isConnected;
 			_isConnected = false;
 			_ws?.close(1000);
 			_ws = null;
+
+			if(lastState) {
+				ApplicationSignal.onWsDisConnectedListener();
+			}
+
 			periodicHeartTimer?.cancel();
 		}
 		catch(e){/**/}
@@ -74,18 +82,22 @@ class WebsocketService {
 			return;
 		}
 
+		LogTools.logger.logToAll('Websocket is start connecting. [${DateTime.now()}]  url: $_uri');
+
 		try {
-			_ws = GetSocket(_uri!);
+			_ws = IrisWebSocket(_uri!);
 			_ws!.addOpenListener(_onConnected);
 			_ws!.addMessageListener(_handlerNewMessage);
-			_ws!.addCloseListener((c) => _onDisConnected());
-			_ws!.addErrorListener((e) => _onDisConnected());
+			_ws!.addCloseListener((e) => _onDisConnected(e));
+			_ws!.addErrorListener((e) => _onDisConnected(e));
 
 			//(_ws as BaseWebSocket).allowSelfSigned = true;
-			_ws!.connect();
+			final client = HttpClient();
+			client.connectionTimeout = const Duration(seconds: 10);
+			_ws!.connect(client: client);
 		}
 		catch(e){
-			_onDisConnected();
+			_onDisConnected(e);
 		}
 	}
 
@@ -93,8 +105,11 @@ class WebsocketService {
 		reconnectTimer?.cancel();
 
 		void timerFn() {
-			if(_tryReconnect < 10) {
-				_tryReconnect++;
+			if(_tryReconnect < 1200) {
+				if(AppBroadcast.isNetConnected){
+					_tryReconnect++;
+				}
+
 				connect();
 			}
 			else {
@@ -117,25 +132,20 @@ class WebsocketService {
 		_ws!.send(data);
 	}
 
-	static void _onDisConnected() async {
-		final lastState = _isConnected;
+	static void _onDisConnected(Object e) async {
+		LogTools.logger.logToAll('Websocket is disconnected. [${DateTime.now()}] $e');
 
 		_close();
-
-		if(lastState) {
-			ApplicationSignal.onWsDisConnectedListener();
-		}
-
 		_reconnect();
 	}
 
 	///-------------- on new Connect ---------------------------------------------
 	static void _onConnected() async {
 		_isConnected = true;
-		reconnectInterval = const Duration(seconds: 4);
+		_tryReconnect = 0;
 
-		sendHeartAndUsers();
 		ApplicationSignal.onWsConnectedListener();
+		sendHeartAndUsers();
 
 		final dur = Duration(minutes: SettingsModel.webSocketPeriodicHeartMinutes);
 		periodicHeartTimer?.cancel();
@@ -153,7 +163,7 @@ class WebsocketService {
 		}
 		catch(e){
 			_close();
-			_reconnect(const Duration(seconds: 2));
+			_reconnect();
 		}
 	}
 
@@ -179,21 +189,21 @@ class WebsocketService {
 			///---------- process ----------------------------------------
 			if(section == HttpCodes.command$section || section == 'none') {
 				switch (command) {
-					case HttpCodes.com_messageForUser:
+					case HttpCodes.messageForUser$command:
 						messageForUser(js);
 						break;
-					case HttpCodes.com_forceLogOff:
+					case HttpCodes.forceLogOff$command:
 						// ignore: unawaited_futures
 						LoginService.forceLogoff(userId: userId);
 						break;
-					case HttpCodes.com_forceLogOffAll:
+					case HttpCodes.forceLogOffAll$command:
 						// ignore: unawaited_futures
 						LoginService.forceLogoffAll();
 						break;
-					case HttpCodes.com_talkMeWho:
+					case HttpCodes.talkMeWho$command:
 						sendData(JsonHelper.mapToJson(ApiManager.getHeartMap()));
 						break;
-					case HttpCodes.com_sendDeviceInfo:
+					case HttpCodes.sendDeviceInfo$command:
 						sendData(JsonHelper.mapToJson(DeviceInfoTools.mapDeviceInfo()));
 						break;
 				}

@@ -71,10 +71,12 @@ class _SwitchViewState extends StateSuper<SwitchView> {
                       if(lastDataModel == null){
                         return const Center(
                           child: SizedBox(
-                            width: 100,
-                            height: 100,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
+                            width: 35,
+                            height: 35,
+                            child: FittedBox(
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         );
@@ -194,9 +196,15 @@ class _SwitchViewState extends StateSuper<SwitchView> {
 
   void sendSwitchState(bool state) async {
     final x = await ClientDataManager.requestChangeSwitch(lastDataModel!, state);
-
+print('xxxxxxxx $x');
     if(!x){
-      lastDataModel!.data = '0';
+      if(lastDataModel!.isVolumeActive()) {
+        lastDataModel!.data = '0';
+      }
+      else {
+        lastDataModel!.data = '1';
+      }
+
       callState();
 
       if(mounted){

@@ -8,7 +8,6 @@ import 'package:iris_tools/api/helpers/colorHelper.dart';
 import 'package:iris_tools/api/helpers/fileHelper.dart';
 import 'package:iris_tools/api/helpers/mathHelper.dart';
 import 'package:iris_tools/modules/stateManagers/updater_state.dart';
-import 'package:share_extend/share_extend.dart';
 
 import 'package:app/managers/version_manager.dart';
 import 'package:app/services/download_upload_service.dart';
@@ -214,7 +213,7 @@ class DrawerMenuBuilder {
 
   static void shareAppCall() {
     AppBroadcast.layoutPageKey.currentState?.scaffoldState.currentState?.closeDrawer();
-    ShareExtend.share('https://cafebazaar.ir/app/ir.vosatezehn.com', 'text');
+    //ShareExtend.share('https://cafebazaar.ir/app/ir.vosatezehn.com', 'text');
   }
 
   static void gotoContactUsPage(){
