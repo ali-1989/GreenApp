@@ -1,4 +1,3 @@
-import 'package:app/tools/app/app_broadcast.dart';
 import 'package:flutter/material.dart';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -7,6 +6,7 @@ import 'package:iris_tools/api/notifiers/appEventListener.dart';
 import 'package:iris_tools/net/netManager.dart';
 
 import 'package:app/structures/enums/app_events.dart';
+import 'package:app/tools/app/app_broadcast.dart';
 import 'package:app/tools/app/app_cache.dart';
 
 class ApplicationSignal {

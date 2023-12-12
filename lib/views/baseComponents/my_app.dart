@@ -1,3 +1,11 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+
+import 'package:iris_route/iris_route.dart';
+import 'package:iris_tools/widgets/maxWidth.dart';
+import 'package:iris_tools/widgets/path/box_clipper.dart';
+
 import 'package:app/managers/font_manager.dart';
 import 'package:app/managers/settings_manager.dart';
 import 'package:app/managers/splash_manager.dart';
@@ -10,15 +18,9 @@ import 'package:app/tools/app/app_sizes.dart';
 import 'package:app/tools/app/app_themes.dart';
 import 'package:app/tools/app/app_toast.dart';
 import 'package:app/tools/route_tools.dart';
+import 'package:app/views/baseComponents/empty_app.dart';
 import 'package:app/views/baseComponents/route_dispatcher.dart';
 import 'package:app/views/baseComponents/splash_page.dart';
-import 'package:app/views/baseComponents/empty_app.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
-import 'package:iris_route/iris_route.dart';
-import 'package:iris_tools/widgets/maxWidth.dart';
-import 'package:iris_tools/widgets/path/box_clipper.dart';
 
 class MyApp extends StatefulWidget {
   // ignore: prefer_const_constructors_in_immutables

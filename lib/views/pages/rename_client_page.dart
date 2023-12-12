@@ -1,3 +1,8 @@
+import 'package:flutter/material.dart';
+
+import 'package:iris_tools/api/helpers/focusHelper.dart';
+import 'package:iris_tools/modules/stateManagers/updater_state.dart';
+
 import 'package:app/managers/green_client_manager.dart';
 import 'package:app/services/session_service.dart';
 import 'package:app/structures/abstract/state_super.dart';
@@ -10,9 +15,6 @@ import 'package:app/tools/app/app_sheet.dart';
 import 'package:app/tools/app/app_snack.dart';
 import 'package:app/tools/route_tools.dart';
 import 'package:app/views/components/back_btn.dart';
-import 'package:flutter/material.dart';
-import 'package:iris_tools/api/helpers/focusHelper.dart';
-import 'package:iris_tools/modules/stateManagers/updater_state.dart';
 
 class RenameClientPage extends StatefulWidget {
   final GreenClientModel clientModel;

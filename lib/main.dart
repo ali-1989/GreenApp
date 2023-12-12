@@ -1,16 +1,16 @@
 import 'dart:async';
 
-import 'package:app/managers/splash_manager.dart';
-import 'package:app/views/baseComponents/error_page.dart';
-import 'package:app/views/baseComponents/my_app.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import 'package:app/managers/splash_manager.dart';
 import 'package:app/services/native_call_service.dart';
 import 'package:app/system/constants.dart';
 import 'package:app/tools/app/app_directories.dart';
 import 'package:app/tools/device_info_tools.dart';
 import 'package:app/tools/log_tools.dart';
+import 'package:app/views/baseComponents/error_page.dart';
+import 'package:app/views/baseComponents/my_app.dart';
 
 ///================ call on any hot restart
 void main() {

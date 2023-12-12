@@ -1,11 +1,12 @@
-import 'package:app/managers/client_data_manager.dart';
 import 'package:flutter/cupertino.dart';
+
 import 'package:iris_tools/api/converter.dart';
 import 'package:iris_tools/dateSection/dateHelper.dart';
+import 'package:line_icons/line_icons.dart';
 
+import 'package:app/managers/client_data_manager.dart';
 import 'package:app/structures/enums/client_type.dart';
 import 'package:app/system/keys.dart';
-import 'package:line_icons/line_icons.dart';
 
 class GreenClientModel {
   String? userId;

@@ -1,3 +1,12 @@
+import 'package:flutter/material.dart';
+
+import 'package:fl_chart/fl_chart.dart';
+import 'package:iris_notifier/iris_notifier.dart';
+import 'package:iris_tools/api/helpers/mathHelper.dart';
+import 'package:iris_tools/dateSection/dateHelper.dart';
+import 'package:iris_tools/modules/stateManagers/updater_state.dart';
+import 'package:iris_tools/widgets/custom_card.dart';
+
 import 'package:app/managers/client_data_manager.dart';
 import 'package:app/structures/abstract/state_super.dart';
 import 'package:app/structures/enums/app_events.dart';
@@ -8,13 +17,6 @@ import 'package:app/structures/models/green_client_model.dart';
 import 'package:app/system/extensions.dart';
 import 'package:app/tools/app/app_decoration.dart';
 import 'package:app/tools/app/app_messages.dart';
-import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/material.dart';
-import 'package:iris_notifier/iris_notifier.dart';
-import 'package:iris_tools/api/helpers/mathHelper.dart';
-import 'package:iris_tools/dateSection/dateHelper.dart';
-import 'package:iris_tools/modules/stateManagers/updater_state.dart';
-import 'package:iris_tools/widgets/custom_card.dart';
 
 typedef OnSettingsClick = void Function(BuildContext context, GreenClientModel model);
 ///------------------------------------------------------

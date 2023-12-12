@@ -1,9 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:app/managers/client_data_manager.dart';
-import 'package:app/managers/green_client_manager.dart';
-import 'package:app/tools/app/app_broadcast.dart';
 import 'package:flutter/material.dart';
 
 import 'package:iris_notifier/iris_notifier.dart';
@@ -12,6 +9,8 @@ import 'package:iris_tools/api/helpers/jsonHelper.dart';
 import 'package:iris_websocket/iris_websocket.dart';
 
 import 'package:app/managers/api_manager.dart';
+import 'package:app/managers/client_data_manager.dart';
+import 'package:app/managers/green_client_manager.dart';
 import 'package:app/managers/green_mind_manager.dart';
 import 'package:app/services/login_service.dart';
 import 'package:app/services/session_service.dart';
@@ -19,6 +18,7 @@ import 'package:app/structures/enums/app_events.dart';
 import 'package:app/structures/models/settings_model.dart';
 import 'package:app/system/application_signal.dart';
 import 'package:app/system/keys.dart';
+import 'package:app/tools/app/app_broadcast.dart';
 import 'package:app/tools/app/app_db.dart';
 import 'package:app/tools/app/app_dialog_iris.dart';
 import 'package:app/tools/app/app_messages.dart';

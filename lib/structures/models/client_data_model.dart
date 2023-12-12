@@ -1,8 +1,9 @@
+import 'package:iris_tools/api/helpers/mathHelper.dart';
+import 'package:iris_tools/dateSection/dateHelper.dart';
+
 import 'package:app/managers/green_client_manager.dart';
 import 'package:app/structures/enums/client_type.dart';
 import 'package:app/tools/date_tools.dart';
-import 'package:iris_tools/api/helpers/mathHelper.dart';
-import 'package:iris_tools/dateSection/dateHelper.dart';
 
 class ClientDataModel {
   late int clientId;

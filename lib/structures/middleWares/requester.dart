@@ -1,4 +1,3 @@
-import 'package:app/services/websocket_service.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:dio/dio.dart';
@@ -7,6 +6,7 @@ import 'package:iris_tools/api/logger/logger.dart';
 import 'package:iris_tools/api/tools.dart';
 
 import 'package:app/managers/api_manager.dart';
+import 'package:app/services/websocket_service.dart';
 import 'package:app/system/keys.dart';
 import 'package:app/tools/app/app_http_dio.dart';
 import 'package:app/tools/device_info_tools.dart';

@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:app/structures/enums/client_type.dart';
 import 'package:iris_db/iris_db.dart';
 import 'package:iris_tools/modules/stateManagers/updater_state.dart';
 
 import 'package:app/services/session_service.dart';
+import 'package:app/structures/enums/client_type.dart';
 import 'package:app/structures/enums/updater_group.dart';
 import 'package:app/structures/middleWares/requester.dart';
 import 'package:app/structures/models/green_child_model.dart';

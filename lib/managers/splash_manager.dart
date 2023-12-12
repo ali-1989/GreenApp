@@ -1,18 +1,18 @@
 import 'dart:async';
 
-import 'package:app/managers/font_manager.dart';
-import 'package:app/managers/version_manager.dart';
-import 'package:app/views/baseComponents/error_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:iris_tools/net/trustSsl.dart';
 
+import 'package:app/managers/font_manager.dart';
 import 'package:app/managers/green_client_manager.dart';
 import 'package:app/managers/green_mind_manager.dart';
 import 'package:app/managers/home_chart_manager.dart';
 import 'package:app/managers/settings_manager.dart';
 import 'package:app/managers/user_guide_manager.dart';
+import 'package:app/managers/version_manager.dart';
 import 'package:app/services/firebase_service.dart';
 import 'package:app/services/native_call_service.dart';
 import 'package:app/services/session_service.dart';
@@ -26,8 +26,7 @@ import 'package:app/tools/app/app_themes.dart';
 import 'package:app/tools/device_info_tools.dart';
 import 'package:app/tools/log_tools.dart';
 import 'package:app/tools/route_tools.dart';
-import 'package:flutter_web_plugins/url_strategy.dart';
-
+import 'package:app/views/baseComponents/error_page.dart';
 
 class SplashManager {
   SplashManager._();
@@ -137,6 +136,7 @@ class SplashManager {
       WebsocketService.startWebSocket(SettingsManager.localSettings.wsAddress);
       //LoginService.init();
       //DownloadUploadService.init();
+      //SettingsManager.requestGlobalSettings();
       await FireBaseService.start();
 
       /*if (System.isWeb()) {

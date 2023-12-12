@@ -1,6 +1,15 @@
 import 'dart:ui';
 
+import 'package:flutter/material.dart';
+
+import 'package:expandable/expandable.dart';
+import 'package:iris_tools/modules/stateManagers/updater_state.dart';
+import 'package:iris_tools/widgets/custom_card.dart';
+import 'package:iris_tools/widgets/icon/circular_icon.dart';
+import 'package:iris_tools/widgets/text/custom_rich.dart';
+
 import 'package:app/managers/green_client_manager.dart';
+import 'package:app/structures/abstract/state_super.dart';
 import 'package:app/structures/enums/client_type.dart';
 import 'package:app/structures/enums/updater_group.dart';
 import 'package:app/structures/models/green_child_model.dart';
@@ -9,26 +18,17 @@ import 'package:app/structures/models/green_mind_model.dart';
 import 'package:app/system/extensions.dart';
 import 'package:app/tools/app/app_decoration.dart';
 import 'package:app/tools/app/app_icons.dart';
+import 'package:app/tools/app/app_images.dart';
 import 'package:app/tools/app/app_messages.dart';
 import 'package:app/tools/app/app_pop.dart';
 import 'package:app/tools/app/app_sheet.dart';
 import 'package:app/tools/date_tools.dart';
 import 'package:app/tools/route_tools.dart';
+import 'package:app/views/baseComponents/appbar_builder.dart';
 import 'package:app/views/components/live_and_chart_view.dart';
 import 'package:app/views/components/switch_view.dart';
 import 'package:app/views/pages/rename_client_page.dart';
 import 'package:app/views/pages/rename_green_child.dart';
-import 'package:expandable/expandable.dart';
-import 'package:flutter/material.dart';
-
-
-import 'package:app/structures/abstract/state_super.dart';
-import 'package:app/tools/app/app_images.dart';
-import 'package:app/views/baseComponents/appbar_builder.dart';
-import 'package:iris_tools/modules/stateManagers/updater_state.dart';
-import 'package:iris_tools/widgets/custom_card.dart';
-import 'package:iris_tools/widgets/icon/circular_icon.dart';
-import 'package:iris_tools/widgets/text/custom_rich.dart';
 
 class ChildInfoPage extends StatefulWidget {
   final GreenMindModel greenMind;
