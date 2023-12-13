@@ -198,7 +198,7 @@ class _SwitchViewState extends StateSuper<SwitchView> {
 
   void sendSwitchState(bool state) async {
     final x = await ClientDataManager.requestChangeSwitch(lastDataModel!, state);
-print('xxxxxxxx $x');
+
     if(!x){
       if(lastDataModel!.isVolumeActive()) {
         lastDataModel!.data = '0';

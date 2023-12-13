@@ -31,7 +31,7 @@ class ChartPageState extends StateSuper<ChartPage> {
 
   Widget buildBody() {
     return Center(
-      child: Text('Soon...').bold().fsR(10),
+      child: Text('coming Soon...').bold().fsR(10),
     );
   }
 }

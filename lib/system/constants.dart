@@ -3,9 +3,9 @@ class Constants {
   Constants._();
 
   /// used for (app folder, send to server)
-  static const appName = 'Green Oasis';
+  static const appName = 'GreenOasis';
   /// used for (app title)
-  static String appTitle = 'Green Oasis';
+  static String appTitle = 'GreenOasis';
   static const _major = 0;
   static const _minor = 0;
   static const _patch = 1;

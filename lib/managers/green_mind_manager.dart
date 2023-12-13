@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app/managers/green_client_manager.dart';
 import 'package:iris_db/iris_db.dart';
 import 'package:iris_notifier/iris_notifier.dart';
 import 'package:iris_tools/modules/stateManagers/updater_state.dart';
@@ -309,5 +310,27 @@ class GreenMindManager {
 			final child = GreenChildModel.fromMap(map);
 			m.findById(child.mindId)?.matchChild(child);
 		}
+	}
+
+  static Future<void> deleteUserFootMark(String userId) async {
+		final m = getManagerFor(userId);
+		Set<int> mindId = {};
+		Set<int> childrenId = {};
+
+		for(final x in m._itemList){
+			mindId.add(x.id);
+
+			for(final c in x.children){
+				childrenId.add(c.id);
+			}
+		}
+
+		final con = Conditions();
+		con.add(Condition()..key = Keys.userId..value = userId);
+		await AppDB.db.delete(AppDB.tbGreenMind, con);
+
+		_userHolder.removeWhere((element) => element.userId == userId);
+
+		await GreenClientManager.deleteUserFootMark(userId);
 	}
 }

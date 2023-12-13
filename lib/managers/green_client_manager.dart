@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app/managers/client_data_manager.dart';
 import 'package:iris_db/iris_db.dart';
 import 'package:iris_tools/modules/stateManagers/updater_state.dart';
 
@@ -240,5 +241,29 @@ class GreenClientManager {
 		}
 
 		return false;
+	}
+
+	static Future<void> deleteUserFootMark(String userId) async {
+		final m = getManagerFor(userId);
+		Set<int> childrenId = {};
+
+		for(final x in m._itemList){
+			childrenId.add(x.id);
+		}
+
+		final con = Conditions();
+		con.add(Condition()..key = Keys.userId..value = userId);
+		await AppDB.db.delete(AppDB.tbGreenClient, con);
+
+		_userHolder.removeWhere((element) => element.userId == userId);
+
+		for(final cliId in childrenId) {
+			con.clearConditions();
+
+			con.add(Condition()..key = 'client_id'..value = cliId);
+			await AppDB.db.delete(AppDB.tbClientData, con);
+			
+			ClientDataManager.items.removeWhere((element) => element.clientId == cliId);
+		}
 	}
 }

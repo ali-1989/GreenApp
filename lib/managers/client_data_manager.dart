@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:app/tools/http_tools.dart';
+import 'package:app/tools/route_tools.dart';
 import 'package:iris_db/iris_db.dart';
 import 'package:iris_tools/api/helpers/databaseHelper.dart';
 import 'package:iris_tools/dateSection/dateHelper.dart';
@@ -175,7 +177,11 @@ class ClientDataManager {
 	static Future<Requester> requestNewDataFor(int clientId, {DateTime? from}) async {
 		final requester = Requester();
 
-		requester.httpRequestEvents.onStatusOk = (res, response) async {
+		requester.httpRequestEvents.onFailState = (req, response) async {
+			HttpTools.handler(RouteTools.getTopContext()!, req.getBodyAsJson()?? {});
+		};
+
+		requester.httpRequestEvents.onStatusOk = (req, response) async {
 			final data = response[Keys.data];
 
 			if(data is List){
