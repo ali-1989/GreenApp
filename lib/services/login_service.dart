@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app/tools/app/app_db.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:dio/dio.dart';
@@ -58,9 +59,13 @@ class LoginService {
     GreenClientManager.current?.start();
   }
 
-  static void onLogoffObservable({dynamic data}){
+  static void onLogoffObservable({dynamic data}) async {
     if(data is UserModel){
       sendLogoffState(data);
+      await GreenMindManager.deleteUserFootMark(data.userId);
+      AppDB.db.logRows(AppDB.tbGreenMind);
+      AppDB.db.logRows(AppDB.tbGreenClient);
+      AppDB.db.logRows(AppDB.tbClientData);
     }
   }
 

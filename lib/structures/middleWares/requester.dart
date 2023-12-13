@@ -137,7 +137,7 @@ class Requester {
             '\n\nrequest:[$request]'
             '\n\nresponse ====>>  status:[${_httpRequester.responseData?.statusCode}]'
             '\ndata:$response'
-            '\n<_._._._._._._.__._._._._._._.__._._._._._._.__._.End';
+            '\n<_._._._._._._.__._._._._._._.__._._._._._._._ End';
 
         Tools.verboseLog(pr);
       }

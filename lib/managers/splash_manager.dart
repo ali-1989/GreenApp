@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app/services/login_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -67,7 +68,7 @@ class SplashManager {
       AppThemes.init();
       SettingsManager.init();
 
-      if(false){
+      if(true){
         SettingsManager.localSettings.httpAddress = 'http://192.168.1.104:20010';
         SettingsManager.localSettings.wsAddress = 'ws://192.168.1.104:20015/ws';
       }
@@ -134,7 +135,7 @@ class SplashManager {
       NativeCallService.init();
       NativeCallService.assistanceBridge?.invokeMethod('setAppIsRun');
       WebsocketService.startWebSocket(SettingsManager.localSettings.wsAddress);
-      //LoginService.init();
+      LoginService.init();
       //DownloadUploadService.init();
       //SettingsManager.requestGlobalSettings();
       await FireBaseService.start();
