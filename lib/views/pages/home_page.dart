@@ -1,7 +1,9 @@
+import 'package:app/managers/home_widget_manager.dart';
+import 'package:app/structures/enums/updater_group.dart';
+import 'package:app/views/components/home_widget_view.dart';
 import 'package:flutter/material.dart';
 
 import 'package:app/managers/green_mind_manager.dart';
-import 'package:app/managers/home_chart_manager.dart';
 import 'package:app/structures/abstract/state_super.dart';
 import 'package:app/system/extensions.dart';
 import 'package:app/tools/app/app_broadcast.dart';
@@ -11,6 +13,8 @@ import 'package:app/tools/app/app_sheet.dart';
 import 'package:app/tools/route_tools.dart';
 import 'package:app/views/pages/add_widget_page.dart';
 import 'package:app/views/states/user_guide_box.dart';
+import 'package:iris_tools/api/helpers/mathHelper.dart';
+import 'package:iris_tools/modules/stateManagers/updater_state.dart';
 
 class HomePage extends StatefulWidget {
 
@@ -28,11 +32,15 @@ class HomePageState extends StateSuper<HomePage> {
   @override
   void initState(){
     super.initState();
+    
+    UpdaterController.addGroupListener([UpdaterGroup.homeWidgetUpdate], onUpdateWidget);
   }
 
   @override
   void dispose(){
     super.dispose();
+
+    UpdaterController.removeGroupListener(onUpdateWidget);
   }
 
   @override
@@ -61,12 +69,49 @@ class HomePageState extends StateSuper<HomePage> {
         Expanded(
           child: Builder(
             builder: (context) {
-              if(HomeChartManager.list.isEmpty){
+              if(HomeWidgetManager.current!.items.isEmpty){
                 return buildWhenThereIsNoChart();
               }
 
-              return ListView.builder(
-                itemCount: 0,
+              return ReorderableListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                  onReorder: (old, newOrder) async {
+                    int min = MathHelper.minInt(old, newOrder);
+                    int max = MathHelper.maxInt(old, newOrder);
+                    bool toTop = newOrder < old;
+
+                    if(toTop){
+                      final r1Order = HomeWidgetManager.current!.items[newOrder].order;
+
+                      HomeWidgetManager.current!.items.getRange(min, max)
+                          .forEach((element) {
+                        element.order++;
+                      });
+
+                      final r2 = HomeWidgetManager.current!.items[old];
+                      r2.order = r1Order;
+                    }
+                    else {
+                      final ic = MathHelper.minInt(newOrder, HomeWidgetManager.current!.items.length-1);
+                      final r1Order = HomeWidgetManager.current!.items[ic].order;
+
+                      HomeWidgetManager.current!.items.getRange(min, max)
+                          .forEach((element) {
+                        element.order--;
+                      });
+
+                      final r2 = HomeWidgetManager.current!.items[old];
+                      r2.order = r1Order;
+                    }
+
+                    HomeWidgetManager.current!.sortItemsByOrder();
+                    HomeWidgetManager.current!.notifyUpdate();
+
+                    for(final k in HomeWidgetManager.current!.items){
+                      await HomeWidgetManager.current!.sink(k);
+                    }
+                  },
+                itemCount: HomeWidgetManager.current!.items.length,
                 itemBuilder: listItemBuilder,
               );
             }
@@ -76,9 +121,23 @@ class HomePageState extends StateSuper<HomePage> {
     );
   }
 
+  Widget listItemBuilder(BuildContext context, int index) {
+    final itm = HomeWidgetManager.current!.items[index];
 
+    if(index == HomeWidgetManager.current!.items.length-1){
+      return Padding(
+        key: ValueKey(itm.clientId),
+          padding: EdgeInsets.only(bottom: 15 * hRel),
+        child: HomeWidgetView(
+          homeWidget: itm,
+        ),
+      );
+    }
 
-  Widget? listItemBuilder(BuildContext context, int index) {
+    return HomeWidgetView(
+      key: ValueKey(itm.clientId),
+      homeWidget: itm,
+    );
   }
 
   void onAddWidgetClick() {
@@ -108,5 +167,9 @@ class HomePageState extends StateSuper<HomePage> {
         ),
       ),
     );
+  }
+
+  void onUpdateWidget(UpdaterGroupId p1) {
+    callState();
   }
 }

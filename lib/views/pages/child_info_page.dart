@@ -1,8 +1,12 @@
 import 'dart:ui';
 
+import 'package:app/managers/home_widget_manager.dart';
+import 'package:app/services/session_service.dart';
+import 'package:app/structures/models/home_widget_model.dart';
 import 'package:flutter/material.dart';
 
 import 'package:expandable/expandable.dart';
+import 'package:iris_tools/dateSection/dateHelper.dart';
 import 'package:iris_tools/modules/stateManagers/updater_state.dart';
 import 'package:iris_tools/widgets/custom_card.dart';
 import 'package:iris_tools/widgets/icon/circular_icon.dart';
@@ -412,7 +416,26 @@ class _ChildInfoPageState extends StateSuper<ChildInfoPage> {
     }
 
     void addToHome(){
+      final hw = HomeWidgetModel();
+      hw.userId = SessionService.getLastLoginUserId()!;
+      hw.clientId = itm.id;
+      hw.greenMindId = widget.greenMind.id;
+      hw.childId = itm.ownerId;
+      hw.registerDate = DateHelper.nowMinusUtcOffset();
+      hw.order = HomeWidgetManager.current!.getLastOrder()+1;
 
+      HomeWidgetManager.current?.addHomeWidget(hw);
+    }
+
+    void removeFromHome(){
+      HomeWidgetManager.current?.removeWidget(itm.id);
+    }
+
+    bool existInHome = HomeWidgetManager.current!.existOnHome(itm.id);
+    String keyName = 'addToHome';
+
+    if(existInHome){
+      keyName = 'removeFromHome';
     }
 
     showMenu(
@@ -434,13 +457,13 @@ class _ChildInfoPageState extends StateSuper<ChildInfoPage> {
 
         PopupMenuItem(
             height: 30,
-            onTap: addToHome,
+            onTap: existInHome? removeFromHome: addToHome,
             child: Row(
               children: [
                 const Icon(Icons.add),
 
                 const SizedBox(width: 20),
-                Text(AppMessages.trans('addToHome')).bold(),
+                Text(AppMessages.trans(keyName)).bold(),
               ],
             )
         ),

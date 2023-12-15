@@ -1,16 +1,14 @@
 import 'dart:async';
 
-import 'package:app/managers/green_client_manager.dart';
+import 'package:app/structures/enums/updater_group.dart';
+import 'package:app/structures/models/home_widget_model.dart';
 import 'package:iris_db/iris_db.dart';
-import 'package:iris_tools/modules/stateManagers/updater_state.dart';
 
 import 'package:app/services/session_service.dart';
-import 'package:app/structures/enums/updater_group.dart';
-import 'package:app/structures/models/green_child_model.dart';
-import 'package:app/structures/models/green_mind_model.dart';
 import 'package:app/system/extensions.dart';
 import 'package:app/system/keys.dart';
 import 'package:app/tools/app/app_db.dart';
+import 'package:iris_tools/modules/stateManagers/updater_state.dart';
 
 class HomeWidgetManager {
 	HomeWidgetManager._(this.userId);
@@ -50,8 +48,8 @@ class HomeWidgetManager {
 
 	///---------------------------------------------------------------------------
 	final String userId;
-	final List<GreenMindModel> _itemList = [];
-	List<GreenMindModel> get items => _itemList;
+	final List<HomeWidgetModel> _itemList = [];
+	List<HomeWidgetModel> get items => _itemList;
 
 
 	Future<void> start() async {
@@ -66,112 +64,119 @@ class HomeWidgetManager {
 		final res = AppDB.db.query(AppDB.tbHomeWidgets, con);
 
 		for(final x in res){
-			_itemList.add(GreenMindModel.fromMap(x));
+			_itemList.add(HomeWidgetModel.fromMap(x));
 		}
 	}
 
-	Future<bool> sink(dynamic greenMind) async {
+	Future<bool> sink(dynamic widget) async {
 		final Map<String, dynamic> map;
 
-		if(greenMind is GreenMindModel){
-			map = greenMind.toMap();
+		if(widget is HomeWidgetModel){
+			map = widget.toMap();
 		}
 		else {
-			map = greenMind;
+			map = widget;
 		}
 
 		map[Keys.userId] ??= userId;
 
 		final con = Conditions();
-		con.add(Condition()..key = Keys.id .. value = map[Keys.id]);
+		con.add(Condition()..key = 'client_id' .. value = map['client_id']);
 
 		final res = await AppDB.db.insertOrUpdate(AppDB.tbHomeWidgets, map, con);
 
 		return res > -1;
 	}
 
-	GreenMindModel? findById(int id){
-		return _itemList.firstWhereSafe((element) => element.id == id);
+	Future<bool> deleteRecord(int clientId) async {
+		final con = Conditions();
+		con.add(Condition()..key = 'client_id' .. value = clientId);
+
+		final res = await AppDB.db.delete(AppDB.tbHomeWidgets, con);
+
+		return res > -1;
 	}
 
-	GreenMindModel? findByChildId(int childId){
-		return _itemList.firstWhereSafe(
-						(element)
-				=> element.children.any((element) => element.id == childId));
+	HomeWidgetModel? findByClientId(int id){
+		return _itemList.firstWhereSafe((element) => element.clientId == id);
 	}
 
-	GreenChildModel? findChildById(int childId){
-		for(final x in _itemList){
-			for(final x2 in x.children){
-				if(x2.id == childId){
-					return x2;
-				}
-			}
-		}
-
-		return null;
-	}
-
-	void addGreenMind(dynamic obj, {bool notify = true}){
-		GreenMindModel greenMind;
+	void addHomeWidget(dynamic obj, {bool notify = true}){
+		HomeWidgetModel homeWidget;
 
 		if(obj is Map){
-			greenMind = GreenMindModel.fromMap(obj);
+			homeWidget = HomeWidgetModel.fromMap(obj);
 		}
 		else {
-			greenMind = obj;
+			homeWidget = obj;
 		}
 
-		greenMind.userId ??= userId;
-
-		final old = findById(greenMind.id);
+		final old = findByClientId(homeWidget.clientId);
 
 		if(old != null){
-			old.matchBy(greenMind);
+			old.matchBy(homeWidget);
 		}
 		else {
-			_itemList.add(greenMind);
+			_itemList.add(homeWidget);
 		}
 
-		sink(greenMind);
+		sortItemsByOrder();
+		sink(homeWidget);
 
 		if(notify) {
 			notifyUpdate();
 		}
 	}
 
-	void addGreenMinds(List<Map> mapList){
+	void sortItemsByOrder(){
+		int sorter(HomeWidgetModel m1, HomeWidgetModel m2){
+			if(m1.order == m2.order){
+				return 0;
+			}
+
+			return m1.order > m2.order? 1 : -1;
+		}
+
+		_itemList.sort(sorter);
+	}
+
+	void addHomeWidgets(List<Map> mapList){
 		for(final x in mapList){
-			addGreenMind(x, notify: false);
+			addHomeWidget(x, notify: false);
 		}
 
 		notifyUpdate();
 	}
 
 	void notifyUpdate(){
-		UpdaterController.updateByGroup(UpdaterGroup.greenMindUpdate);
+		UpdaterController.updateByGroup(UpdaterGroup.homeWidgetUpdate);
 	}
 
-	///----- static --------------------------------------------------------------
-  static Future<void> deleteUserFootMark(String userId) async {
-		final m = getManagerFor(userId);
-		Set<int> mindId = {};
-		Set<int> childrenId = {};
+	int getLastOrder(){
+		int last = -1;
 
-		for(final x in m._itemList){
-			mindId.add(x.id);
-
-			for(final c in x.children){
-				childrenId.add(c.id);
+		for(final i in _itemList){
+			if(i.order > last){
+				last = i.order;
 			}
 		}
 
-		final con = Conditions();
-		con.add(Condition()..key = Keys.userId..value = userId);
-		await AppDB.db.delete(AppDB.tbHomeWidgets, con);
-
-		_userHolder.removeWhere((element) => element.userId == userId);
-
-		await GreenClientManager.deleteUserFootMark(userId);
+		return last;
 	}
+
+  bool existOnHome(int clientId) {
+		return _itemList.any((element) => element.clientId == clientId);
+	}
+
+  void removeWidget(int clientId, {bool notify = true}) {
+		_itemList.removeWhere((element) => element.clientId == clientId);
+
+		deleteRecord(clientId);
+
+		if(notify){
+			notifyUpdate();
+		}
+	}
+	///----- static --------------------------------------------------------------
+
 }

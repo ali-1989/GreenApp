@@ -11,7 +11,6 @@ import 'package:iris_tools/net/trustSsl.dart';
 import 'package:app/managers/font_manager.dart';
 import 'package:app/managers/green_client_manager.dart';
 import 'package:app/managers/green_mind_manager.dart';
-import 'package:app/managers/home_chart_manager.dart';
 import 'package:app/managers/settings_manager.dart';
 import 'package:app/managers/user_guide_manager.dart';
 import 'package:app/managers/version_manager.dart';
@@ -110,7 +109,6 @@ class SplashManager {
         //await precacheImage(AppCache.screenBack!, context);
       }
 
-      await HomeChartManager.init();
       await UserGuidingManager.init();
       GreenMindManager.init();
       await GreenMindManager.current?.start();

@@ -329,6 +329,9 @@
   "comingSoon": "Coming soon...",
   "withoutDevice": "Without Device",
   "addToHome": "Add to home screen",
+  "removeFromHome": "Remove from home screen",
+  "hideChart": "Hide chart",
+  "showChart": "Show chart",
   "noDataForChart": "there is no data to draw a graph",
   "": ""
 }

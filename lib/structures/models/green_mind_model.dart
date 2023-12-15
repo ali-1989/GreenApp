@@ -90,7 +90,7 @@ class GreenMindModel {
       return caption!;
     }
 
-    return 'SN: $serialNumber';
+    return serialNumber; //SN:
   }
 
   Color getStatusColor() {

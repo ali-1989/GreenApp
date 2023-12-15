@@ -435,7 +435,7 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
     yMinValue = MathHelper.clearToDouble(dataList[0].data);
     yMaxValue = MathHelper.clearToDouble(dataList[0].data);
 
-    xMaxValue = 24* (60/5)+2; // 2 is for padding in right
+    xMaxValue = 24* (60/5)+4; // 4 is for padding in right
 
     {/// first dot
       final date = dataList[0].hardwareDate!;
