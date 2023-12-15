@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app/managers/home_widget_manager.dart';
 import 'package:app/services/login_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -115,6 +116,8 @@ class SplashManager {
       await GreenMindManager.current?.start();
       GreenClientManager.init();
       await GreenClientManager.current?.start();
+      HomeWidgetManager.init();
+      await HomeWidgetManager.current?.start();
 
       AppThemes.instance.textDirection = AppLocale.detectLocaleDirection(SettingsManager.localSettings.appLocale);
     }

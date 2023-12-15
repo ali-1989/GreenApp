@@ -179,6 +179,7 @@ class ClientDataManager {
 
 		requester.httpRequestEvents.onFailState = (req, response) async {
 			HttpTools.handler(RouteTools.getTopContext()!, req.getBodyAsJson()?? {});
+			notifyUpdate(null);
 		};
 
 		requester.httpRequestEvents.onStatusOk = (req, response) async {

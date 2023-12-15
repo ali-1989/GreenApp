@@ -36,16 +36,19 @@ class SwitchView extends StatefulWidget {
 ///=============================================================================
 class _SwitchViewState extends StateSuper<SwitchView> {
   ClientDataModel? lastDataModel;
+  bool errorOccurred = false;
 
   @override
   void initState(){
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      prepareLastModel();
+      if(mounted){
       UpdaterController.addGroupListener([UpdaterGroup.greenClientUpdate], onNewDataListener);
       EventNotifierService.addListener(AppEvents.networkConnected, onReConnectNet);
+      prepareLastModel();
       requestNewData();
+      }
     });
   }
 
@@ -69,7 +72,13 @@ class _SwitchViewState extends StateSuper<SwitchView> {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    /// switch button or loading
                     Builder(builder: (_){
+                      if(errorOccurred){
+                        return const Text(' ooh ☹')
+                            .color(Colors.white).fsMultiInRatio(15);
+                      }
+
                       if(lastDataModel == null){
                         return const Center(
                           child: SizedBox(
@@ -176,7 +185,9 @@ class _SwitchViewState extends StateSuper<SwitchView> {
   }
 
   void onNewDataListener(UpdaterGroupId p1) {
-    prepareLastModel();
+    if(mounted) {
+      prepareLastModel();
+    }
   }
 
   void prepareLastModel() async {
@@ -184,8 +195,13 @@ class _SwitchViewState extends StateSuper<SwitchView> {
 
     if(last is ClientDataModel){
       lastDataModel = last;
-      callState();
+      errorOccurred = false;
     }
+    else {
+      errorOccurred = true;
+    }
+
+    callState();
   }
 
   void requestNewData(){

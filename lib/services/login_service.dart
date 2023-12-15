@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app/managers/home_widget_manager.dart';
 import 'package:app/tools/app/app_db.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -53,13 +54,14 @@ class LoginService {
     EventNotifierService.addListener(AppEvents.userLogoff, onLogoffObservable);
   }
 
-  static void onLoginObservable({dynamic data}){
+  static Future<void> onLoginObservable({dynamic data}) async {
     WebsocketService.sendHeartAndUsers();
-    GreenMindManager.current?.start();
-    GreenClientManager.current?.start();
+    await GreenMindManager.current?.start();
+    await GreenClientManager.current?.start();
+    await HomeWidgetManager.current?.start();
   }
 
-  static void onLogoffObservable({dynamic data}) async {
+  static Future<void> onLogoffObservable({dynamic data}) async {
     if(data is UserModel){
       sendLogoffState(data);
       await GreenMindManager.deleteUserFootMark(data.userId);

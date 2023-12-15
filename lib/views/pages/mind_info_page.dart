@@ -285,15 +285,19 @@ class _MindInfoPageState extends StateSuper<MindInfoPage> {
 
           /// if there is not children
           if(greenMind.children.isEmpty)
-            BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10),
-              child: Padding(
-                  padding: const EdgeInsets.only(top: 70),
-                child: CustomCard(
-                  color: Colors.white.withAlpha(120),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 50),
-                    child: Text(AppMessages.transCap('withoutDevice')).bold(),
+            Container(
+              clipBehavior: Clip.hardEdge,
+              decoration: const BoxDecoration(),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10),
+                child: Padding(
+                    padding: const EdgeInsets.only(top: 70),
+                  child: CustomCard(
+                    color: Colors.white.withAlpha(120),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 50),
+                      child: Text(AppMessages.transCap('withoutDevice')).bold(),
+                    ),
                   ),
                 ),
               ),

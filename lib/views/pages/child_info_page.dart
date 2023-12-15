@@ -268,15 +268,19 @@ class _ChildInfoPageState extends StateSuper<ChildInfoPage> {
         ),
 
         if(itemList.isEmpty)
-          BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10),
-            child: Padding(
-              padding: const EdgeInsets.only(top: 70),
-              child: CustomCard(
-                color: Colors.white.withAlpha(120),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 50),
-                  child: Text(AppMessages.transCap('withoutDevice')).bold(),
+          ClipRect(
+            clipBehavior: Clip.hardEdge,
+            //decoration: const BoxDecoration(),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10),
+              child: Padding(
+                padding: const EdgeInsets.only(top: 70),
+                child: CustomCard(
+                  color: Colors.white.withAlpha(120),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 50),
+                    child: Text(AppMessages.transCap('withoutDevice')).bold(),
+                  ),
                 ),
               ),
             ),
@@ -297,7 +301,10 @@ class _ChildInfoPageState extends StateSuper<ChildInfoPage> {
           mainAxisExtent: 140,
         ),
         itemBuilder: (_, idx){
-          return SwitchView(clientModel: items[idx]);
+          return SwitchView(
+              clientModel: items[idx],
+            onSettingsClick: onSettingOnSwitchClick,
+          );
         }
     );
   }
@@ -309,7 +316,10 @@ class _ChildInfoPageState extends StateSuper<ChildInfoPage> {
     return SliverList.builder(
       itemCount: items.length,
      itemBuilder: (_, idx){
-        return LiveAndChartView(clientModel: items[idx]);
+        return LiveAndChartView(
+            clientModel: items[idx],
+          onSettingsClick: onSettingOnSwitchClick,
+        );
      },
     );
   }
@@ -395,48 +405,47 @@ class _ChildInfoPageState extends StateSuper<ChildInfoPage> {
     );
   }
 
-  VoidCallback onSettingOnSwitchClick(GreenClientModel itm, BuildContext ctx) {
-    return (){
-      void rename(){
-        RouteTools.pushPage(context, RenameClientPage(clientModel: itm));
-      }
+  void onSettingOnSwitchClick(BuildContext ctx, GreenClientModel itm) {
+    void rename() async {
+      await RouteTools.pushPage(context, RenameClientPage(clientModel: itm));
+      callState();
+    }
 
-      void addToHome(){
+    void addToHome(){
 
-      }
+    }
 
-      showMenu(
-          context: context,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          position: AppPop.findPosition(ctx),
-          items: [
-            PopupMenuItem(
-              height: 30,
-                onTap: rename,
-                child: Row(
-                  children: [
-                    const Icon(Icons.drive_file_rename_outline),
-                    const SizedBox(width: 20),
-                    Text(AppMessages.transCap('rename')).bold(),
-                  ],
-                )
-            ),
+    showMenu(
+      context: context,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      position: AppPop.findPosition(ctx),
+      items: [
+        PopupMenuItem(
+            height: 30,
+            onTap: rename,
+            child: Row(
+              children: [
+                const Icon(Icons.drive_file_rename_outline),
+                const SizedBox(width: 20),
+                Text(AppMessages.transCap('rename')).bold(),
+              ],
+            )
+        ),
 
-            PopupMenuItem(
-              height: 30,
-                onTap: addToHome,
-                child: Row(
-                  children: [
-                    const Icon(Icons.add),
+        PopupMenuItem(
+            height: 30,
+            onTap: addToHome,
+            child: Row(
+              children: [
+                const Icon(Icons.add),
 
-                    const SizedBox(width: 20),
-                    Text(AppMessages.trans('addToHome')).bold(),
-                  ],
-                )
-            ),
-          ],
-      );
-    };
+                const SizedBox(width: 20),
+                Text(AppMessages.trans('addToHome')).bold(),
+              ],
+            )
+        ),
+      ],
+    );
   }
 
 }

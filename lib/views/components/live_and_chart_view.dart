@@ -5,6 +5,7 @@ import 'package:iris_notifier/iris_notifier.dart';
 import 'package:iris_tools/api/helpers/mathHelper.dart';
 import 'package:iris_tools/dateSection/dateHelper.dart';
 import 'package:iris_tools/modules/stateManagers/updater_state.dart';
+import 'package:iris_tools/widgets/circle_bordering.dart';
 import 'package:iris_tools/widgets/custom_card.dart';
 
 import 'package:app/managers/client_data_manager.dart';
@@ -42,13 +43,17 @@ class LiveAndChartView extends StatefulWidget {
 class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
   ClientDataModel? lastDataModel;
   List<ClientDataModel> dataList = [];
-  List<String> bottomTexts = [];
-  double minValue = 0;
-  double maxValue = 1;
-  double hLineStep = 1;
+  double yMinValue = 0;
+  double yMaxValue = 1;
+  double yLineStep = 1;
+  double xMinValue = 0;
+  double xMaxValue = 8;
+  double xLineStep = 1;
   late ChartDimType chartDim;
   List<FlSpot> dots = [];
-  //Timer todo. timer for update every 3 h
+  Map<int, DateTime> bottomSteps = {};
+  bool errorOccurredInLiveData = false;
+  //Timer todo. 100
 
   @override
   void initState(){
@@ -56,11 +61,13 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
 
     chartDim = widget.chartDimType;
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      prepareLastModel();
-      prepareDataList();
-      UpdaterController.addGroupListener([UpdaterGroup.greenClientUpdate], onNewDataListener);
-      EventNotifierService.addListener(AppEvents.networkConnected, onReConnectNet);
-      requestNewData();
+      if(mounted){
+        UpdaterController.addGroupListener([UpdaterGroup.greenClientUpdate], onNewDataListener);
+        EventNotifierService.addListener(AppEvents.networkConnected, onReConnectNet);
+        prepareLastModel();
+        prepareDataList();
+        requestNewData();
+      }
     });
   }
 
@@ -71,9 +78,9 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
 
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
-    //print('>>>>>>>>>>. live chart build <<<<<<<<< ');
     if(lastDataModel == null && !widget.forceShowView){
       return const SizedBox();
     }
@@ -84,106 +91,185 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
         color: Colors.black,
         padding: EdgeInsets.zero,
         child: SizedBox(
-          height: 150,
-          child: Row(
+          height: 240,
+          child: Column(
             children: [
-              Flexible(
-                  flex: 2,
-                  fit: FlexFit.tight,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Center(
-                        child: Builder(
-                            builder: (_){
-                              if(lastDataModel == null){
-                                return const CircularProgressIndicator(color: Colors.white);
-                              }
-
-                              return Text(lastDataModel!.data.toString())
-                                  .color(Colors.white).bold().fsRRatio(8);
-                            }
-                        ),
-                      ),
-
-                      /// settings icon
-                      Positioned(
-                        top: 7,
-                          left: 7,
-                          child: Builder(
-                            builder: (ctx) {
-                              return GestureDetector(
-                                onTap: ()=> onSettingsIconClick(ctx),
-                                  child: const Icon(Icons.settings, color: Colors.white)
-                              );
-                            }
-                          ),
-                      ),
-
-                      Positioned(
-                        bottom: 5,
-                        left: 7,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(widget.clientModel.getCaption())
-                            .color(Colors.blue).bold().fsRRatio(1),
-                            Text(lastDataModel?.lastConnectionTime()?? '-')
-                                .color(Colors.white).fitWidthOverflow(),
-                          ],
-                        ),
-                      ),
-
-                      /// icon
-                      Positioned(
-                        bottom: 0,
-                        top:0,
-                        left: 7,
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Icon(widget.clientModel.getTypeIcon(), color: Colors.white),
-                        ),
-                      ),
-                    ],
-                  )
-              ),
-
-              Flexible(
-                  flex: 5,
-                  fit: FlexFit.tight,
-                  child: SizedBox.expand(
-                    child: ColoredBox(
-                      color: AppDecoration.differentColor,
+              /// live data
+              SizedBox(
+                height: 70,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    /// number
+                    Center(
                       child: Builder(
                           builder: (_){
+                            if(errorOccurredInLiveData){
+                              return Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text(' ☹')
+                                      .color(Colors.white).fsR(15),
+
+                                  const Text(' ooh')
+                                      .color(Colors.white).fsMultiInRatio(14),
+                                ],
+                              );
+                            }
+
                             if(lastDataModel == null){
-                              return const SizedBox(
-                                width: 100,
-                                  child: UnconstrainedBox(
-                                    child: CircularProgressIndicator(
-                                      color: Colors.white,
-                                    ),
-                                  )
-                              );
+                              return const CircularProgressIndicator(color: Colors.white);
                             }
 
-                            if(dataList.isEmpty){
-                              return Center(
-                                child: Text(AppMessages.transCap('noDataForChart')),
-                              );
-                            }
-
-                            return LineChart(genChartData());
+                            return Transform.translate(
+                              offset: const Offset(0, -6),
+                              child: CircleBordering(
+                                  borderColor: Colors.amber,
+                                  borderWidth: 1.3,
+                                  radius: 38,
+                                  padding: const EdgeInsets.only(top: 3),
+                                  child: Text(lastDataModel!.data.toString())
+                                      .color(Colors.white).bold().fsRRatio(8),
+                                  ),
+                            );
                           }
                       ),
                     ),
+
+                    /// settings icon
+                    Positioned(
+                      top: 7,
+                      left: 7,
+                      child: Builder(
+                          builder: (ctx) {
+                            return GestureDetector(
+                                onTap: ()=> onSettingsIconClick(ctx),
+                                behavior: HitTestBehavior.translucent,
+                                child: const Icon(Icons.settings, color: Colors.white)
+                            );
+                          }
+                      ),
+                    ),
+
+                    /// icon
+                    Positioned(
+                      top:7,
+                      right: 7,
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Icon(widget.clientModel.getTypeIcon(), color: Colors.white),
+                      ),
+                    ),
+
+                    /// name
+                    Positioned(
+                      bottom: 5,
+                      left: 7,
+                      child: Text(widget.clientModel.getCaption())
+                          .color(Colors.blue).bold().fsRRatio(1),
+                    ),
+
+                    /// date
+                    Positioned(
+                      bottom: 5,
+                      right: 7,
+                      child: Row(
+                        children: [
+                          const Text('last update: ')
+                              .color(Colors.grey).bold().fsR(1),
+
+                          Text(lastDataModel?.lastConnectionTime()?? '-')
+                              .color(Colors.white).bold().fsR(2),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              /// chart
+              SizedBox(
+                height: 170,
+                child: ColoredBox(
+                  //color: Colors.grey[800]!,//AppDecoration.differentColor,
+                  color: Colors.black,
+                  child: Builder(
+                      builder: (_){
+                        if(dataList.isEmpty && lastDataModel == null && !errorOccurredInLiveData){
+                          return const SizedBox(
+                              width: 100,
+                              child: UnconstrainedBox(
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                ),
+                              )
+                          );
+                        }
+
+                        if(dataList.isEmpty){
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text('🗑')
+                                  .color(Colors.white).fsR(10),
+                              const SizedBox(height: 12),
+                              Text(AppMessages.transCap('noDataForChart'))
+                                  .color(Colors.white).fsRRatio(1).bold(),
+                            ],
+                          );
+                        }
+
+                        return LineChart(genChartData());
+                      }
                   ),
+                ),
               ),
             ],
-          ),
+          )
         ),
       ),
     );
+  }
+
+  void prepareLastModel() async {
+    final last = await ClientDataManager.fetchLastData(widget.clientModel.id, false);
+
+    if(last is ClientDataModel){
+      lastDataModel = last;
+      errorOccurredInLiveData = false;
+    }
+    else {
+      errorOccurredInLiveData = true;
+    }
+
+    callState();
+  }
+
+  void prepareDataList() async {
+    DateTime to = DateHelper.nowMinusUtcOffset();
+    DateTime from;
+
+    if(chartDim == ChartDimType.day){
+      from = to.subtract(const Duration(hours: 24));
+    }
+    else if(chartDim == ChartDimType.week){
+      from = to.subtract(const Duration(days: 7));
+    }
+    else if(chartDim == ChartDimType.month){
+      from = to.subtract(const Duration(days: 30));
+    }
+    else {
+      from = to.subtract(const Duration(days: 365));
+    }
+
+    final list = await ClientDataManager.fetchFor(widget.clientModel.id, from, to: to);
+
+    dataList.clear();
+    dataList.addAll(list);
+
+    prepareMinMaxAndDots(from);
+
+    callState();
   }
 
   LineChartData genChartData() {
@@ -199,18 +285,18 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
         curveSmoothness: 0.2,
         //lineChartStepData: LineChartStepData(stepDirection: 5),
         isStepLineChart: false, //break Line, no Curve
-        spots: dots
+        spots: dots,
       ),
     );
 
     return LineChartData(
-      backgroundColor: AppDecoration.mainColor,
-      minX: 0,
-      maxX: 8,
-      minY: minValue,
-      maxY: maxValue,
-      lineBarsData: bars,
-      titlesData: FlTitlesData(
+        backgroundColor: AppDecoration.mainColor,
+        minX: xMinValue,
+        maxX: xMaxValue, //0,1,...,8 (9 step)
+        minY: yMinValue,
+        maxY: yMaxValue,
+        lineBarsData: bars,
+        titlesData: FlTitlesData(
         show: true,
         rightTitles: const AxisTitles(
           sideTitles: SideTitles(showTitles: false),
@@ -222,8 +308,8 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
           //axisNameWidget: Text('hour'),
           sideTitles: SideTitles(
             showTitles: true,
-            reservedSize: 25,
-            interval: 1,
+            reservedSize: 36,
+            interval: xLineStep,
             getTitlesWidget: bottomTitleWidgets,
           ),
         ),
@@ -232,19 +318,19 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
             showTitles: true,
             getTitlesWidget: leftTitleWidgets,
             reservedSize: 25,
-            interval: hLineStep,
+            interval: yLineStep,
           ),
         ),
       ),
-      borderData: FlBorderData(
-        show: true,
-        border: const Border(left: BorderSide(color: Colors.transparent)),
-      ),
-      gridData: FlGridData(
+        borderData: FlBorderData(
+          show: true,
+          border: const Border(left: BorderSide(color: Colors.transparent)),
+        ),
+        gridData: FlGridData(
         show: true,
         drawHorizontalLine: true,
         drawVerticalLine: false,
-        horizontalInterval: hLineStep,
+        horizontalInterval: yLineStep,
         getDrawingHorizontalLine: (v){
           return const FlLine(
             color: Colors.white60,
@@ -264,7 +350,7 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
 
     String text;
 
-    if(value == minValue || value == maxValue){
+    if(value == yMinValue || value == yMaxValue){
       text = '';
     }
     else {
@@ -273,7 +359,6 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
 
     return Text(text, style: style, textAlign: TextAlign.right);
   }
-
   Widget bottomTitleWidgets(double value, TitleMeta meta) {
     /// value: minX  to  maxX
     /*String text = '';
@@ -282,15 +367,119 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
       text = value.ceil().toString().replaceFirst('.0', '');
     }*/
 
-    Widget view = Text(bottomTexts[value.toInt()]).color(Colors.white);
+    var itm = bottomSteps[value.toInt()];
 
-    return SideTitleWidget(
+    if(itm == null){
+      return const SizedBox();
+    }
+
+    itm = DateHelper.utcToLocal(itm);
+
+    Widget view = UnconstrainedBox(
+      child: CustomCard(
+        color: Colors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 0.7, vertical: 0.3),
+        radius: 4,
+        child: Column(
+          children: [
+            Text(itm.hour.toString().padLeft(2, '0'))
+                .color(Colors.black).bold(),
+            Text(itm.minute.toString().padLeft(2, '0'))
+                .color(Colors.black).bold(),
+          ],
+        ),
+      ),
+    );
+
+    return view;
+    /*
+    SideTitleWidget(
       axisSide: meta.axisSide,
       angle: 0,
       space: 4, // top padding
       fitInside: SideTitleFitInsideData.fromTitleMeta(meta, enabled: true, distanceFromEdge: 4),
       child: view,
-    );
+    )
+     */
+  }
+
+  /*void prepareBottomTexts(DateTime from){
+    from = DateHelper.utcToLocal(from);
+
+    if(chartDim == ChartDimType.day){
+      from = from.add(const Duration(hours: 3));
+      bottomTexts.add(' ');
+
+      for(int i=0; i<8; i++){
+        int h = from.hour;
+        bottomTexts.add('$h"');
+        from = from.add(const Duration(hours: 3));
+      }
+    }
+  }*/
+
+  void prepareMinMaxAndDots(DateTime base) {
+    dots.clear();
+    bottomSteps.clear();
+
+    if(dataList.isEmpty){
+      yMinValue = 0;
+      yMaxValue = 1;
+      yLineStep = 1;
+      xMinValue = 0;
+      xMaxValue = 1;
+      xLineStep = 1;
+      return;
+    }
+
+    yMinValue = MathHelper.clearToDouble(dataList[0].data);
+    yMaxValue = MathHelper.clearToDouble(dataList[0].data);
+
+    xMaxValue = 24* (60/5)+2; // 2 is for padding in right
+
+    {/// first dot
+      final date = dataList[0].hardwareDate!;
+      final difDur = DateHelper.difference(base, date);
+      /// 24*60 = 1440 minutes
+      //old: 1440/8 = 180 x-step distance  if x-step be 8
+      /// 1440/8 = 180 x-step distance
+      final d = FlSpot(difDur.inMinutes / 5, yMinValue);
+      dots.add(d);
+
+      bottomSteps[difDur.inMinutes ~/ 5] = date;
+    }
+
+    for(int i=1; i< dataList.length; i++){
+      final date = dataList[i].hardwareDate!;
+      final difDur = DateHelper.difference(base, date);
+
+      double v = MathHelper.clearToDouble(dataList[i].data);
+
+      final d = FlSpot(difDur.inMinutes/5, v);
+      dots.add(d);
+      bottomSteps[difDur.inMinutes ~/ 5] = date;
+
+      if(v > yMaxValue){
+        yMaxValue = v;
+      }
+      else if(v < yMinValue) {
+        yMinValue = v;
+      }
+    }
+
+    double diff = yMaxValue - yMinValue;
+
+    if(diff < 8){
+      yLineStep = 1;
+      yMinValue -= dataList.length < 2?  4 : 1;
+      yMaxValue += dataList.length < 2?  4 : 1;
+    }
+    else {
+      yMinValue -= 1;
+      yMaxValue += 1;
+      diff = yMaxValue - yMinValue;
+      yLineStep = diff / 6;
+    }
   }
 
   void onSettingsIconClick(BuildContext ctx) {
@@ -308,108 +497,5 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
 
   void onReConnectNet({data}) {
     requestNewData();
-  }
-
-  void prepareLastModel() async {
-    final last = await ClientDataManager.fetchLastData(widget.clientModel.id, false);
-
-    if(last is ClientDataModel){
-      lastDataModel = last;
-      callState();
-    }
-  }
-
-  void prepareDataList() async {
-    DateTime from;
-
-    if(chartDim == ChartDimType.day){
-      from = DateHelper.nowMinusUtcOffset().subtract(const Duration(hours: 24));
-    }
-    else if(chartDim == ChartDimType.week){
-      from = DateHelper.nowMinusUtcOffset().subtract(const Duration(days: 7));
-    }
-    else if(chartDim == ChartDimType.month){
-      from = DateHelper.nowMinusUtcOffset().subtract(const Duration(days: 30));
-    }
-    else {
-      from = DateHelper.nowMinusUtcOffset().subtract(const Duration(days: 365));
-    }
-
-    final list = await ClientDataManager.fetchFor(widget.clientModel.id, from);
-
-    dataList.clear();
-    dataList.addAll(list);
-
-    prepareBottomTexts(from);
-    prepareMinMaxAndDots(from);
-
-    callState();
-  }
-
-  void prepareBottomTexts(DateTime from){
-    from = DateHelper.utcToLocal(from);
-
-    if(chartDim == ChartDimType.day){
-
-      for(int i=0; i<9; i++){
-        int h = from.hour;
-        bottomTexts.add('$h"');
-        from = from.add(const Duration(hours: 3));
-      }
-    }
-  }
-
-  void prepareMinMaxAndDots(DateTime base) {
-    dots.clear();
-
-    if(dataList.isEmpty){
-      minValue = 0;
-      maxValue = 1;
-      hLineStep = 1;
-      return;
-    }
-
-    minValue = MathHelper.clearToDouble(dataList[0].data);
-    maxValue = MathHelper.clearToDouble(dataList[0].data);
-
-    {/// first dot
-      final date = dataList[0].hardwareDate!;
-      final difDur = DateHelper.difference(base, date);
-      /// 24*60 = 1440
-      /// 1440/8 = 180
-      final d = FlSpot(difDur.inMinutes / 180, minValue);
-      dots.add(d);
-    }
-
-    for(int i=1; i< dataList.length; i++){
-      final date = dataList[i].hardwareDate!;
-      final difDur = DateHelper.difference(base, date);
-
-      double v = MathHelper.clearToDouble(dataList[i].data);
-
-      final d = FlSpot(difDur.inMinutes/180, v);
-      dots.add(d);
-
-      if(v > maxValue){
-        maxValue = v;
-      }
-      else if(v < minValue) {
-        minValue = v;
-      }
-    }
-
-    double diff = maxValue - minValue;
-
-    if(diff < 8){
-      hLineStep = 1;
-      minValue -= dataList.length < 2?  4 : 1;
-      maxValue += dataList.length < 2?  4 : 1;
-    }
-    else {
-      minValue -= 1;
-      maxValue += 1;
-      diff = maxValue - minValue;
-      hLineStep = diff / 6;
-    }
   }
 }

@@ -35,7 +35,7 @@ class SplashView extends StatelessWidget {
 
               FadeIn(
                 duration: const Duration(milliseconds: 700),
-                child: const Text('Green Oasis',
+                child: const Text('GreenOasis',
                   style: TextStyle(shadows: [
                     Shadow(color: Colors.grey, blurRadius: 2, offset: Offset(2,2)),
                     Shadow(color: Colors.grey, blurRadius: 5, offset: Offset(4,4)),
