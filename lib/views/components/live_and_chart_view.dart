@@ -1,3 +1,7 @@
+import 'package:app/managers/green_mind_manager.dart';
+import 'package:app/structures/models/home_widget_model.dart';
+import 'package:app/tools/route_tools.dart';
+import 'package:app/views/pages/full_chart_page.dart';
 import 'package:flutter/material.dart';
 
 import 'package:fl_chart/fl_chart.dart';
@@ -188,39 +192,42 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
               ),
 
               /// chart
-              SizedBox(
-                height: 170,
-                child: ColoredBox(
-                  //color: Colors.grey[800]!,//AppDecoration.differentColor,
-                  color: Colors.black,
-                  child: Builder(
-                      builder: (_){
-                        if(dataList.isEmpty && lastDataModel == null && !errorOccurredInLiveData){
-                          return const SizedBox(
-                              width: 100,
-                              child: UnconstrainedBox(
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                ),
-                              )
-                          );
-                        }
+              GestureDetector(
+                onTap: onShowFullScreenClick,
+                child: SizedBox(
+                  height: 170,
+                  child: ColoredBox(
+                    //color: Colors.grey[800]!,//AppDecoration.differentColor,
+                    color: Colors.black,
+                    child: Builder(
+                        builder: (_){
+                          if(dataList.isEmpty && lastDataModel == null && !errorOccurredInLiveData){
+                            return const SizedBox(
+                                width: 100,
+                                child: UnconstrainedBox(
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                  ),
+                                )
+                            );
+                          }
 
-                        if(dataList.isEmpty){
-                          return Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text('🗑')
-                                  .color(Colors.white).fsR(10),
-                              const SizedBox(height: 12),
-                              Text(AppMessages.transCap('noDataForChart'))
-                                  .color(Colors.white).fsRRatio(1).bold(),
-                            ],
-                          );
-                        }
+                          if(dataList.isEmpty){
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text('🗑')
+                                    .color(Colors.white).fsR(10),
+                                const SizedBox(height: 12),
+                                Text(AppMessages.transCap('noDataForChart'))
+                                    .color(Colors.white).fsRRatio(1).bold(),
+                              ],
+                            );
+                          }
 
-                        return LineChart(genChartData());
-                      }
+                          return LineChart(genChartData());
+                        }
+                    ),
                   ),
                 ),
               ),
@@ -359,6 +366,7 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
 
     return Text(text, style: style, textAlign: TextAlign.right);
   }
+
   Widget bottomTitleWidgets(double value, TitleMeta meta) {
     /// value: minX  to  maxX
     /*String text = '';
@@ -497,5 +505,15 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
 
   void onReConnectNet({data}) {
     requestNewData();
+  }
+
+  void onShowFullScreenClick() {
+    final hw = HomeWidgetModel();
+    //hw.userId = SessionService.getLastLoginUserId()!;
+    hw.clientId = widget.clientModel.id;
+    hw.greenMindId = GreenMindManager.current!.findByChildId(widget.clientModel.ownerId)!.id;
+    hw.childId = widget.clientModel.ownerId;
+
+    RouteTools.pushPage(context, FullChartPage(homeWidget: hw));
   }
 }

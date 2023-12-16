@@ -4,6 +4,7 @@ import 'package:app/tools/app/app_icons.dart';
 import 'package:app/tools/app/app_pop.dart';
 import 'package:app/tools/app/app_snack.dart';
 import 'package:app/tools/route_tools.dart';
+import 'package:app/views/pages/full_chart_page.dart';
 import 'package:app/views/pages/rename_client_page.dart';
 import 'package:flutter/material.dart';
 
@@ -225,169 +226,172 @@ class _HomeWidgetViewState extends StateSuper<HomeWidgetView> {
   Widget buildChartMode() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5.0),
-      child: CustomCard(
-        color: Colors.black,
-        padding: EdgeInsets.zero,
-        child: SizedBox(
-          height: widget.homeWidget.showChart? 240 : 70,
-          child: Builder(
-            builder: (context) {
-              return Column(
-                children: [
-                  /// live data
-                  SizedBox(
-                    height: 70,
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        /// settings icon
-                        Positioned(
-                          top: 7,
-                          left: 7,
-                          child: Builder(
-                              builder: (ctx) {
-                                return GestureDetector(
-                                    onTap: ()=> onSettingsIconClick(ctx),
-                                    behavior: HitTestBehavior.translucent,
-                                    child: const Icon(Icons.settings, color: Colors.white, size: 20)
-                                );
-                              }
+      child: GestureDetector(
+        onTap: onShowFullScreenClick,
+        child: CustomCard(
+          color: Colors.black,
+          padding: EdgeInsets.zero,
+          child: SizedBox(
+            height: widget.homeWidget.showChart? 240 : 70,
+            child: Builder(
+              builder: (context) {
+                return Column(
+                  children: [
+                    /// live data
+                    SizedBox(
+                      height: 70,
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          /// settings icon
+                          Positioned(
+                            top: 7,
+                            left: 7,
+                            child: Builder(
+                                builder: (ctx) {
+                                  return GestureDetector(
+                                      onTap: ()=> onSettingsIconClick(ctx),
+                                      behavior: HitTestBehavior.translucent,
+                                      child: const Icon(Icons.settings, color: Colors.white, size: 20)
+                                  );
+                                }
+                            ),
                           ),
-                        ),
-
-                        /// icon, number
-                        Positioned(
-                          top:7,
-                          right: 7,
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Row(
-                              children: [
-                                Builder(
-                                    builder: (_){
-                                      if(errorOccurredInLiveData){
-                                        return Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            const Text(' ☹')
-                                                .color(Colors.white).fsR(15),
-
-                                            const Text(' ooh')
-                                                .color(Colors.white).fsMultiInRatio(14),
-                                          ],
+        
+                          /// icon, number
+                          Positioned(
+                            top:7,
+                            right: 7,
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Row(
+                                children: [
+                                  Builder(
+                                      builder: (_){
+                                        if(errorOccurredInLiveData){
+                                          return Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              const Text(' ☹')
+                                                  .color(Colors.white).fsR(15),
+        
+                                              const Text(' ooh')
+                                                  .color(Colors.white).fsMultiInRatio(14),
+                                            ],
+                                          );
+                                        }
+        
+                                        if(lastDataModel == null){
+                                          return const CircularProgressIndicator(color: Colors.white);
+                                        }
+        
+                                        return Transform.translate(
+                                          offset: const Offset(0, 0),
+                                          child: CircleBordering(
+                                            borderColor: Colors.amber,
+                                            borderWidth: 1.3,
+                                            radius: 38,
+                                            padding: const EdgeInsets.only(top: 3),
+                                            child: Text(lastDataModel!.data.toString())
+                                                .color(Colors.white).bold().fsRRatio(8),
+                                          ),
                                         );
                                       }
-
-                                      if(lastDataModel == null){
-                                        return const CircularProgressIndicator(color: Colors.white);
-                                      }
-
-                                      return Transform.translate(
-                                        offset: const Offset(0, 0),
-                                        child: CircleBordering(
-                                          borderColor: Colors.amber,
-                                          borderWidth: 1.3,
-                                          radius: 38,
-                                          padding: const EdgeInsets.only(top: 3),
-                                          child: Text(lastDataModel!.data.toString())
-                                              .color(Colors.white).bold().fsRRatio(8),
-                                        ),
-                                      );
-                                    }
+                                  ),
+        
+                                  const SizedBox(width: 6),
+                                  Icon(clientModel!.getTypeIcon(), color: Colors.white),
+                                ],
+                              ),
+                            ),
+                          ),
+        
+                          /// name
+                          Positioned(
+                            bottom: 5,
+                            left: 7,
+                            right: 90,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Flexible(
+                                      child: Text(clientModel!.getCaption(), maxLines: 1,)
+                                          .color(Colors.blue).bold().fsR(1),
+                                    ),
+        
+                                    const Text('  Of ', maxLines: 1,)
+                                        .color(Colors.amber),
+                                    Flexible(
+                                      child: Text(widget.homeWidget.getMind()?.getCaption()?? '', maxLines: 1,)
+                                          .color(Colors.white),
+                                    ),
+                                  ],
                                 ),
-
-                                const SizedBox(width: 6),
-                                Icon(clientModel!.getTypeIcon(), color: Colors.white),
+        
+                                const SizedBox(height: 1),
+                                Row(
+                                  children: [
+                                    /*const Text('last update: ')
+                                        .color(Colors.grey).bold().fsR(1),*/
+        
+                                    Text(lastDataModel?.lastConnectionTime()?? '-')
+                                        .color(Colors.grey).bold(),
+                                  ],
+                                ),
                               ],
                             ),
                           ),
-                        ),
-
-                        /// name
-                        Positioned(
-                          bottom: 5,
-                          left: 7,
-                          right: 90,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Flexible(
-                                    child: Text(clientModel!.getCaption(), maxLines: 1,)
-                                        .color(Colors.blue).bold().fsR(1),
-                                  ),
-
-                                  const Text('  Of ', maxLines: 1,)
-                                      .color(Colors.amber),
-                                  Flexible(
-                                    child: Text(widget.homeWidget.getMind()?.getCaption()?? '', maxLines: 1,)
-                                        .color(Colors.white),
-                                  ),
-                                ],
-                              ),
-
-                              const SizedBox(height: 1),
-                              Row(
-                                children: [
-                                  /*const Text('last update: ')
-                                      .color(Colors.grey).bold().fsR(1),*/
-
-                                  Text(lastDataModel?.lastConnectionTime()?? '-')
-                                      .color(Colors.grey).bold(),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-
-                  /// chart
-                  Visibility(
-                    visible: widget.homeWidget.showChart,
-                    child: SizedBox(
-                      height: 170,
-                      child: ColoredBox(
-                        //color: Colors.grey[800]!,//AppDecoration.differentColor,
-                        color: Colors.black,
-                        child: Builder(
-                            builder: (_){
-                              if(dataList.isEmpty && lastDataModel == null && !errorOccurredInLiveData){
-                                return const SizedBox(
-                                    width: 100,
-                                    child: UnconstrainedBox(
-                                      child: CircularProgressIndicator(
-                                        color: Colors.white,
-                                      ),
-                                    )
-                                );
+        
+                    /// chart
+                    Visibility(
+                      visible: widget.homeWidget.showChart,
+                      child: SizedBox(
+                        height: 170,
+                        child: ColoredBox(
+                          //color: Colors.grey[800]!,//AppDecoration.differentColor,
+                          color: Colors.black,
+                          child: Builder(
+                              builder: (_){
+                                if(dataList.isEmpty && lastDataModel == null && !errorOccurredInLiveData){
+                                  return const SizedBox(
+                                      width: 100,
+                                      child: UnconstrainedBox(
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                  );
+                                }
+        
+                                if(dataList.isEmpty){
+                                  return Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Text('🗑')
+                                          .color(Colors.white).fsR(10),
+                                      const SizedBox(height: 12),
+                                      Text(AppMessages.transCap('noDataForChart'))
+                                          .color(Colors.white).fsRRatio(1).bold(),
+                                    ],
+                                  );
+                                }
+        
+                                return LineChart(genChartData());
                               }
-
-                              if(dataList.isEmpty){
-                                return Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Text('🗑')
-                                        .color(Colors.white).fsR(10),
-                                    const SizedBox(height: 12),
-                                    Text(AppMessages.transCap('noDataForChart'))
-                                        .color(Colors.white).fsRRatio(1).bold(),
-                                  ],
-                                );
-                              }
-
-                              return LineChart(genChartData());
-                            }
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              );
-            }
-          )
+                  ],
+                );
+              }
+            )
+          ),
         ),
       ),
     );
@@ -750,5 +754,9 @@ class _HomeWidgetViewState extends StateSuper<HomeWidgetView> {
         AppSnack.showError(context, AppMessages.errorCommunicatingServer);
       }
     }
+  }
+
+  void onShowFullScreenClick() {
+    RouteTools.pushPage(context, FullChartPage(homeWidget: widget.homeWidget));
   }
 }
