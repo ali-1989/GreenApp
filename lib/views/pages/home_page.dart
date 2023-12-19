@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:app/managers/home_widget_manager.dart';
 import 'package:app/structures/enums/updater_group.dart';
 import 'package:app/views/components/home_widget_view.dart';
@@ -28,12 +30,14 @@ class HomePage extends StatefulWidget {
 }
 ///=============================================================================
 class HomePageState extends StateSuper<HomePage> {
+  late Timer onHourUpdateTimer;
 
   @override
   void initState(){
     super.initState();
     
     UpdaterController.addGroupListener([UpdaterGroup.homeWidgetUpdate], onUpdateWidget);
+    onHourUpdateTimer = Timer.periodic(const Duration(minutes: 30), (timer) {callState();});
   }
 
   @override
@@ -41,6 +45,7 @@ class HomePageState extends StateSuper<HomePage> {
     super.dispose();
 
     UpdaterController.removeGroupListener(onUpdateWidget);
+    onHourUpdateTimer.cancel();
   }
 
   @override

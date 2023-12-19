@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app/tools/app/app_cache.dart';
 import 'package:app/tools/http_tools.dart';
 import 'package:app/tools/route_tools.dart';
 import 'package:iris_db/iris_db.dart';
@@ -174,7 +175,11 @@ class ClientDataManager {
 		UpdaterController.updateByGroup(UpdaterGroup.greenClientUpdate, data: model);
 	}
 
-	static Future<Requester> requestNewDataFor(int clientId, {DateTime? from}) async {
+	static Future<Requester?> requestNewDataFor(int clientId, {DateTime? from}) async {
+		if(AppCache.canCallMethodAgain('requestNewDataFor_$clientId', dur: const Duration(seconds: 2))){
+			return null;
+		}
+
 		final requester = Requester();
 
 		requester.httpRequestEvents.onFailState = (req, response) async {

@@ -358,7 +358,7 @@ class RegisterPageState extends StateSuper<RegisterPage> {
           context,
           AppMessages.emailVerifyIsSentClickOn,
           onButton: (){
-            RouteTools.pushPage(context, LoginPage());
+            RouteTools.pushPage(context, LoginPage(email: emailCtr.text.trim()));
           }
       );
     };

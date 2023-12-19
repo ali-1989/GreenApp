@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:app/managers/green_mind_manager.dart';
 import 'package:app/structures/models/home_widget_model.dart';
 import 'package:app/tools/route_tools.dart';
@@ -27,7 +29,6 @@ typedef OnSettingsClick = void Function(BuildContext context, GreenClientModel m
 ///------------------------------------------------------
 class LiveAndChartView extends StatefulWidget {
   final GreenClientModel clientModel;
-  final bool forceShowView;
   final OnSettingsClick? onSettingsClick;
   final ChartDimType chartDimType;
 
@@ -35,7 +36,6 @@ class LiveAndChartView extends StatefulWidget {
   LiveAndChartView({
     super.key,
     required this.clientModel,
-    this.forceShowView = true,
     this.onSettingsClick,
     this.chartDimType = ChartDimType.day,
   });
@@ -57,7 +57,7 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
   List<FlSpot> dots = [];
   Map<int, DateTime> bottomSteps = {};
   bool errorOccurredInLiveData = false;
-  //Timer todo. 100
+  late Timer oneHourUpdateTimer;
 
   @override
   void initState(){
@@ -68,9 +68,11 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
       if(mounted){
         UpdaterController.addGroupListener([UpdaterGroup.greenClientUpdate], onNewDataListener);
         EventNotifierService.addListener(AppEvents.networkConnected, onReConnectNet);
-        prepareLastModel();
-        prepareDataList();
-        requestNewData();
+        prepare();
+
+        oneHourUpdateTimer = Timer.periodic(const Duration(minutes: 30), (timer) {
+          prepare();
+        });
       }
     });
   }
@@ -79,16 +81,13 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
   void dispose(){
     UpdaterController.removeGroupListener(onNewDataListener);
     EventNotifierService.removeListener(AppEvents.networkConnected, onReConnectNet);
+    oneHourUpdateTimer.cancel();
 
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if(lastDataModel == null && !widget.forceShowView){
-      return const SizedBox();
-    }
-
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5.0),
       child: CustomCard(
@@ -225,7 +224,7 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
                             );
                           }
 
-                          return LineChart(genChartData());
+                          return IgnorePointer(child: LineChart(genChartData()));
                         }
                     ),
                   ),
@@ -236,6 +235,12 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
         ),
       ),
     );
+  }
+
+  void prepare(){
+    prepareLastModel();
+    prepareDataList();
+    requestNewData();
   }
 
   void prepareLastModel() async {
@@ -508,6 +513,10 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
   }
 
   void onShowFullScreenClick() {
+    if(dataList.isEmpty && lastDataModel == null && !errorOccurredInLiveData){
+      return;
+    }
+
     final hw = HomeWidgetModel();
     //hw.userId = SessionService.getLastLoginUserId()!;
     hw.clientId = widget.clientModel.id;

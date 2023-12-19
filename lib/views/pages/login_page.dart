@@ -20,8 +20,10 @@ import 'package:app/tools/http_tools.dart';
 import 'package:app/tools/route_tools.dart';
 
 class LoginPage extends StatefulWidget {
+  final String? email;
+
   // ignore: prefer_const_constructors_in_immutables
-  LoginPage({super.key});
+  LoginPage({super.key, this.email});
 
   @override
   State createState() => LoginPageState();
@@ -37,6 +39,8 @@ class LoginPageState extends StateSuper<LoginPage> {
   @override
   void initState(){
     super.initState();
+
+    emailCtr.text = widget.email?? '';
   }
 
   @override
