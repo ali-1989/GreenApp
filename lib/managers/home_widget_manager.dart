@@ -186,15 +186,8 @@ class HomeWidgetManager {
 	}
 
 	void reorderFrom(int index){
-		for(final x in _itemList){
-			print('======>index:$index   ${x.clientId} ${x.order} ');
-		}
 		_itemList.skip(index).forEach((element) {
 			element.order--;
 		});
-
-		for(final x in _itemList){
-			print('======>   ${x.clientId} ${x.order} ');
-		}
 	}
 }

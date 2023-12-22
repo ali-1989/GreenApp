@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:app/managers/green_mind_manager.dart';
+import 'package:app/services/session_service.dart';
 import 'package:app/structures/models/home_widget_model.dart';
 import 'package:app/tools/route_tools.dart';
 import 'package:app/views/pages/full_chart_page.dart';
@@ -224,7 +225,18 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
                             );
                           }
 
-                          return IgnorePointer(child: LineChart(genChartData()));
+                          return IgnorePointer(
+                              child: Stack(
+                                children: [
+                                  LineChart(genChartData()),
+                                  const Positioned(
+                                      bottom: 4,
+                                      left: 4,
+                                      child: Icon(Icons.fullscreen, color: Colors.white)
+                                  ),
+                                ],
+                              ))
+                          ;
                         }
                     ),
                   ),
@@ -518,7 +530,7 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
     }
 
     final hw = HomeWidgetModel();
-    //hw.userId = SessionService.getLastLoginUserId()!;
+    hw.userId = SessionService.getLastLoginUserId()!;
     hw.clientId = widget.clientModel.id;
     hw.greenMindId = GreenMindManager.current!.findByChildId(widget.clientModel.ownerId)!.id;
     hw.childId = widget.clientModel.ownerId;

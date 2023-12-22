@@ -179,20 +179,12 @@ class GreenMindManager {
 		UpdaterController.updateByGroup(UpdaterGroup.greenMindUpdate);
 	}
 
-	Future<void> removeUnNeedGreenMinds(List<int> ids){
+	Future<int> removeUnNeedGreenMinds(List<int> ids) {
 		final con = Conditions();
 		con.add(Condition()..key=Keys.userId..value = userId);
 		con.add(Condition(ConditionType.NotIn)..key='id'..value = ids);
 
-		print('777777777777777777777777777777777');
-		AppDB.db.logRows(AppDB.tbGreenMind);
-		final res = AppDB.db.delete(AppDB.tbGreenMind, con);
-		Future.delayed(Duration(seconds: 2), (){
-			print('777777777777777777777777777777777 2');
-			AppDB.db.logRows(AppDB.tbGreenMind);
-		});
-		return res;
-
+		return AppDB.db.delete(AppDB.tbGreenMind, con);
 	}
 
 	Requester? requestGreenMinds(){

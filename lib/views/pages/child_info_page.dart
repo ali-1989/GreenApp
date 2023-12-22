@@ -59,7 +59,7 @@ class _ChildInfoPageState extends StateSuper<ChildInfoPage> {
     greenChild = widget.greenChild;
     prepareList();
     expandCtr.expanded = itemList.isEmpty;
-    GreenClientManager.current!.requestClientsFor(greenChild);
+    GreenClientManager.current!.requestClientsFor(greenChild.mindId, greenChild.id);
     keyStyle = TextStyle(color: Colors.grey.shade300);
     valueStyle = const TextStyle(color: Colors.white, fontWeight: FontWeight.bold);
   }

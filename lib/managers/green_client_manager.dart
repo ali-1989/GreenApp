@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:app/managers/client_data_manager.dart';
+import 'package:app/tools/app/app_cache.dart';
 import 'package:iris_db/iris_db.dart';
 import 'package:iris_tools/modules/stateManagers/updater_state.dart';
 
@@ -8,7 +9,6 @@ import 'package:app/services/session_service.dart';
 import 'package:app/structures/enums/client_type.dart';
 import 'package:app/structures/enums/updater_group.dart';
 import 'package:app/structures/middleWares/requester.dart';
-import 'package:app/structures/models/green_child_model.dart';
 import 'package:app/structures/models/green_client_model.dart';
 import 'package:app/system/extensions.dart';
 import 'package:app/system/keys.dart';
@@ -160,7 +160,11 @@ class GreenClientManager {
 		UpdaterController.updateByGroup(UpdaterGroup.greenClientUpdate, data: model);
 	}
 
-	Requester requestClientsFor(GreenChildModel childModel){
+	Requester? requestClientsFor(int mindId, int childId){
+		if(!AppCache.canCallMethodAgain('requestClientsFor_$mindId $childId', dur: const Duration(seconds: 2))){
+			return null;
+		}
+
 		final requester = Requester();
 
 		requester.httpRequestEvents.onStatusOk = (res, response) async {
@@ -175,8 +179,8 @@ class GreenClientManager {
 		final js = <String, dynamic>{};
 		js[Keys.request] = 'get_clients_for';
 		js[Keys.requesterId] = userId;
-		js['mind_id'] = childModel.mindId;
-		js['child_id'] = childModel.id;
+		js['mind_id'] = mindId;
+		js['child_id'] = childId;
 
 		requester.bodyJson = js;
 		requester.prepareUrl();

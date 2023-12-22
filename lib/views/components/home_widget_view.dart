@@ -1,6 +1,7 @@
+import 'package:app/managers/green_client_manager.dart';
+import 'package:app/managers/green_mind_manager.dart';
 import 'package:app/managers/home_widget_manager.dart';
 import 'package:app/structures/models/home_widget_model.dart';
-import 'package:app/tools/app/app_db.dart';
 import 'package:app/tools/app/app_icons.dart';
 import 'package:app/tools/app/app_pop.dart';
 import 'package:app/tools/app/app_snack.dart';
@@ -60,11 +61,11 @@ class _HomeWidgetViewState extends StateSuper<HomeWidgetView> {
     super.initState();
 
     clientModel = widget.homeWidget.getClient();
-    print('ohhhhhhhhhhhhh ${clientModel == null} , ${widget.homeWidget.clientId} ');
-    AppDB.db.logRows(AppDB.tbGreenClient);
+
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if(mounted){
         UpdaterController.addGroupListener([UpdaterGroup.greenClientUpdate], onNewDataListener);
+        UpdaterController.addGroupListener([UpdaterGroup.greenMindUpdate], onNewDataListener);
         EventNotifierService.addListener(AppEvents.networkConnected, onReConnectNet);
         prepareLastModel();
         prepareDataList();
@@ -127,6 +128,11 @@ class _HomeWidgetViewState extends StateSuper<HomeWidgetView> {
                   children: [
                     /// switch button or loading
                     Builder(builder: (_){
+                      if(errorOccurredInLiveData) {
+                        return const Text(' ooh ☹')
+                            .color(Colors.white).fsMultiInRatio(15);
+                      }
+
                       if(lastDataModel == null){
                         return const Center(
                           child: SizedBox(
@@ -372,22 +378,36 @@ class _HomeWidgetViewState extends StateSuper<HomeWidgetView> {
                               }
 
                               if(dataList.isEmpty){
-                                return Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Text('🗑')
-                                        .color(Colors.white).fsR(10),
-                                    const SizedBox(height: 12),
-                                    Text(AppMessages.transCap('noDataForChart'))
-                                        .color(Colors.white).fsRRatio(1).bold(),
-                                  ],
+                                return GestureDetector(
+                                  onTap: onShowFullScreenClick,
+                                  behavior: HitTestBehavior.translucent,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Text('🗑')
+                                          .color(Colors.white).fsR(10),
+                                      const SizedBox(height: 12),
+                                      Text(AppMessages.transCap('noDataForChart'))
+                                          .color(Colors.white).fsRRatio(1).bold(),
+                                    ],
+                                  ),
                                 );
                               }
 
                               return GestureDetector(
                                 onTap: onShowFullScreenClick,
                                   behavior: HitTestBehavior.translucent,
-                                  child: LineChart(genChartData())
+                                  child: Stack(
+                                    children: [
+                                      LineChart(genChartData()),
+
+                                      const Positioned(
+                                        bottom: 4,
+                                          left: 4,
+                                          child: Icon(Icons.fullscreen, color: Colors.white)
+                                      ),
+                                    ],
+                                  )
                               );
                             }
                         ),
@@ -404,7 +424,17 @@ class _HomeWidgetViewState extends StateSuper<HomeWidgetView> {
   }
 
   void prepareLastModel() async {
+    clientModel = widget.homeWidget.getClient();
+
     if(clientModel == null){
+      GreenClientManager.current!.requestClientsFor(widget.homeWidget.greenMindId, widget.homeWidget.childId);
+
+      final gm = widget.homeWidget.getMind();
+
+      if(gm == null){
+        GreenMindManager.current?.requestGreenMinds();
+      }
+
       return;
     }
 
@@ -767,7 +797,7 @@ class _HomeWidgetViewState extends StateSuper<HomeWidgetView> {
   }
 
   void onShowFullScreenClick() {
-    print('hhhh');
+    print('fulll click');
     RouteTools.pushPage(context, FullChartPage(homeWidget: widget.homeWidget));
   }
 }
