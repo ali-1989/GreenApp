@@ -1,10 +1,5 @@
 import 'dart:async';
 
-import 'package:app/managers/green_mind_manager.dart';
-import 'package:app/services/session_service.dart';
-import 'package:app/structures/models/home_widget_model.dart';
-import 'package:app/tools/route_tools.dart';
-import 'package:app/views/pages/full_chart_page.dart';
 import 'package:flutter/material.dart';
 
 import 'package:fl_chart/fl_chart.dart';
@@ -16,15 +11,20 @@ import 'package:iris_tools/widgets/circle_bordering.dart';
 import 'package:iris_tools/widgets/custom_card.dart';
 
 import 'package:app/managers/client_data_manager.dart';
+import 'package:app/managers/green_mind_manager.dart';
+import 'package:app/services/session_service.dart';
 import 'package:app/structures/abstract/state_super.dart';
 import 'package:app/structures/enums/app_events.dart';
 import 'package:app/structures/enums/chart_dim_type.dart';
 import 'package:app/structures/enums/updater_group.dart';
 import 'package:app/structures/models/client_data_model.dart';
 import 'package:app/structures/models/green_client_model.dart';
+import 'package:app/structures/models/home_widget_model.dart';
 import 'package:app/system/extensions.dart';
 import 'package:app/tools/app/app_decoration.dart';
 import 'package:app/tools/app/app_messages.dart';
+import 'package:app/tools/route_tools.dart';
+import 'package:app/views/pages/full_chart_page.dart';
 
 typedef OnSettingsClick = void Function(BuildContext context, GreenClientModel model);
 ///------------------------------------------------------
@@ -460,7 +460,11 @@ class _LiveAndChartViewState extends StateSuper<LiveAndChartView> {
     yMinValue = MathHelper.clearToDouble(dataList[0].data);
     yMaxValue = MathHelper.clearToDouble(dataList[0].data);
 
-    xMaxValue = 24* (60/5)+4; // 4 is for padding in right
+    // 4 is for padding in right
+    // 24 is 24h in a day
+    // 60 is 60min in an hour
+    // 5 used for reduce points
+    xMaxValue = 24* (60/5)+4;
 
     {/// first dot
       final date = dataList[0].hardwareDate!;

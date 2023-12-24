@@ -1,8 +1,5 @@
 import 'dart:async';
 
-import 'package:app/tools/app/app_cache.dart';
-import 'package:app/tools/http_tools.dart';
-import 'package:app/tools/route_tools.dart';
 import 'package:iris_db/iris_db.dart';
 import 'package:iris_tools/api/helpers/databaseHelper.dart';
 import 'package:iris_tools/dateSection/dateHelper.dart';
@@ -16,7 +13,10 @@ import 'package:app/structures/middleWares/requester.dart';
 import 'package:app/structures/models/client_data_model.dart';
 import 'package:app/system/extensions.dart';
 import 'package:app/system/keys.dart';
+import 'package:app/tools/app/app_cache.dart';
 import 'package:app/tools/app/app_db.dart';
+import 'package:app/tools/http_tools.dart';
+import 'package:app/tools/route_tools.dart';
 
 /// clients => Sensors and switches
 
@@ -176,7 +176,7 @@ class ClientDataManager {
 	}
 
 	static Future<Requester?> requestNewDataFor(int clientId, {DateTime? from}) async {
-		if(AppCache.canCallMethodAgain('requestNewDataFor_$clientId', dur: const Duration(seconds: 2))){
+		if(!AppCache.canCallMethodAgain('requestNewDataFor_$clientId', dur: const Duration(seconds: 2))){
 			return null;
 		}
 
@@ -197,7 +197,7 @@ class ClientDataManager {
 		};
 
 		final lastModel = await fetchLastData(clientId, false);
-		DateTime? lastDate = lastModel?.hardwareDate?? from;
+		DateTime? lastDate = from?? lastModel?.hardwareDate;
 
 		final js = <String, dynamic>{};
 		js[Keys.request] = 'get_client_data';

@@ -229,11 +229,8 @@ class LoginPageState extends StateSuper<LoginPage> {
 
     final events = HttpRequestEvents();
 
-    events.onAnyState = (req) async {
-      await hideLoading();
-    };
-
     events.onFailState = (req, res) async {
+      await hideLoading();
       bool handled = HttpTools.handler(context, req.getBodyAsJson()?? {});
 
       if(!handled) {
@@ -250,6 +247,8 @@ class LoginPageState extends StateSuper<LoginPage> {
       }
 
       await SessionService.loginByProfileData(data);
+      await hideLoading();
+
       RouteTools.backToRoot(RouteTools.getTopContext()!);
       AppBroadcast.reBuildApp();
     };

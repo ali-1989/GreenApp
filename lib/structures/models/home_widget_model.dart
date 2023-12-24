@@ -1,12 +1,11 @@
-import 'package:app/managers/green_client_manager.dart';
-import 'package:app/managers/green_mind_manager.dart';
-import 'package:app/structures/models/green_client_model.dart';
-import 'package:app/structures/models/green_mind_model.dart';
-
 import 'package:iris_tools/api/converter.dart';
 import 'package:iris_tools/dateSection/dateHelper.dart';
 
+import 'package:app/managers/green_client_manager.dart';
+import 'package:app/managers/green_mind_manager.dart';
 import 'package:app/structures/models/green_child_model.dart';
+import 'package:app/structures/models/green_client_model.dart';
+import 'package:app/structures/models/green_mind_model.dart';
 import 'package:app/system/keys.dart';
 
 class HomeWidgetModel {

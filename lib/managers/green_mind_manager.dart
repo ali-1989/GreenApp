@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:app/managers/green_client_manager.dart';
 import 'package:iris_db/iris_db.dart';
 import 'package:iris_notifier/iris_notifier.dart';
 import 'package:iris_tools/modules/stateManagers/updater_state.dart';
 
+import 'package:app/managers/green_client_manager.dart';
 import 'package:app/services/session_service.dart';
 import 'package:app/structures/enums/app_events.dart';
 import 'package:app/structures/enums/updater_group.dart';

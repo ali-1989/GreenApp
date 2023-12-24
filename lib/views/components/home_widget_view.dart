@@ -1,13 +1,3 @@
-import 'package:app/managers/green_client_manager.dart';
-import 'package:app/managers/green_mind_manager.dart';
-import 'package:app/managers/home_widget_manager.dart';
-import 'package:app/structures/models/home_widget_model.dart';
-import 'package:app/tools/app/app_icons.dart';
-import 'package:app/tools/app/app_pop.dart';
-import 'package:app/tools/app/app_snack.dart';
-import 'package:app/tools/route_tools.dart';
-import 'package:app/views/pages/full_chart_page.dart';
-import 'package:app/views/pages/rename_client_page.dart';
 import 'package:flutter/material.dart';
 
 import 'package:fl_chart/fl_chart.dart';
@@ -17,17 +7,27 @@ import 'package:iris_tools/dateSection/dateHelper.dart';
 import 'package:iris_tools/modules/stateManagers/updater_state.dart';
 import 'package:iris_tools/widgets/circle_bordering.dart';
 import 'package:iris_tools/widgets/custom_card.dart';
+import 'package:lite_rolling_switch/lite_rolling_switch.dart';
 
 import 'package:app/managers/client_data_manager.dart';
+import 'package:app/managers/green_client_manager.dart';
+import 'package:app/managers/green_mind_manager.dart';
+import 'package:app/managers/home_widget_manager.dart';
 import 'package:app/structures/abstract/state_super.dart';
 import 'package:app/structures/enums/app_events.dart';
 import 'package:app/structures/enums/updater_group.dart';
 import 'package:app/structures/models/client_data_model.dart';
 import 'package:app/structures/models/green_client_model.dart';
+import 'package:app/structures/models/home_widget_model.dart';
 import 'package:app/system/extensions.dart';
 import 'package:app/tools/app/app_decoration.dart';
+import 'package:app/tools/app/app_icons.dart';
 import 'package:app/tools/app/app_messages.dart';
-import 'package:lite_rolling_switch/lite_rolling_switch.dart';
+import 'package:app/tools/app/app_pop.dart';
+import 'package:app/tools/app/app_snack.dart';
+import 'package:app/tools/route_tools.dart';
+import 'package:app/views/pages/full_chart_page.dart';
+import 'package:app/views/pages/rename_client_page.dart';
 
 class HomeWidgetView extends StatefulWidget {
   final HomeWidgetModel homeWidget;

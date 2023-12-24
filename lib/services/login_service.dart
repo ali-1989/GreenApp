@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:app/managers/home_widget_manager.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:dio/dio.dart';
@@ -15,6 +14,7 @@ import 'package:iris_tools/modules/stateManagers/updater_state.dart';
 import 'package:app/managers/api_manager.dart';
 import 'package:app/managers/green_client_manager.dart';
 import 'package:app/managers/green_mind_manager.dart';
+import 'package:app/managers/home_widget_manager.dart';
 import 'package:app/managers/settings_manager.dart';
 import 'package:app/services/google_sign_service.dart';
 import 'package:app/services/session_service.dart';

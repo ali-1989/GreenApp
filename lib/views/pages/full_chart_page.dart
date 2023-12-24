@@ -1,3 +1,14 @@
+import 'package:flutter/material.dart';
+
+import 'package:fl_chart/fl_chart.dart';
+import 'package:iris_notifier/iris_notifier.dart';
+import 'package:iris_tools/api/helpers/mathHelper.dart';
+import 'package:iris_tools/dateSection/dateHelper.dart';
+import 'package:iris_tools/modules/stateManagers/updater_state.dart';
+import 'package:iris_tools/widgets/circle_bordering.dart';
+import 'package:iris_tools/widgets/custom_card.dart';
+import 'package:iris_tools/widgets/optionsRow/radioRow.dart';
+
 import 'package:app/managers/client_data_manager.dart';
 import 'package:app/structures/abstract/state_super.dart';
 import 'package:app/structures/enums/app_events.dart';
@@ -11,15 +22,8 @@ import 'package:app/structures/models/home_widget_model.dart';
 import 'package:app/system/extensions.dart';
 import 'package:app/tools/app/app_decoration.dart';
 import 'package:app/tools/app/app_messages.dart';
-import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/material.dart';
-import 'package:iris_notifier/iris_notifier.dart';
-import 'package:iris_tools/api/helpers/mathHelper.dart';
-import 'package:iris_tools/dateSection/dateHelper.dart';
-import 'package:iris_tools/modules/stateManagers/updater_state.dart';
-import 'package:iris_tools/widgets/circle_bordering.dart';
-import 'package:iris_tools/widgets/custom_card.dart';
-import 'package:iris_tools/widgets/optionsRow/radioRow.dart';
+import 'package:app/tools/app/app_sizes.dart';
+import 'package:app/tools/date_tools.dart';
 
 class FullChartPage extends StatefulWidget {
   final HomeWidgetModel homeWidget;
@@ -34,6 +38,9 @@ class _FullChartPageState extends StateSuper<FullChartPage> {
   late GreenMindModel greenMind;
   late GreenChildModel childModel;
   late GreenClientModel clientModel;
+  late DateTime fromDate;
+  late DateTime toDate;
+  late DateTime currentDate;
   bool isAllModelsOk = true;
   ClientDataModel? lastDataModel;
   List<ClientDataModel> dataList = [];
@@ -48,6 +55,13 @@ class _FullChartPageState extends StateSuper<FullChartPage> {
   Map<int, DateTime> bottomSteps = {};
   bool errorOccurredInLiveData = false;
   String radioGroupValue = 'day';
+  int currentPage = 0;
+  int maxPage = 1;
+  bool showArrowKeys = false;
+  int dotToDotMinInterval = 30; //30mim
+  late int maxPointCount;
+  var currentScale = 3;
+  int findPoint = 0;
 
   @override
   void initState(){
@@ -57,6 +71,8 @@ class _FullChartPageState extends StateSuper<FullChartPage> {
     final childTemp = widget.homeWidget.getChild();
     final clientTemp = widget.homeWidget.getClient();
 
+    currentDate = DateTime.now();
+
     if(gTemp == null || childTemp == null || clientTemp == null){
       isAllModelsOk = false;
     }
@@ -64,6 +80,7 @@ class _FullChartPageState extends StateSuper<FullChartPage> {
       greenMind = gTemp;
       childModel = childTemp;
       clientModel = clientTemp;
+      calcMaxXAxisMaxPoint();
     }
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -72,7 +89,7 @@ class _FullChartPageState extends StateSuper<FullChartPage> {
         EventNotifierService.addListener(AppEvents.networkConnected, onReConnectNet);
         prepareLastModel();
         prepareDataList();
-        requestNewData();
+        requestNewData(fromDate);
       }
     });
   }
@@ -108,8 +125,8 @@ class _FullChartPageState extends StateSuper<FullChartPage> {
             ).color(Colors.black).bold().fsR(3),
           ),
         ),
-        const SizedBox(height: 12),
 
+        const SizedBox(height: 8),
         Expanded(
             child: Builder(
               builder: (_){
@@ -213,10 +230,7 @@ class _FullChartPageState extends StateSuper<FullChartPage> {
                               description: const Text('DAY  ').color(Colors.white),
                               groupValue: radioGroupValue,
                               value: 'day',
-                              onChanged: (v){
-                                radioGroupValue = v;
-                                callState();
-                              }
+                              onChanged: onChangeDaysRadio
                           ),
 
                           RadioRow(
@@ -224,10 +238,7 @@ class _FullChartPageState extends StateSuper<FullChartPage> {
                               description: const Text('WEEK  ').color(Colors.white),
                               groupValue: radioGroupValue,
                               value: 'week',
-                              onChanged: (v){
-                                radioGroupValue = v;
-                                callState();
-                              }
+                              onChanged: onChangeDaysRadio
                           ),
 
                           RadioRow(
@@ -235,10 +246,7 @@ class _FullChartPageState extends StateSuper<FullChartPage> {
                               description: const Text('MONTH  ').color(Colors.white),
                               groupValue: radioGroupValue,
                               value: 'month',
-                              onChanged: (v){
-                                radioGroupValue = v;
-                                callState();
-                              }
+                              onChanged: onChangeDaysRadio
                           ),
 
                           RadioRow(
@@ -246,15 +254,81 @@ class _FullChartPageState extends StateSuper<FullChartPage> {
                               description: const Text('YEAR  ').color(Colors.white),
                               groupValue: radioGroupValue,
                               value: 'year',
-                              onChanged: (v){
-                                radioGroupValue = v;
-                                callState();
-                              }
+                              onChanged: onChangeDaysRadio
                           ),
                         ],
                       ),
                     ),
 
+
+                    Visibility(
+                      visible: dataList.isNotEmpty,
+                      child: SizedBox(
+                        width: 200,
+                        child: Slider(
+                            value: currentScale.toDouble(),
+                            min: 1,
+                            max: 10,
+                            divisions: 10,
+                            onChanged: (v){
+                              showLoading();
+                              currentScale = v.toInt();
+
+                              calcMaxXAxisMaxPoint(newDotToDotMinInterval: currentScale*10);
+                              checkMustShowArrows(fromDate, toDate);
+                              prepareDots();
+
+                              hideLoading();
+                              callState();
+                            }
+                        ),
+                      ),
+                    ),
+
+                    Center(
+                      child: Visibility(
+                          visible: showArrowKeys,
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  GestureDetector(
+                                    onTap: onBackWardClick,
+                                    behavior: HitTestBehavior.translucent,
+                                    child: const CircleBordering(
+                                      borderColor: Colors.white,
+                                      borderWidth: 1,
+                                      radius: 35,
+                                      padding: EdgeInsets.zero,
+                                      child: Center(child: Icon(Icons.keyboard_arrow_left, color: Colors.white,)),
+                                    ),
+                                  ),
+
+                                  Text('  ${currentPage+1} / $maxPage  ')
+                                  .color(Colors.white),
+
+                                  GestureDetector(
+                                    onTap: onForwardClick,
+                                    behavior: HitTestBehavior.translucent,
+                                    child: const CircleBordering(
+                                      borderColor: Colors.white,
+                                      borderWidth: 1,
+                                      radius: 35,
+                                      padding: EdgeInsets.zero,
+                                      child: Center(child: Icon(Icons.keyboard_arrow_right, color: Colors.white,)),
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              const SizedBox(height: 6),
+                              Text('[${DateTools.dateAndHmRelative(currentDate)}]')
+                                  .color(Colors.white),
+                            ],
+                          ),
+                      ),
+                    ),
 
                     /// chart
                     Expanded(
@@ -331,28 +405,55 @@ class _FullChartPageState extends StateSuper<FullChartPage> {
   }
 
   void prepareDataList() async {
-    DateTime to = DateHelper.nowMinusUtcOffset();
-    DateTime from;
+    toDate = DateHelper.nowMinusUtcOffset();
 
     if(chartDim == ChartDimType.day){
-      from = to.subtract(const Duration(hours: 24));
+      fromDate = toDate.subtract(const Duration(hours: 24));
     }
     else if(chartDim == ChartDimType.week){
-      from = to.subtract(const Duration(days: 7));
+      fromDate = toDate.subtract(const Duration(days: 7));
     }
     else if(chartDim == ChartDimType.month){
-      from = to.subtract(const Duration(days: 30));
+      fromDate = toDate.subtract(const Duration(days: 30));
     }
     else {
-      from = to.subtract(const Duration(days: 365));
+      fromDate = toDate.subtract(const Duration(days: 365));
     }
 
-    final list = await ClientDataManager.fetchFor(clientModel.id, from, to: to);
+    final list = await ClientDataManager.fetchFor(clientModel.id, fromDate, to: toDate);
+
+    if(list.length == dataList.length){
+      bool isSame = true;
+
+      for(final l1 in list){
+        bool find = false;
+
+        for(final l2 in dataList){
+          if(l1.data == l2.data && l1.hardwareDate == l2.hardwareDate){
+            find = true;
+            break;
+          }
+        }
+
+        if(!find){
+          isSame = false;
+          break;
+        }
+      }
+
+      if(isSame){
+        return;
+      }
+    }
 
     dataList.clear();
     dataList.addAll(list);
+    sortData();
 
-    prepareMinMaxAndDots(from);
+    calcMinAndMaxForVertical();
+    calcMaxXAxisMaxPoint();
+    checkMustShowArrows(fromDate, toDate);
+    prepareDots();
 
     callState();
   }
@@ -364,12 +465,14 @@ class _FullChartPageState extends StateSuper<FullChartPage> {
       LineChartBarData(
         show: true,
         isCurved: true,
+        isStepLineChart: false, //true: break Line, no Curve
+        preventCurveOverShooting: false,
+        preventCurveOvershootingThreshold: 0,
         color: Colors.white,
         barWidth: 1,
-        preventCurveOverShooting: false,
         curveSmoothness: 0.2,
+        dotData: FlDotData(show: currentScale < 7),
         //lineChartStepData: LineChartStepData(stepDirection: 5),
-        isStepLineChart: false, //break Line, no Curve
         spots: dots,
       ),
     );
@@ -446,33 +549,56 @@ class _FullChartPageState extends StateSuper<FullChartPage> {
   }
 
   Widget bottomTitleWidgets(double value, TitleMeta meta) {
-    /// value: minX  to  maxX
-    /*String text = '';
-
-    if(value >= 1.0){
-      text = value.ceil().toString().replaceFirst('.0', '');
-    }*/
-
     var itm = bottomSteps[value.toInt()];
+    final temp = bottomSteps.values.toList();
+    final showIndex = [0, bottomSteps.length-1, bottomSteps.length/2];
 
     if(itm == null){
       return const SizedBox();
     }
 
-    itm = DateHelper.utcToLocal(itm);
+    bool isInList = showIndex.contains(temp.indexOf(itm));
+
+    if(bottomSteps.length > 15 && !isInList){
+      return const SizedBox();
+    }
+
+    bool moveEndItem = bottomSteps.length > 15 && isInList || bottomSteps.length < 3;
+    //moveEndItem = moveEndItem && temp.indexOf(itm) >= bottomSteps.length-1;
+    moveEndItem = moveEndItem && value > xMaxValue- (2*currentScale);
 
     Widget view = UnconstrainedBox(
-      child: CustomCard(
-        color: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 0.7, vertical: 0.3),
-        radius: 4,
-        child: Column(
-          children: [
-            Text(itm.hour.toString().padLeft(2, '0'))
-                .color(Colors.black).bold(),
-            Text(itm.minute.toString().padLeft(2, '0'))
-                .color(Colors.black).bold(),
-          ],
+      child: Transform.translate(
+        offset: Offset(moveEndItem? -30: 0, 0),
+        child: CustomCard(
+          color: Colors.white,
+          padding: const EdgeInsets.symmetric(horizontal: 0.7, vertical: 0.3),
+          radius: 4,
+          child: Builder(
+            builder: (context) {
+              if(bottomSteps.length > 15 && isInList || bottomSteps.length < 3){
+                return Column(
+                  children: [
+                    Text(DateTools.dateOnlyRelative(itm, isUtc: false))
+                        .color(Colors.black).bold(),
+                    Text(DateTools.hmOnlyRelative(itm, isUtc: false))
+                        .color(Colors.black).bold(),
+                  ],
+                );
+              }
+
+              itm = DateHelper.utcToLocal(itm!);
+
+              return Column(
+                children: [
+                  Text(itm!.hour.toString().padLeft(2, '0'))
+                      .color(Colors.black).bold(),
+                  Text(itm!.minute.toString().padLeft(2, '0'))
+                      .color(Colors.black).bold(),
+                ],
+              );
+            }
+          ),
         ),
       ),
     );
@@ -489,10 +615,7 @@ class _FullChartPageState extends StateSuper<FullChartPage> {
      */
   }
 
-  void prepareMinMaxAndDots(DateTime base) {
-    dots.clear();
-    bottomSteps.clear();
-
+  void calcMinAndMaxForVertical(){
     if(dataList.isEmpty){
       yMinValue = 0;
       yMaxValue = 1;
@@ -506,29 +629,8 @@ class _FullChartPageState extends StateSuper<FullChartPage> {
     yMinValue = MathHelper.clearToDouble(dataList[0].data);
     yMaxValue = MathHelper.clearToDouble(dataList[0].data);
 
-    xMaxValue = 24* (60/5)+4; // 4 is for padding in right
-
-        {/// first dot
-      final date = dataList[0].hardwareDate!;
-      final difDur = DateHelper.difference(base, date);
-      /// 24*60 = 1440 minutes
-      //old: 1440/8 = 180 x-step distance  if x-step be 8
-      /// 1440/8 = 180 x-step distance
-      final d = FlSpot(difDur.inMinutes / 5, yMinValue);
-      dots.add(d);
-
-      bottomSteps[difDur.inMinutes ~/ 5] = date;
-    }
-
     for(int i=1; i< dataList.length; i++){
-      final date = dataList[i].hardwareDate!;
-      final difDur = DateHelper.difference(base, date);
-
       double v = MathHelper.clearToDouble(dataList[i].data);
-
-      final d = FlSpot(difDur.inMinutes/5, v);
-      dots.add(d);
-      bottomSteps[difDur.inMinutes ~/ 5] = date;
 
       if(v > yMaxValue){
         yMaxValue = v;
@@ -553,16 +655,178 @@ class _FullChartPageState extends StateSuper<FullChartPage> {
     }
   }
 
+  void prepareDots() {
+    dots.clear();
+    bottomSteps.clear();
+
+    double div = (maxPointCount * dotToDotMinInterval)/xMaxValue;
+
+    final distance = Duration(minutes: currentPage * dotToDotMinInterval);
+    currentDate = fromDate.add(distance);
+    DateTime findDate = fromDate.add(distance);
+    final start = findDate.add(const Duration());
+
+    for(int i=0; i< maxPointCount; i++){
+      final curDot = findDataForDate(findDate);
+
+      findDate = findDate.add(Duration(minutes: dotToDotMinInterval));
+
+      if(curDot == null){
+        continue;
+      }
+
+      final date = curDot.hardwareDate!;
+      final difDur = DateHelper.difference(start, date);
+      double v = MathHelper.clearToDouble(curDot.data);
+      double h = difDur.inMinutes / div;
+      final d = FlSpot(h, v);
+
+      dots.add(d);
+      bottomSteps[h.toInt()] = date;
+    }
+
+    findDate = findDate.add(Duration(minutes: dotToDotMinInterval));
+
+    while(findDate.isBefore(dataList.last.hardwareDate!)) {
+      final curDot = findDataForDate(findDate);
+      findDate = findDate.add(Duration(minutes: dotToDotMinInterval));
+
+      if (curDot != null) {
+        final difDur = DateHelper.difference(start, curDot.hardwareDate!);
+        double v = MathHelper.clearToDouble(curDot.data);
+        double h = difDur.inMinutes / div;
+        final d = FlSpot(h, v);
+        dots.add(d);
+        break;
+      }
+    }
+
+    double center = maxPointCount / 2;
+
+    findPoint = currentPage * dotToDotMinInterval;
+    findPoint += (center * dotToDotMinInterval).toInt();
+  }
+
   void onNewDataListener(UpdaterGroupId p1) {
     prepareLastModel();
     prepareDataList();
   }
 
-  void requestNewData() {
-    ClientDataManager.requestNewDataFor(clientModel.id);
+  void requestNewData(DateTime? from) {
+    ClientDataManager.requestNewDataFor(clientModel.id, from: from);
   }
 
   void onReConnectNet({data}) {
-    requestNewData();
+    reDrawOnChangeRadio();
+  }
+
+  void onChangeDaysRadio(v){
+    radioGroupValue = v;
+    currentPage = 0;
+    maxPage = 0;
+    showArrowKeys = false;
+    callState();
+
+    showLoading();
+    Future.delayed(const Duration(milliseconds: 300), (){
+      reDrawOnChangeRadio();
+      hideLoading();
+    });
+  }
+
+  void reDrawOnChangeRadio(){
+    if(radioGroupValue == 'week'){
+      chartDim = ChartDimType.week;
+    }
+    else if(radioGroupValue == 'month'){
+      chartDim = ChartDimType.month;
+    }
+    else if(radioGroupValue == 'year'){
+      chartDim = ChartDimType.year;
+    }
+    else {
+      chartDim = ChartDimType.day;
+    }
+
+    prepareDataList();
+    requestNewData(fromDate);
+  }
+
+  ClientDataModel? findDataForDate(DateTime findDate) {
+    for(final d in dataList){
+      bool isBetween = d.hardwareDate!.isAfter(findDate);
+      isBetween = isBetween
+          && (d.hardwareDate!.isBefore(findDate.add(Duration(minutes: dotToDotMinInterval)))
+          || d.hardwareDate! == findDate.add(Duration(minutes: dotToDotMinInterval)));
+
+      if(isBetween){
+        return d;
+      }
+    }
+
+    return null;
+  }
+
+  void sortData(){
+    int sort(ClientDataModel d1, ClientDataModel d2){
+      return DateHelper.compareDates(d1.hardwareDate!, d2.hardwareDate!);
+    }
+
+    dataList.sort(sort);
+  }
+
+  void onForwardClick(){
+    final end = toDate.subtract(Duration(minutes: dotToDotMinInterval * maxPointCount));
+
+    if(currentDate.isBefore(end)) {
+      currentPage++;
+      prepareDots();
+      callState();
+    }
+  }
+
+  void onBackWardClick(){
+    if(currentPage > 0) {
+      currentPage--;
+      prepareDots();
+      callState();
+    }
+  }
+
+  void calcMaxXAxisMaxPoint({int? newDotToDotMinInterval}) {
+    if(newDotToDotMinInterval != null) {
+      dotToDotMinInterval = newDotToDotMinInterval;
+    }
+
+    // 25 is width-space for a point to other
+    var x = MathHelper.between(5, 100, 25, 10, dotToDotMinInterval.toDouble());
+    // 40 is padding
+    maxPointCount = (AppSizes.instance.appWidth-40) ~/ x;
+    // 10: every 10min
+    xMaxValue = (maxPointCount * (dotToDotMinInterval/10));
+  }
+
+  void checkMustShowArrows(DateTime first, DateTime last){
+    final difDur = DateHelper.difference(first, last);
+
+    maxPage = difDur.inMinutes ~/ dotToDotMinInterval;
+    maxPage -= maxPointCount;
+    maxPage++;
+    showArrowKeys = maxPage > maxPointCount;
+
+    currentPage = 0;
+    int newMulti = currentPage * dotToDotMinInterval;
+    double center = maxPointCount / 2;
+    newMulti += (center * dotToDotMinInterval).toInt();
+
+    while (currentPage < maxPage) {
+      if (newMulti >= findPoint) {
+        break;
+      }
+
+      currentPage++;
+      newMulti = currentPage * dotToDotMinInterval;
+      newMulti += (center * dotToDotMinInterval).toInt();
+    }
   }
 }

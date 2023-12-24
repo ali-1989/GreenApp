@@ -1,8 +1,5 @@
 import 'dart:ui';
 
-import 'package:app/managers/home_widget_manager.dart';
-import 'package:app/services/session_service.dart';
-import 'package:app/structures/models/home_widget_model.dart';
 import 'package:flutter/material.dart';
 
 import 'package:expandable/expandable.dart';
@@ -13,12 +10,15 @@ import 'package:iris_tools/widgets/icon/circular_icon.dart';
 import 'package:iris_tools/widgets/text/custom_rich.dart';
 
 import 'package:app/managers/green_client_manager.dart';
+import 'package:app/managers/home_widget_manager.dart';
+import 'package:app/services/session_service.dart';
 import 'package:app/structures/abstract/state_super.dart';
 import 'package:app/structures/enums/client_type.dart';
 import 'package:app/structures/enums/updater_group.dart';
 import 'package:app/structures/models/green_child_model.dart';
 import 'package:app/structures/models/green_client_model.dart';
 import 'package:app/structures/models/green_mind_model.dart';
+import 'package:app/structures/models/home_widget_model.dart';
 import 'package:app/system/extensions.dart';
 import 'package:app/tools/app/app_decoration.dart';
 import 'package:app/tools/app/app_icons.dart';
@@ -470,5 +470,4 @@ class _ChildInfoPageState extends StateSuper<ChildInfoPage> {
       ],
     );
   }
-
 }
